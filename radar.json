@@ -1,53 +1,53 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-20T16:02:08.959Z",
+  "generatedAt": "2026-06-20T16:55:51.829Z",
   "trends": [
     {
-      "name": "Hario Switch immersion drip hybrid brewing",
-      "buzz": "The Hario Switch continues to dominate pour-over forums as the beginner-friendly brewer that lets you toggle between immersion and percolation mid-brew. Reddit threads praise its forgiving nature and the way it turns mistakes into happy accidents.",
+      "name": "Wilfa Uniform grinder hype train",
+      "buzz": "The Wilfa Uniform is trending hard as a budget flat-burr grinder that punches above its price point. Coffee Reddit is calling it the best entry-level option for pour-over enthusiasts who want consistent grinds without spending $300+.",
       "tpl": "s2",
       "src": "community",
-      "angle": "Frame it as the training-wheels-optional brewer: you can start with full immersion for consistency, then experiment with hybrid recipes when you're ready. No wrong answers, just different cups.",
+      "angle": "Perfect for anyone leveling up from a blade grinder or entry hand grinder — you don't need to break the bank to unlock better cups at home.",
       "source_url": "https://www.reddit.com/r/pourover/"
     },
     {
-      "name": "Single-dose grinder debate: DF64 Gen 2 vs. Fellow Opus",
-      "buzz": "r/espresso and r/pourover are debating whether the DF64 Gen 2's flat burrs justify the price jump over the Opus for pour-over purists. Both are praised for low retention and quiet operation.",
-      "tpl": "s3",
+      "name": "Fellow Opus grinder firmware updates & modding",
+      "buzz": "Fellow Opus owners are sharing grind-setting sweet spots and discussing burr swaps to get even better pour-over performance. The sub-$200 grinder continues to dominate beginner-to-intermediate conversations.",
+      "tpl": "s2",
       "src": "community",
-      "angle": "Celebrate that both grinders exist at accessible price points. Emphasize that either choice levels up your game—pick based on budget and whether you want espresso flexibility later.",
-      "source_url": "https://www.reddit.com/r/espresso/"
+      "angle": "The Opus proves you can start with a solid grinder and grow into it — tweaking settings is part of the fun, not a barrier.",
+      "source_url": "https://www.reddit.com/r/pourover/"
     },
     {
-      "name": "Osmotic flow brewing (ultra-long steep experiments)",
-      "buzz": "Coffee nerds on r/JamesHoffmann are experimenting with 12–24 hour cold steeps using osmotic pressure principles, claiming smoother, tea-like clarity. Results are wildly inconsistent but the hype is real.",
-      "tpl": "s4",
-      "src": "community",
-      "angle": "Position it as a fun weekend science project, not a daily method. Encourage curiosity: 'Try it once, compare notes, see if it's your vibe—no pressure to optimize.'",
-      "source_url": "https://www.reddit.com/r/JamesHoffmann/"
-    },
-    {
-      "name": "Orea V4 flat-bottom brewer adoption spike",
-      "buzz": "The Orea V4's flat-bottom geometry and ribbed walls are winning over Kalita Wave fans who want more flow control. Baristas praise its even extraction and the option to use Kalita or custom filters.",
+      "name": "Orea V4 brewer buzz",
+      "buzz": "The Orea V4 pour-over brewer is getting fresh attention for its flat-bed design and forgiving brew window. Fans love how it handles everything from light naturals to darker roasts with minimal fuss.",
       "tpl": "s1",
       "src": "community",
-      "angle": "Highlight it as a 'choose your own adventure' brewer—use the stock filters for speed or Kalita 185s for more body. Perfect for tinkerers who don't want to commit to one style.",
-      "source_url": "https://www.reddit.com/r/barista/"
-    },
-    {
-      "name": "Anaerobic natural process beans flooding specialty roasters",
-      "buzz": "Roasters are releasing waves of anaerobic natural lots with fruit-bomb profiles (mango, passionfruit, wine-like). Social chatter suggests they're divisive—some love the funk, others find it too much.",
-      "tpl": "s5",
-      "src": "verify",
-      "angle": "Normalize the polarization: 'These beans are like natural wine—bold, funky, and totally fine to not be your thing. Grab a small bag and see where you land.' No judgment either way.",
+      "angle": "Flat-bed brewers like the Orea are all about consistency and room to experiment — no need to nail a perfect spiral pour every single time.",
       "source_url": "https://www.reddit.com/r/pourover/"
     },
     {
-      "name": "Gooseneck kettle with pour-rate feedback (Acaia Orion)",
-      "buzz": "Whispers of a smart gooseneck kettle that tracks pour rate and weight in real time, helping beginners nail bloom timing and flow consistency. Specs and release date unconfirmed but the hype is building.",
-      "tpl": "s6",
-      "src": "verify",
-      "angle": "If real, frame it as optional training wheels for pour control—great for learning the feel, but you won't need it forever. Tech as a teaching tool, not a requirement.",
+      "name": "Timemore Sculptor grinders gaining traction",
+      "buzz": "Timemore's Sculptor line (064, 078) is earning praise as a mid-tier grinder option with excellent pour-over clarity. The 64mm flat burrs and solid build quality are winning over home brewers looking for value.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "You don't need the most hyped grinder to make incredible coffee — the Sculptor shows that thoughtful design and good burrs go a long way.",
+      "source_url": "https://www.reddit.com/r/pourover/"
+    },
+    {
+      "name": "Iced coffee season recipes flooding feeds",
+      "buzz": "With summer in full swing, Japanese iced coffee and flash-brew recipes are dominating specialty coffee communities. Brewers are sharing ratio tweaks and ice-to-coffee formulas for V60, Kalita, and Origami drippers.",
+      "tpl": "s5",
+      "src": "community",
+      "angle": "Iced pour-over isn't just hot coffee poured over ice — it's a chance to play with ratios and discover how your favorite beans taste cold.",
+      "source_url": "https://www.reddit.com/r/pourover/"
+    },
+    {
+      "name": "April Brewer plastic vs glass debates",
+      "buzz": "The April Brewer continues to spark discussion about whether the plastic or glass version is worth it, and whether flat-bottom geometry really changes the cup. Fans swear by its clean, tea-like extractions.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "Brewer choice is personal — if you're curious about flat-bottom or the April hype, try it, but your trusty V60 isn't wrong either.",
       "source_url": "https://www.reddit.com/r/pourover/"
     }
   ]
