@@ -203,7 +203,9 @@ function buildUserMessage(sources, today, retry) {
   const base =
     `Find this week's most postable specialty-coffee trends — up to 12, ordered ` +
     `best/most-postable first. ` +
-    `Prioritize these sources and similar ones:\n\n${sources}\n\n` +
+    `Use the web_search tool and base each pick on a real result you actually found.\n\n` +
+    `Look here and at similar places — this list is ONLY where to look; never ` +
+    `cite these root URLs themselves:\n\n${sources}\n\n` +
     `Today is ${today}.\n\n` +
     `Return up to 12 items, ordered best-first. If this week is thin, include ` +
     `notable gear/trends from the last ~3 months. Mark anything not fully ` +
@@ -212,17 +214,23 @@ function buildUserMessage(sources, today, retry) {
     `Each object: { "name": string, "src": "press"|"review"|"community"|"verify", ` +
     `"buzz": string (1-2 sentences), "tpl": "s1".."s6", ` +
     `"angle": string (how DrewBrews should frame it — inclusive, no gatekeeping), ` +
-    `"source_url": the EXACT page — a specific Reddit /comments/ thread, a YouTube ` +
-    `watch?v= video, or a specific article URL. Never a homepage, channel, or ` +
-    `subreddit root. If you can't find a specific link, omit the item entirely. }`;
+    `"source_url": copy the EXACT full URL of the specific search result you used ` +
+    `— a Reddit /comments/ thread, a YouTube watch?v= video, or a specific article ` +
+    `page with a real slug. NEVER a homepage, channel, @profile, or subreddit ` +
+    `root, and never a URL from the list above. ` +
+    `Good: https://www.reddit.com/r/pourover/comments/1abc23/title/  ` +
+    `Bad: https://www.reddit.com/r/pourover/ . ` +
+    `If you don't have a specific result URL for an item, omit that item. }`;
 
   if (!retry) return base;
 
   return (
     `CRITICAL: your previous result had too few items with specific, verifiable ` +
-    `source links. Return ONLY items whose source_url is a direct page — a ` +
-    `Reddit /comments/ thread, a YouTube watch?v= video, or a specific article ` +
-    `URL. Omit any item you cannot back with such a link. Output the array only.\n\n` +
+    `source links. For each item, copy the EXACT full URL of a real web_search ` +
+    `result — a Reddit /comments/ thread, a YouTube watch?v= video, or a specific ` +
+    `article page. Do NOT use subreddit roots, channel/@profile pages, homepages, ` +
+    `or any URL from the source list. Omit any item you cannot back with such a ` +
+    `link. Output the array only.\n\n` +
     base
   );
 }
