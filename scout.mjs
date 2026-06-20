@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import Anthropic from '@anthropic-ai/sdk';
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SCHEMA_PATH = join(__dirname, 'radar.schema.json');
@@ -22,12 +23,12 @@ const SOURCES_PATH = join(__dirname, 'sources.txt');
 const OUTPUT_PATH = join(__dirname, 'radar.json');
 
 // --- The model name lives in exactly ONE place. A future rename is a one-liner.
-// Haiku 4.5 is the cheap default; override with the MODEL env var if you ever
-// want a smarter (pricier) weekly run.
-const MODEL = process.env.MODEL || 'claude-haiku-4-5';
+// Sonnet 4.5 handles the multi-step web research + synthesis well; override with
+// the MODEL env var if you want a cheaper (Haiku) or smarter (Opus) weekly run.
+const MODEL = process.env.MODEL || 'claude-sonnet-4-5';
 
-// Cap web-search calls to keep the weekly cost to a few cents.
-const MAX_SEARCHES = Number(process.env.MAX_SEARCHES || 5);
+// Cap web-search calls to keep the weekly cost to a few cents (10 ≈ ~10–15¢).
+const MAX_SEARCHES = Number(process.env.MAX_SEARCHES || 10);
 // Safety net so a server-tool loop can't spin forever.
 const MAX_CONTINUATIONS = 6;
 
@@ -54,7 +55,15 @@ Honesty rules:
 - Every source_url must be a real URL you actually encountered while searching.
 
 Use the web search tool to ground your picks in this week's real chatter
-(Reddit threads, YouTube videos, press, blogs).`;
+(Reddit threads, YouTube videos, press, blogs).
+
+Output format (this is critical):
+You output ONLY a JSON array — never prose, never a refusal, never an apology,
+never markdown fences. Your output is parsed by a machine; any non-JSON text
+breaks it. If a given week looks thin, do NOT explain or decline — instead
+broaden to notable gear/trends from roughly the last 1–3 months and mark
+anything you can't fully confirm as "verify". Always return exactly 6 items.
+Never return zero.`;
 
 // -----------------------------------------------------------------------------
 // Helpers
@@ -166,6 +175,56 @@ function collectText(message) {
     .trim();
 }
 
+/** Build the user prompt. When `strict`, prepend a hard correction for the retry. */
+function buildUserMessage(sources, today, strict) {
+  const base =
+    `Find this week's 6 most postable specialty-coffee trends. ` +
+    `Prioritize these sources and similar ones:\n\n${sources}\n\n` +
+    `Today is ${today}.\n\n` +
+    `If this exact week is thin, include notable gear/trends from roughly the ` +
+    `last 1–3 months, and mark anything you can't fully confirm as ` +
+    `src: "verify". Always return 6 items. Never return zero.\n\n` +
+    `Reply with ONLY a JSON array of 6 objects, each:\n` +
+    `{ "name": string, "src": "press"|"review"|"community"|"verify", ` +
+    `"buzz": string (1-2 sentences), "tpl": "s1".."s6", ` +
+    `"angle": string (how DrewBrews should frame it — inclusive, no gatekeeping), ` +
+    `"source_url": a real link }\n` +
+    `No prose, no markdown fences — just the array.`;
+
+  if (!strict) return base;
+
+  return (
+    `CRITICAL: your previous reply could not be parsed as JSON. ` +
+    `Output the JSON array ONLY — start with "[" and end with "]". ` +
+    `No prose, no apology, no explanation, no code fences.\n\n` +
+    base
+  );
+}
+
+/**
+ * Send one prompt to the model with web search enabled and return its text.
+ * Handles the server-side tool's pause_turn loop (re-send to continue).
+ */
+async function askModel(client, userMessage, tools, label) {
+  const messages = [{ role: 'user', content: userMessage }];
+  let response = await withRetry(
+    () => client.messages.create({ model: MODEL, max_tokens: 4096, system: SYSTEM_PROMPT, tools, messages }),
+    label
+  );
+
+  let continuations = 0;
+  while (response.stop_reason === 'pause_turn' && continuations < MAX_CONTINUATIONS) {
+    messages.push({ role: 'assistant', content: response.content });
+    response = await withRetry(
+      () => client.messages.create({ model: MODEL, max_tokens: 4096, system: SYSTEM_PROMPT, tools, messages }),
+      `${label} (continuation ${continuations + 1})`
+    );
+    continuations++;
+  }
+
+  return collectText(response);
+}
+
 // -----------------------------------------------------------------------------
 // Main
 // -----------------------------------------------------------------------------
@@ -177,6 +236,7 @@ async function main() {
 
   const schema = JSON.parse(await readFile(SCHEMA_PATH, 'utf8'));
   const ajv = new Ajv({ strict: false, allErrors: true });
+  addFormats(ajv); // teaches ajv the "date-time" format (also silences its warning)
   const validate = ajv.compile(schema);
 
   const sources = await readSources();
@@ -184,48 +244,27 @@ async function main() {
 
   const client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment
 
-  const userMessage =
-    `Find this week's 6 most postable specialty-coffee trends. ` +
-    `Prioritize these sources and similar ones:\n\n${sources}\n\n` +
-    `Today is ${today}.\n\n` +
-    `Reply with ONLY a JSON array of up to 6 objects, each:\n` +
-    `{ "name": string, "src": "press"|"review"|"community"|"verify", ` +
-    `"buzz": string (1-2 sentences), "tpl": "s1".."s6", ` +
-    `"angle": string (how DrewBrews should frame it — inclusive, no gatekeeping), ` +
-    `"source_url": a real link }\n` +
-    `No prose, no markdown fences — just the array.`;
-
   console.log(`[scout] Model: ${MODEL}  |  max searches: ${MAX_SEARCHES}  |  date: ${today}`);
 
-  // --- Call the Messages API with the (basic) web search tool enabled.
-  // Haiku 4.5 predates the dynamic-filtering web_search_20260209 variant, so we
-  // use web_search_20250305. (If you switch MODEL to an Opus 4.6+/Sonnet 4.6
-  // model, you may upgrade this to web_search_20260209 for better filtering.)
+  // --- Web search tool. We use the basic web_search_20250305 variant, which
+  // works on every model (including the Sonnet 4.5 default). If you switch MODEL
+  // to an Opus 4.6+/Sonnet 4.6 model you may upgrade this to web_search_20260209
+  // for better dynamic filtering.
   const tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: MAX_SEARCHES }];
 
-  const messages = [{ role: 'user', content: userMessage }];
+  // First attempt.
+  let text = await askModel(client, buildUserMessage(sources, today, false), tools, 'initial request');
+  let trends = coerceTrends(parseTrends(text));
+  console.log(`[scout] Attempt 1: ${trends.length} usable item(s) after cleaning.`);
 
-  let response = await withRetry(
-    () => client.messages.create({ model: MODEL, max_tokens: 4096, system: SYSTEM_PROMPT, tools, messages }),
-    'initial request'
-  );
-
-  // Server-side tools run their own loop; if it pauses, re-send to continue.
-  let continuations = 0;
-  while (response.stop_reason === 'pause_turn' && continuations < MAX_CONTINUATIONS) {
-    messages.push({ role: 'assistant', content: response.content });
-    response = await withRetry(
-      () => client.messages.create({ model: MODEL, max_tokens: 4096, system: SYSTEM_PROMPT, tools, messages }),
-      `continuation ${continuations + 1}`
-    );
-    continuations++;
+  // Fallback: if we parsed nothing usable (e.g. the model returned prose or a
+  // refusal), try once more with a stricter "JSON array only" instruction.
+  if (trends.length === 0) {
+    console.warn('[scout] 0 items parsed — retrying once with a stricter JSON-only instruction…');
+    text = await askModel(client, buildUserMessage(sources, today, true), tools, 'strict retry');
+    trends = coerceTrends(parseTrends(text));
+    console.log(`[scout] Attempt 2: ${trends.length} usable item(s) after cleaning.`);
   }
-
-  const text = collectText(response);
-  const rawTrends = parseTrends(text);
-  const trends = coerceTrends(rawTrends);
-
-  console.log(`[scout] Parsed ${rawTrends.length} item(s); ${trends.length} usable after cleaning.`);
 
   const radar = {
     schemaVersion: 1,

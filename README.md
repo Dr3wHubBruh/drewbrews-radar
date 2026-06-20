@@ -20,9 +20,9 @@ no other keys, quotas, or accounts to babysit.
 
 ## What it costs
 
-A single weekly run is **a few cents**. Web search is billed per search (about
-$10 per 1,000 searches) and the run is capped at 5 searches, plus a small amount
-of token cost. Set a **monthly spend cap** in the Anthropic console as a
+A single weekly run is **around 10–15 cents**. Web search is billed per search
+(about $10 per 1,000 searches) and the run is capped at 10 searches, plus a small
+amount of token cost. Set a **monthly spend cap** in the Anthropic console as a
 runaway-bug backstop — see "First-time setup" below.
 
 ---
@@ -86,8 +86,9 @@ this file each week and tells Claude to prioritize those and similar sources.
 
 The model name lives in exactly one place in `scout.mjs`
 (`const MODEL = …`). You can also override it without editing code by setting a
-`MODEL` environment variable. The default is `claude-haiku-4-5` (cheap and
-plenty for this job).
+`MODEL` environment variable. The default is `claude-sonnet-4-5` — strong at the
+multi-step web research this job needs, still pennies per week. Set
+`MODEL=claude-haiku-4-5` for a cheaper run, or an Opus model for a smarter one.
 
 ---
 
