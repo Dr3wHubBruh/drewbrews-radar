@@ -147,12 +147,11 @@ function normalizeParsed(parsed) {
  * - drop items missing name or buzz
  * - coerce an out-of-range tpl to "s5"
  * - coerce an unknown src to "verify"
- * - cap to the schema's 12-item ceiling
+ * (The 12-item cap is applied later, after the specific-source filter + de-dupe.)
  */
 function coerceTrends(trends) {
   return trends
     .filter((t) => t && typeof t.name === 'string' && t.name.trim() && typeof t.buzz === 'string' && t.buzz.trim())
-    .slice(0, 12)
     .map((t) => {
       const out = {
         name: String(t.name).trim().slice(0, 80),
@@ -166,6 +165,30 @@ function coerceTrends(trends) {
     });
 }
 
+/**
+ * Every published trend must cite a SPECIFIC page — not a homepage, channel,
+ * profile, or subreddit root. This is the gate that keeps the radar's links
+ * clickable-to-the-actual-thing.
+ */
+function isSpecificSourceUrl(u) {
+  if (typeof u !== 'string') return false;
+  let url;
+  try { url = new URL(u.trim()); } catch { return false; }
+  if (!/^https?:$/.test(url.protocol)) return false;
+  const host = url.hostname.replace(/^www\./, '');
+  const path = url.pathname.replace(/\/+$/, ''); // drop trailing slash
+  const seg = path.split('/').filter(Boolean);
+  // Reddit: must be an actual comments thread
+  if (host.endsWith('reddit.com')) return /\/comments\//.test(url.pathname);
+  // YouTube: must be a specific video
+  if (host.endsWith('youtube.com')) return url.searchParams.has('v');
+  if (host === 'youtu.be') return seg.length >= 1;
+  // Reject obvious channel/profile/tag roots
+  if (seg.length === 1 && /^[@]/.test(seg[0])) return false;
+  // Everything else (articles): need a real path with a slug-like segment
+  return seg.length >= 1 && seg.join('/').length >= 6;
+}
+
 /** Pull all text blocks out of a Messages API response and join them. */
 function collectText(message) {
   return (message.content || [])
@@ -175,8 +198,8 @@ function collectText(message) {
     .trim();
 }
 
-/** Build the user prompt. When `strict`, prepend a hard correction for the retry. */
-function buildUserMessage(sources, today, strict) {
+/** Build the user prompt. When `retry`, prepend a hard push for verifiable links. */
+function buildUserMessage(sources, today, retry) {
   const base =
     `Find this week's most postable specialty-coffee trends — up to 12, ordered ` +
     `best/most-postable first. ` +
@@ -189,13 +212,17 @@ function buildUserMessage(sources, today, strict) {
     `Each object: { "name": string, "src": "press"|"review"|"community"|"verify", ` +
     `"buzz": string (1-2 sentences), "tpl": "s1".."s6", ` +
     `"angle": string (how DrewBrews should frame it — inclusive, no gatekeeping), ` +
-    `"source_url": a real link }`;
+    `"source_url": the EXACT page — a specific Reddit /comments/ thread, a YouTube ` +
+    `watch?v= video, or a specific article URL. Never a homepage, channel, or ` +
+    `subreddit root. If you can't find a specific link, omit the item entirely. }`;
 
-  if (!strict) return base;
+  if (!retry) return base;
 
   return (
-    `CRITICAL: your previous reply could not be parsed as JSON. ` +
-    `Output the JSON array ONLY — no prose, no apology, no explanation, no code fences.\n\n` +
+    `CRITICAL: your previous result had too few items with specific, verifiable ` +
+    `source links. Return ONLY items whose source_url is a direct page — a ` +
+    `Reddit /comments/ thread, a YouTube watch?v= video, or a specific article ` +
+    `URL. Omit any item you cannot back with such a link. Output the array only.\n\n` +
     base
   );
 }
@@ -243,6 +270,35 @@ async function askModel(client, userMessage, tools, label) {
   return PREFILL + assembled;
 }
 
+/**
+ * One round trip: ask the model, parse, clean, then KEEP ONLY items whose
+ * source_url points at a specific page. Bad-link items are dropped (not fatal),
+ * so the good ones still publish.
+ */
+async function getTrends(client, userMessage, tools, label) {
+  const text = await askModel(client, userMessage, tools, label);
+  const cleaned = coerceTrends(parseTrends(text));
+  const specific = cleaned.filter((t) => isSpecificSourceUrl(t.source_url));
+  const dropped = cleaned.length - specific.length;
+  if (dropped > 0) console.log(`[scout] ${label}: dropped ${dropped} item(s) without a specific source link.`);
+  return specific;
+}
+
+/** Merge attempts: de-dupe by name OR source_url, keep order, cap at 12. */
+function dedupeTrends(trends) {
+  const seen = new Set();
+  const out = [];
+  for (const t of trends) {
+    const nameKey = 'n:' + (t.name || '').toLowerCase().trim();
+    const urlKey = 'u:' + (t.source_url || '').trim();
+    if (seen.has(nameKey) || seen.has(urlKey)) continue;
+    seen.add(nameKey);
+    seen.add(urlKey);
+    out.push(t);
+  }
+  return out.slice(0, 12); // the schema's 12-item ceiling
+}
+
 // -----------------------------------------------------------------------------
 // Main
 // -----------------------------------------------------------------------------
@@ -270,19 +326,22 @@ async function main() {
   // for better dynamic filtering.
   const tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: MAX_SEARCHES }];
 
-  // First attempt.
-  let text = await askModel(client, buildUserMessage(sources, today, false), tools, 'initial request');
-  let trends = coerceTrends(parseTrends(text));
-  console.log(`[scout] Attempt 1: ${trends.length} usable item(s) after cleaning.`);
+  const MIN_ITEMS = 4;
 
-  // Fallback: if we parsed nothing usable (e.g. the model returned prose or a
-  // refusal), try once more with a stricter "JSON array only" instruction.
-  if (trends.length === 0) {
-    console.warn('[scout] 0 items parsed — retrying once with a stricter JSON-only instruction…');
-    text = await askModel(client, buildUserMessage(sources, today, true), tools, 'strict retry');
-    trends = coerceTrends(parseTrends(text));
-    console.log(`[scout] Attempt 2: ${trends.length} usable item(s) after cleaning.`);
+  // First attempt — only items with a specific source link survive.
+  let trends = await getTrends(client, buildUserMessage(sources, today, false), tools, 'initial request');
+  console.log(`[scout] Attempt 1: ${trends.length} item(s) with a specific source link.`);
+
+  // If too few survive the link filter, retry once for verifiable direct links,
+  // then merge + de-dupe so the good items from both attempts publish together.
+  if (trends.length < MIN_ITEMS) {
+    console.warn(`[scout] Fewer than ${MIN_ITEMS} items with specific links — retrying once for verifiable direct links…`);
+    const more = await getTrends(client, buildUserMessage(sources, today, true), tools, 'links retry');
+    trends = [...trends, ...more];
   }
+
+  trends = dedupeTrends(trends); // de-dupe + cap to 12
+  console.log(`[scout] Final: ${trends.length} item(s) after de-dupe.`);
 
   const radar = {
     schemaVersion: 1,
@@ -293,7 +352,7 @@ async function main() {
   if (!validate(radar)) {
     console.error('[scout] Result FAILED schema validation. radar.json left untouched.');
     console.error(ajv.errorsText(validate.errors, { separator: '\n  ' }));
-    if (text) console.error('[scout] Model reply was:\n' + text.slice(0, 1500));
+    console.error('[scout] Trends we tried to write:\n' + JSON.stringify(trends, null, 2).slice(0, 2000));
     process.exit(1);
   }
 
