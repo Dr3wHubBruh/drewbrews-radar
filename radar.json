@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-18T00:00:00Z",
+  "trends": [
+    { "name": "Hario V60 NEO", "src": "press", "buzz": "Hario refreshed its iconic cone in durable Tritan; new colorways at World of Coffee.", "tpl": "s5", "angle": "The brewer that taught a generation, leveled up — what changed and why clarity still wins.", "source_url": "https://www.hario.com" },
+    { "name": "xBloom Studio", "src": "review", "buzz": "All-in-one grind+brew+scale that automates a pour-over from a card; reviewers call it a friendly assistant.", "tpl": "s5", "angle": "Tech-ista heaven: automation that lowers the barrier instead of gatekeeping.", "source_url": "https://xbloom.com" },
+    { "name": "Hario Switch", "src": "community", "buzz": "Immersion-then-drain hybrids keep trending for forgiving, repeatable cups.", "tpl": "s1", "angle": "The most forgiving way in — a recipe anyone nails first try.", "source_url": "https://www.reddit.com/r/pourover" }
+  ]
+}

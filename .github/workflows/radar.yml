@@ -1,0 +1,52 @@
+name: Weekly Trend Radar
+
+on:
+  # Wednesday 13:00 UTC = 5am PST / 6am PDT.
+  # GitHub cron is UTC and does NOT observe DST, so this drifts ±1h seasonally —
+  # harmless for weekly content. (Exact 5am year-round would need two cron lines.)
+  schedule:
+    - cron: "0 13 * * 3"
+  # Manual "Run now" button in the Actions tab.
+  workflow_dispatch:
+
+# Allow the job to commit the refreshed radar.json back to the repo.
+permissions:
+  contents: write
+
+# Never run two scouts at once.
+concurrency:
+  group: radar
+  cancel-in-progress: false
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run the scout
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scout.mjs
+
+      - name: Commit radar.json if it changed
+        run: |
+          git config user.name  "drewbrews-radar-bot"
+          git config user.email "actions@github.com"
+          if git diff --quiet -- radar.json; then
+            echo "radar.json unchanged — nothing to commit."
+          else
+            git add radar.json
+            git commit -m "radar: weekly refresh ($(date -u +%Y-%m-%d))"
+            git push
+          fi

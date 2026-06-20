@@ -1,0 +1,28 @@
+# DrewBrews trend sources — edit freely, add more any time.
+# scout.mjs reads this and tells Claude to prioritize these (and similar) each week.
+# Lines starting with # are ignored.
+
+# --- Reddit ---
+https://www.reddit.com/r/pourover/
+https://www.reddit.com/r/espresso/
+https://www.reddit.com/r/JamesHoffmann/
+https://www.reddit.com/r/barista/
+https://www.reddit.com/r/OXORapidBrewer/
+
+# --- YouTube ---
+https://www.youtube.com/@LanceHedrick
+https://www.youtube.com/@jameshoffmann
+https://www.youtube.com/@SpecialtyCoffeeAssociation
+https://www.youtube.com/@Eightouncecoffee
+https://www.youtube.com/@BrianQuan
+https://www.youtube.com/@DaddyGotCoffee
+https://www.youtube.com/@Wholelattelovepage
+https://www.youtube.com/@Sprometheus
+
+# --- Publications / blogs ---
+https://notabarista.org/
+https://sprudge.com/
+https://dailycoffeenews.com/
+https://perfectdailygrind.com/
+
+# Also: any similar specialty-coffee creators, subreddits, and publications.

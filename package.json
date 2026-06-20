@@ -1,0 +1,17 @@
+{
+  "name": "drewbrews-radar",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Weekly specialty-coffee trend scout. Writes a validated radar.json for the DrewBrews Trend Studio.",
+  "scripts": {
+    "scout": "node scout.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.0",
+    "ajv": "^8.17.1"
+  }
+}
