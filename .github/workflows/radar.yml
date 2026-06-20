@@ -41,25 +41,23 @@ jobs:
 
       - name: Commit radar.json if it changed
         run: |
-          # Safety net: if a prior run left a rebase mid-flight, clear it.
+          git config user.name "drewbrews-radar-bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          # clear any half-finished rebase/merge left by a previous failed run
           git rebase --abort 2>/dev/null || true
+          git merge  --abort 2>/dev/null || true
 
-          git config user.name  "drewbrews-radar-bot"
-          git config user.email "actions@github.com"
-
-          # radar.json is fully regenerated each run, so OUR version always wins.
-          # Never rebase/merge it — that's what caused unmergeable conflicts.
-          # Instead: stash our file aside, hard-reset to remote, restore it, and
-          # push a clean fast-forward. Retry the whole dance if the remote moves.
+          # keep the freshly generated file safe
           cp radar.json /tmp/radar.json
 
-          for attempt in 1 2 3 4 5; do
+          for i in 1 2 3 4 5; do
             git fetch origin main
-            git reset --hard origin/main          # match remote exactly — no conflict possible
-            cp /tmp/radar.json radar.json         # restore our freshly generated file
+            git reset --hard origin/main      # match remote exactly — no conflict possible
+            cp /tmp/radar.json radar.json     # re-apply our fresh file on top
 
             if git diff --quiet -- radar.json; then
-              echo "radar.json matches remote — no change this week. Nothing to post."
+              echo "No change this week — nothing to post."
               exit 0
             fi
 
@@ -67,11 +65,11 @@ jobs:
             git commit -m "radar: weekly refresh ($(date +%F))"
 
             if git push origin main; then
-              echo "Pushed on attempt $attempt."
+              echo "Pushed radar.json."
               exit 0
             fi
 
-            echo "Push attempt $attempt failed (remote advanced?). Retrying in 5s…"
+            echo "Push attempt $i failed (remote advanced). Retrying in 5s…"
             sleep 5
           done
 
