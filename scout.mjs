@@ -35,6 +35,17 @@ const MAX_CONTINUATIONS = 6;
 const VALID_TPL = new Set(['s1', 's2', 's3', 's4', 's5', 's6']);
 const VALID_SRC = new Set(['press', 'review', 'community', 'verify']);
 
+// Brand-safety allowlist of publication/manufacturer domains that may be cited
+// as article sources, IN ADDITION to any hosts parsed from sources.txt. Reddit
+// and YouTube are gated by their own site-aware checks (vetted subreddit + a
+// keyless YouTube oEmbed channel check). An unvetted/random/NSFW domain can
+// never be published — that's the rule that matters most.
+const SAFE_HOSTS = [
+  'sprudge.com', 'dailycoffeenews.com', 'perfectdailygrind.com',
+  'notabarista.org', 'baristahustle.com', 'sca.coffee', 'scanews.coffee',
+  'coffeereview.com',
+];
+
 // -----------------------------------------------------------------------------
 // Brand voice / scout brief.
 // -----------------------------------------------------------------------------
@@ -165,28 +176,104 @@ function coerceTrends(trends) {
     });
 }
 
+// --- SOURCE SAFETY (the rule that matters most) -----------------------------
+// A "specific" URL is not enough — an unvetted domain could be random or NSFW.
+// Every published source_url must be on the vetted allowlist: a vetted-subreddit
+// /comments/ thread, a vetted-channel YouTube video, or an article on an
+// allowlisted host. The allowlist is built from sources.txt (so the user
+// controls it) plus the small built-in SAFE_HOSTS set.
+
+/** A host is allowed if it's on the list exactly or as a subdomain of a listed host. */
+const hostAllowed = (host, list) => list.includes(host) || list.some((h) => host.endsWith('.' + h));
+
+/** Normalize a YouTube channel identifier from any youtube URL (@handle / channel|c|user slug), or null. */
+function ytChannelKey(u) {
+  let url;
+  try { url = new URL(u); } catch { return null; }
+  const host = url.hostname.replace(/^www\./, '');
+  if (host !== 'youtube.com' && host !== 'youtu.be') return null;
+  const seg = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  if (!seg.length) return null;
+  if (seg[0].startsWith('@')) return seg[0].slice(1).toLowerCase();
+  if (['channel', 'c', 'user'].includes(seg[0]) && seg[1]) return seg[1].toLowerCase();
+  return null;
+}
+
 /**
- * Every published trend must cite a SPECIFIC page — not a homepage, channel,
- * profile, or subreddit root. This is the gate that keeps the radar's links
- * clickable-to-the-actual-thing.
+ * Parse the vetted allowlist from sources.txt. The user edits sources.txt to
+ * control what may be cited:
+ *   - subs:     subreddit names matched by /r/<sub>
+ *   - hosts:    article/manufacturer hostnames (www. stripped)
+ *   - channels: YouTube channel keys (@handle or channel/c/user slug)
  */
-function isSpecificSourceUrl(u) {
+function parseAllowlist(sourcesText) {
+  const subs = new Set();
+  for (const m of sourcesText.matchAll(/\/r\/([a-z0-9_]+)/gi)) subs.add(m[1].toLowerCase());
+
+  const hosts = new Set();
+  for (const m of sourcesText.matchAll(/[a-z0-9][a-z0-9.-]*\.[a-z]{2,}/gi)) {
+    hosts.add(m[0].toLowerCase().replace(/^www\./, ''));
+  }
+
+  const channels = new Set();
+  for (const line of sourcesText.split('\n')) {
+    const key = ytChannelKey(line.trim());
+    if (key) channels.add(key);
+  }
+
+  return { subs: [...subs], hosts: [...hosts], channels };
+}
+
+/** Is u a YouTube watch/short link? (channel still verified separately via oEmbed) */
+function isYouTubeUrl(u) {
+  try {
+    const h = new URL(u).hostname.replace(/^www\./, '');
+    return h === 'youtube.com' || h === 'youtu.be';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Allowlist gate (synchronous part):
+ *  - Reddit: must be a /comments/ thread in a VETTED subreddit
+ *  - YouTube: shape-only here (must have a video id); channel verified via oEmbed
+ *  - everything else: an article path on a SAFE_HOSTS or sources.txt host
+ */
+function isAllowedSourceUrl(u, subs, extraHosts) {
   if (typeof u !== 'string') return false;
   let url;
   try { url = new URL(u.trim()); } catch { return false; }
   if (!/^https?:$/.test(url.protocol)) return false;
   const host = url.hostname.replace(/^www\./, '');
-  const path = url.pathname.replace(/\/+$/, ''); // drop trailing slash
-  const seg = path.split('/').filter(Boolean);
-  // Reddit: must be an actual comments thread
-  if (host.endsWith('reddit.com')) return /\/comments\//.test(url.pathname);
-  // YouTube: must be a specific video
-  if (host.endsWith('youtube.com')) return url.searchParams.has('v');
-  if (host === 'youtu.be') return seg.length >= 1;
-  // Reject obvious channel/profile/tag roots
-  if (seg.length === 1 && /^[@]/.test(seg[0])) return false;
-  // Everything else (articles): need a real path with a slug-like segment
-  return seg.length >= 1 && seg.join('/').length >= 6;
+  const seg = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  if (host === 'reddit.com' || host.endsWith('.reddit.com')) {
+    const m = url.pathname.match(/\/r\/([a-z0-9_]+)\/comments\//i); // vetted sub + real thread
+    return !!m && subs.includes(m[1].toLowerCase());
+  }
+  if (host === 'youtube.com') return url.searchParams.has('v'); // channel verified below
+  if (host === 'youtu.be') return seg.length >= 1; // channel verified below
+  return (hostAllowed(host, SAFE_HOSTS) || hostAllowed(host, extraHosts))
+    && seg.length >= 1 && seg.join('/').length >= 6; // article on a vetted domain
+}
+
+/**
+ * Keyless YouTube channel verification. Fetch oEmbed for the video and confirm
+ * author_url resolves to a channel listed in sources.txt. Also drops dead/invalid
+ * video ids (oEmbed returns non-200). Any failure → not vetted → drop.
+ */
+async function youtubeChannelVetted(videoUrl, vettedChannels) {
+  if (vettedChannels.size === 0) return false;
+  try {
+    const api = `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`;
+    const res = await fetch(api, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return false;
+    const data = await res.json();
+    const key = data && typeof data.author_url === 'string' ? ytChannelKey(data.author_url) : null;
+    return !!key && vettedChannels.has(key);
+  } catch {
+    return false;
+  }
 }
 
 /** Pull all text blocks out of a Messages API response and join them. */
@@ -280,16 +367,30 @@ async function askModel(client, userMessage, tools, label) {
 
 /**
  * One round trip: ask the model, parse, clean, then KEEP ONLY items whose
- * source_url points at a specific page. Bad-link items are dropped (not fatal),
- * so the good ones still publish.
+ * source_url is on the vetted allowlist (and, for YouTube, whose channel passes
+ * the oEmbed check). Off-list items are dropped (not fatal) so the good ones
+ * still publish.
  */
-async function getTrends(client, userMessage, tools, label) {
+async function getTrends(client, userMessage, tools, label, allow) {
   const text = await askModel(client, userMessage, tools, label);
   const cleaned = coerceTrends(parseTrends(text));
-  const specific = cleaned.filter((t) => isSpecificSourceUrl(t.source_url));
-  const dropped = cleaned.length - specific.length;
-  if (dropped > 0) console.log(`[scout] ${label}: dropped ${dropped} item(s) without a specific source link.`);
-  return specific;
+
+  // 1) Synchronous allowlist: vetted subreddit thread, vetted article host, or
+  //    a shape-valid YouTube link (its channel is verified next).
+  const onList = cleaned.filter((t) => isAllowedSourceUrl(t.source_url, allow.subs, allow.hosts));
+
+  // 2) Verify each surviving YouTube link's channel via keyless oEmbed.
+  const kept = [];
+  for (const t of onList) {
+    if (isYouTubeUrl(t.source_url) && !(await youtubeChannelVetted(t.source_url, allow.channels))) {
+      continue; // unverifiable or off-list channel → drop
+    }
+    kept.push(t);
+  }
+
+  const dropped = cleaned.length - kept.length;
+  if (dropped > 0) console.log(`[scout] ${label}: dropped ${dropped} item(s) off the vetted allowlist.`);
+  return kept;
 }
 
 /** Merge attempts: de-dupe by name OR source_url, keep order, cap at 12. */
@@ -322,6 +423,8 @@ async function main() {
   const validate = ajv.compile(schema);
 
   const sources = await readSources();
+  const allow = parseAllowlist(sources);
+  console.log(`[scout] Allowlist — subreddits: ${allow.subs.length}, hosts: ${allow.hosts.length} (+${SAFE_HOSTS.length} built-in), channels: ${allow.channels.size}`);
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
   const client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment
@@ -336,19 +439,19 @@ async function main() {
 
   const MIN_ITEMS = 4;
 
-  // First attempt — only items with a specific source link survive.
-  let trends = await getTrends(client, buildUserMessage(sources, today, false), tools, 'initial request');
-  console.log(`[scout] Attempt 1: ${trends.length} item(s) with a specific source link.`);
+  // First attempt — only items on the vetted allowlist survive.
+  let trends = await getTrends(client, buildUserMessage(sources, today, false), tools, 'initial request', allow);
+  console.log(`[scout] Attempt 1: ${trends.length} item(s) on the vetted allowlist.`);
 
-  // If too few survive the link filter, retry once for verifiable direct links,
-  // then merge + de-dupe so the good items from both attempts publish together.
+  // If too few survive, retry once for items on vetted sources only, then merge
+  // + de-dupe by URL so the good items from both attempts publish together.
   if (trends.length < MIN_ITEMS) {
-    console.warn(`[scout] Fewer than ${MIN_ITEMS} items with specific links — retrying once for verifiable direct links…`);
-    const more = await getTrends(client, buildUserMessage(sources, today, true), tools, 'links retry');
+    console.warn(`[scout] Fewer than ${MIN_ITEMS} vetted items — retrying once for vetted sources only…`);
+    const more = await getTrends(client, buildUserMessage(sources, today, true), tools, 'links retry', allow);
     trends = [...trends, ...more];
   }
 
-  trends = dedupeTrends(trends); // de-dupe + cap to 12
+  trends = dedupeTrends(trends); // de-dupe by url/name + cap to 12
   console.log(`[scout] Final: ${trends.length} item(s) after de-dupe.`);
 
   const radar = {
