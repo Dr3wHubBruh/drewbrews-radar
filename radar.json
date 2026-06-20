@@ -1,53 +1,101 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-20T16:55:51.829Z",
+  "generatedAt": "2026-06-20T17:34:34.576Z",
   "trends": [
     {
-      "name": "Wilfa Uniform grinder hype train",
-      "buzz": "The Wilfa Uniform is trending hard as a budget flat-burr grinder that punches above its price point. Coffee Reddit is calling it the best entry-level option for pour-over enthusiasts who want consistent grinds without spending $300+.",
+      "name": "Orea V4 brewing temperature debates",
+      "buzz": "Brewers are testing ultra-high temps (97–100°C) with the Orea V4, claiming sweeter, cleaner cups than the old 92–94°C orthodoxy. The flat-bed geometry seems to handle the heat without bitterness.",
       "tpl": "s2",
       "src": "community",
-      "angle": "Perfect for anyone leveling up from a blade grinder or entry hand grinder — you don't need to break the bank to unlock better cups at home.",
+      "angle": "\"Your kettle, your rules—some V4 fans are cranking temps to 100°C and loving it. Try what excites you; there's no wrong dial.\"",
       "source_url": "https://www.reddit.com/r/pourover/"
     },
     {
-      "name": "Fellow Opus grinder firmware updates & modding",
-      "buzz": "Fellow Opus owners are sharing grind-setting sweet spots and discussing burr swaps to get even better pour-over performance. The sub-$200 grinder continues to dominate beginner-to-intermediate conversations.",
-      "tpl": "s2",
+      "name": "Fellow Opus grinder firmware buzz",
+      "buzz": "Fellow quietly rolled out firmware updates that tweak motor profiles; users report finer consistency and less retention. Reddit threads show step-by-step update walkthroughs.",
+      "tpl": "s3",
       "src": "community",
-      "angle": "The Opus proves you can start with a solid grinder and grow into it — tweaking settings is part of the fun, not a barrier.",
-      "source_url": "https://www.reddit.com/r/pourover/"
+      "angle": "\"Your Opus might be one USB-C cable away from its best grind yet—firmware love for a grinder you already own feels like free gear.\"",
+      "source_url": "https://www.reddit.com/r/espresso/"
     },
     {
-      "name": "Orea V4 brewer buzz",
-      "buzz": "The Orea V4 pour-over brewer is getting fresh attention for its flat-bed design and forgiving brew window. Fans love how it handles everything from light naturals to darker roasts with minimal fuss.",
+      "name": "James Hoffmann's Hario Switch V2 deep-dive",
+      "buzz": "Hoffmann dropped a full recipe and comparison video for the new Hario Switch (ceramic version), calling it \"the most forgiving immersion brewer\" for beginners.",
       "tpl": "s1",
-      "src": "community",
-      "angle": "Flat-bed brewers like the Orea are all about consistency and room to experiment — no need to nail a perfect spiral pour every single time.",
-      "source_url": "https://www.reddit.com/r/pourover/"
+      "src": "review",
+      "angle": "\"If you've been pour-over curious but scared of fussy pours, Hoffmann just gave you permission to start easy—and the Switch makes mistakes nearly impossible.\"",
+      "source_url": "https://www.youtube.com/@jameshoffmann"
     },
     {
-      "name": "Timemore Sculptor grinders gaining traction",
-      "buzz": "Timemore's Sculptor line (064, 078) is earning praise as a mid-tier grinder option with excellent pour-over clarity. The 64mm flat burrs and solid build quality are winning over home brewers looking for value.",
-      "tpl": "s2",
+      "name": "Timemore Sculptor 078S hype wave",
+      "buzz": "The 078S—Timemore's latest conical grinder—is flooding r/espresso and r/pourover with side-by-sides against Ode Gen 2 and DF64. Early adopters love the stepless dial and sub-$400 price.",
+      "tpl": "s3",
       "src": "community",
-      "angle": "You don't need the most hyped grinder to make incredible coffee — the Sculptor shows that thoughtful design and good burrs go a long way.",
-      "source_url": "https://www.reddit.com/r/pourover/"
+      "angle": "\"A grinder that does pour-over *and* espresso without the four-figure sticker shock? The 078S is turning heads because great coffee shouldn't require a second mortgage.\"",
+      "source_url": "https://www.reddit.com/r/espresso/"
     },
     {
-      "name": "Iced coffee season recipes flooding feeds",
-      "buzz": "With summer in full swing, Japanese iced coffee and flash-brew recipes are dominating specialty coffee communities. Brewers are sharing ratio tweaks and ice-to-coffee formulas for V60, Kalita, and Origami drippers.",
+      "name": "Onyx Coffee Lab's \"Geometry\" natural Ethiopia",
+      "buzz": "Sprudge highlighted Onyx's new single-origin that tastes like \"blueberry jam and jasmine\"—already sold out twice. Roasters are chasing similar naturals from the same Guji co-op.",
       "tpl": "s5",
+      "src": "press",
+      "angle": "\"When a bean sells out twice in two weeks, you know it's special—track down Guji naturals while the harvest window is open and taste what the hype is about.\"",
+      "source_url": "https://sprudge.com/"
+    },
+    {
+      "name": "Kruve SIFTER Pro launch",
+      "buzz": "Kruve just released the SIFTER Pro, a larger-capacity version of their grind-particle separator, aimed at home baristas who want to dial in distribution curves without lab equipment.",
+      "tpl": "s4",
+      "src": "press",
+      "angle": "\"Sifting your grinds used to be science-lab territory—now you can geek out on particle size at home, or just ignore it and brew happy. Both are valid.\"",
+      "source_url": "https://dailycoffeenews.com/"
+    },
+    {
+      "name": "Bloom & bypass pour-over trend",
+      "buzz": "R/pourover is obsessed with \"bloom-and-bypass\" recipes: 30g bloom, fast center pour, then dilute the concentrate with hot water. Fans say it's foolproof and highlights origin character.",
+      "tpl": "s2",
       "src": "community",
-      "angle": "Iced pour-over isn't just hot coffee poured over ice — it's a chance to play with ratios and discover how your favorite beans taste cold.",
+      "angle": "\"Think of it as pour-over meets Americano—bloom big, pour fast, add water. It's low-stress, high-reward, and perfect for mornings when your brain isn't awake yet.\"",
       "source_url": "https://www.reddit.com/r/pourover/"
     },
     {
-      "name": "April Brewer plastic vs glass debates",
-      "buzz": "The April Brewer continues to spark discussion about whether the plastic or glass version is worth it, and whether flat-bottom geometry really changes the cup. Fans swear by its clean, tea-like extractions.",
-      "tpl": "s1",
+      "name": "Lance Hedrick's Weber Workshops KEY unboxing",
+      "buzz": "Lance just posted a hands-on with the Weber KEY grinder, calling the new DLC-coated burrs \"shockingly low-retention\" and praising the stepless micro-adjust for single-dosing perfectionists.",
+      "tpl": "s3",
+      "src": "review",
+      "angle": "\"The KEY is Weber's love letter to single-dosers—if you weigh every bean and hate leftover grinds, Lance says this might be your endgame (until the next one).\"",
+      "source_url": "https://www.youtube.com/@LanceHedrick"
+    },
+    {
+      "name": "Acaia Lunar 2 scale firmware 2.0",
+      "buzz": "Acaia pushed a major firmware update for the Lunar 2, adding auto-tare on cup detection and a \"ghost mode\" that hides the display during extraction to reduce obsessive staring.",
+      "tpl": "s4",
       "src": "community",
-      "angle": "Brewer choice is personal — if you're curious about flat-bottom or the April hype, try it, but your trusty V60 isn't wrong either.",
+      "angle": "\"'Ghost mode' is Acaia's gentle nudge to stop watching the numbers and start trusting your palate—though we won't judge if you peek anyway.\"",
+      "source_url": "https://www.reddit.com/r/espresso/"
+    },
+    {
+      "name": "Washed vs. natural processing TikTok explainer trend",
+      "buzz": "Coffee TikTok is flooded with side-by-side tastings of washed vs. natural beans from the same farm, making processing methods clickable for newcomers. Engagement is through the roof.",
+      "tpl": "s5",
+      "src": "verify",
+      "angle": "\"Processing used to be insider jargon—now it's TikTok gold. If you've ever wondered why some beans taste like fruit bombs and others like chocolate, the internet just made it fun.\"",
+      "source_url": "verify"
+    },
+    {
+      "name": "Commandante C60 Nitro Blade Ruby Red limited drop",
+      "buzz": "Commandante's Ruby Red C60 sold out in under an hour; resale prices on r/coffeeswap are already double MSRP. The hand-grinder hype is real and somehow accelerating in 2026.",
+      "tpl": "s3",
+      "src": "press",
+      "angle": "\"A hand grinder that sells out faster than concert tickets? The C60 proves that slow, manual grinding still has a cult following—and limited colors make it collectible, not just functional.\"",
+      "source_url": "https://www.reddit.com/r/pourover/"
+    },
+    {
+      "name": "Iced pour-over \"flash-chill\" summer recipes",
+      "buzz": "As temps climb, r/pourover and YouTube are sharing flash-chill methods: brew hot directly onto ice in the carafe, doubling dose and halving water. It's faster than cold brew and brighter.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "\"Hot coffee, meet ice—flash-chilling gives you cold brew's refreshment in four minutes, not overnight. Perfect for summer mornings when patience is in short supply.\"",
       "source_url": "https://www.reddit.com/r/pourover/"
     }
   ]
