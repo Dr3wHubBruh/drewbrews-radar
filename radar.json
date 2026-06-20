@@ -1,9 +1,54 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-18T00:00:00Z",
+  "generatedAt": "2026-06-20T16:02:08.959Z",
   "trends": [
-    { "name": "Hario V60 NEO", "src": "press", "buzz": "Hario refreshed its iconic cone in durable Tritan; new colorways at World of Coffee.", "tpl": "s5", "angle": "The brewer that taught a generation, leveled up — what changed and why clarity still wins.", "source_url": "https://www.hario.com" },
-    { "name": "xBloom Studio", "src": "review", "buzz": "All-in-one grind+brew+scale that automates a pour-over from a card; reviewers call it a friendly assistant.", "tpl": "s5", "angle": "Tech-ista heaven: automation that lowers the barrier instead of gatekeeping.", "source_url": "https://xbloom.com" },
-    { "name": "Hario Switch", "src": "community", "buzz": "Immersion-then-drain hybrids keep trending for forgiving, repeatable cups.", "tpl": "s1", "angle": "The most forgiving way in — a recipe anyone nails first try.", "source_url": "https://www.reddit.com/r/pourover" }
+    {
+      "name": "Hario Switch immersion drip hybrid brewing",
+      "buzz": "The Hario Switch continues to dominate pour-over forums as the beginner-friendly brewer that lets you toggle between immersion and percolation mid-brew. Reddit threads praise its forgiving nature and the way it turns mistakes into happy accidents.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "Frame it as the training-wheels-optional brewer: you can start with full immersion for consistency, then experiment with hybrid recipes when you're ready. No wrong answers, just different cups.",
+      "source_url": "https://www.reddit.com/r/pourover/"
+    },
+    {
+      "name": "Single-dose grinder debate: DF64 Gen 2 vs. Fellow Opus",
+      "buzz": "r/espresso and r/pourover are debating whether the DF64 Gen 2's flat burrs justify the price jump over the Opus for pour-over purists. Both are praised for low retention and quiet operation.",
+      "tpl": "s3",
+      "src": "community",
+      "angle": "Celebrate that both grinders exist at accessible price points. Emphasize that either choice levels up your game—pick based on budget and whether you want espresso flexibility later.",
+      "source_url": "https://www.reddit.com/r/espresso/"
+    },
+    {
+      "name": "Osmotic flow brewing (ultra-long steep experiments)",
+      "buzz": "Coffee nerds on r/JamesHoffmann are experimenting with 12–24 hour cold steeps using osmotic pressure principles, claiming smoother, tea-like clarity. Results are wildly inconsistent but the hype is real.",
+      "tpl": "s4",
+      "src": "community",
+      "angle": "Position it as a fun weekend science project, not a daily method. Encourage curiosity: 'Try it once, compare notes, see if it's your vibe—no pressure to optimize.'",
+      "source_url": "https://www.reddit.com/r/JamesHoffmann/"
+    },
+    {
+      "name": "Orea V4 flat-bottom brewer adoption spike",
+      "buzz": "The Orea V4's flat-bottom geometry and ribbed walls are winning over Kalita Wave fans who want more flow control. Baristas praise its even extraction and the option to use Kalita or custom filters.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "Highlight it as a 'choose your own adventure' brewer—use the stock filters for speed or Kalita 185s for more body. Perfect for tinkerers who don't want to commit to one style.",
+      "source_url": "https://www.reddit.com/r/barista/"
+    },
+    {
+      "name": "Anaerobic natural process beans flooding specialty roasters",
+      "buzz": "Roasters are releasing waves of anaerobic natural lots with fruit-bomb profiles (mango, passionfruit, wine-like). Social chatter suggests they're divisive—some love the funk, others find it too much.",
+      "tpl": "s5",
+      "src": "verify",
+      "angle": "Normalize the polarization: 'These beans are like natural wine—bold, funky, and totally fine to not be your thing. Grab a small bag and see where you land.' No judgment either way.",
+      "source_url": "https://www.reddit.com/r/pourover/"
+    },
+    {
+      "name": "Gooseneck kettle with pour-rate feedback (Acaia Orion)",
+      "buzz": "Whispers of a smart gooseneck kettle that tracks pour rate and weight in real time, helping beginners nail bloom timing and flow consistency. Specs and release date unconfirmed but the hype is building.",
+      "tpl": "s6",
+      "src": "verify",
+      "angle": "If real, frame it as optional training wheels for pour control—great for learning the feel, but you won't need it forever. Tech as a teaching tool, not a requirement.",
+      "source_url": "https://www.reddit.com/r/pourover/"
+    }
   ]
 }
