@@ -62,8 +62,8 @@ You output ONLY a JSON array — never prose, never a refusal, never an apology,
 never markdown fences. Your output is parsed by a machine; any non-JSON text
 breaks it. If a given week looks thin, do NOT explain or decline — instead
 broaden to notable gear/trends from roughly the last 1–3 months and mark
-anything you can't fully confirm as "verify". Always return exactly 6 items.
-Never return zero.`;
+anything you can't fully confirm as "verify". Return up to 12 items, ordered
+best/most-postable first. Never return zero.`;
 
 // -----------------------------------------------------------------------------
 // Helpers
@@ -178,11 +178,13 @@ function collectText(message) {
 /** Build the user prompt. When `strict`, prepend a hard correction for the retry. */
 function buildUserMessage(sources, today, strict) {
   const base =
-    `Find this week's 6 most postable specialty-coffee trends. ` +
+    `Find this week's most postable specialty-coffee trends — up to 12, ordered ` +
+    `best/most-postable first. ` +
     `Prioritize these sources and similar ones:\n\n${sources}\n\n` +
     `Today is ${today}.\n\n` +
-    `Return exactly 6 items. If this week is thin, include notable gear/trends ` +
-    `from the last ~3 months. Mark anything not fully confirmed as src: "verify". ` +
+    `Return up to 12 items, ordered best-first. If this week is thin, include ` +
+    `notable gear/trends from the last ~3 months. Mark anything not fully ` +
+    `confirmed as src: "verify". ` +
     `Do not explain, apologize, or refuse — output the array only.\n\n` +
     `Each object: { "name": string, "src": "press"|"review"|"community"|"verify", ` +
     `"buzz": string (1-2 sentences), "tpl": "s1".."s6", ` +
