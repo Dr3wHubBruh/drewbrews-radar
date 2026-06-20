@@ -45,8 +45,22 @@ jobs:
           git config user.email "actions@github.com"
           if git diff --quiet -- radar.json; then
             echo "radar.json unchanged — nothing to commit."
-          else
-            git add radar.json
-            git commit -m "radar: weekly refresh ($(date -u +%Y-%m-%d))"
-            git push
+            exit 0
           fi
+          git add radar.json
+          git commit -m "radar: weekly refresh ($(date -u +%Y-%m-%d))"
+
+          # Race-safe push: the remote may have advanced since checkout (a
+          # concurrent run). Rebase our single commit on top of the latest main
+          # and retry a few times. This is a fast-forward issue, not a
+          # permissions one — keep using the built-in GITHUB_TOKEN.
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push attempt $attempt failed (remote advanced?). Retrying in 5s…"
+            sleep 5
+          done
+          echo "::error::Failed to push radar.json after 3 attempts."
+          exit 1
