@@ -1,102 +1,102 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-20T17:34:34.576Z",
+  "generatedAt": "2026-06-20T23:08:00.700Z",
   "trends": [
     {
-      "name": "Orea V4 brewing temperature debates",
-      "buzz": "Brewers are testing ultra-high temps (97–100°C) with the Orea V4, claiming sweeter, cleaner cups than the old 92–94°C orthodoxy. The flat-bed geometry seems to handle the heat without bitterness.",
-      "tpl": "s2",
-      "src": "community",
-      "angle": "\"Your kettle, your rules—some V4 fans are cranking temps to 100°C and loving it. Try what excites you; there's no wrong dial.\"",
-      "source_url": "https://www.reddit.com/r/pourover/"
-    },
-    {
-      "name": "Fellow Opus grinder firmware buzz",
-      "buzz": "Fellow quietly rolled out firmware updates that tweak motor profiles; users report finer consistency and less retention. Reddit threads show step-by-step update walkthroughs.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "\"Your Opus might be one USB-C cable away from its best grind yet—firmware love for a grinder you already own feels like free gear.\"",
-      "source_url": "https://www.reddit.com/r/espresso/"
-    },
-    {
-      "name": "James Hoffmann's Hario Switch V2 deep-dive",
-      "buzz": "Hoffmann dropped a full recipe and comparison video for the new Hario Switch (ceramic version), calling it \"the most forgiving immersion brewer\" for beginners.",
+      "name": "Orea V4 brewer",
+      "buzz": "The latest iteration of the Orea brewer is generating serious hype on r/pourover with users praising its forgiving flat-bottom design and consistent extractions.",
       "tpl": "s1",
-      "src": "review",
-      "angle": "\"If you've been pour-over curious but scared of fussy pours, Hoffmann just gave you permission to start easy—and the Switch makes mistakes nearly impossible.\"",
-      "source_url": "https://www.youtube.com/@jameshoffmann"
-    },
-    {
-      "name": "Timemore Sculptor 078S hype wave",
-      "buzz": "The 078S—Timemore's latest conical grinder—is flooding r/espresso and r/pourover with side-by-sides against Ode Gen 2 and DF64. Early adopters love the stepless dial and sub-$400 price.",
-      "tpl": "s3",
       "src": "community",
-      "angle": "\"A grinder that does pour-over *and* espresso without the four-figure sticker shock? The 078S is turning heads because great coffee shouldn't require a second mortgage.\"",
-      "source_url": "https://www.reddit.com/r/espresso/"
+      "angle": "A beginner-friendly flat-bottom brewer that makes great coffee easier to dial in — no PhD required.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1djg7kq/orea_v4_first_impressions/"
     },
     {
-      "name": "Onyx Coffee Lab's \"Geometry\" natural Ethiopia",
-      "buzz": "Sprudge highlighted Onyx's new single-origin that tastes like \"blueberry jam and jasmine\"—already sold out twice. Roasters are chasing similar naturals from the same Guji co-op.",
-      "tpl": "s5",
-      "src": "press",
-      "angle": "\"When a bean sells out twice in two weeks, you know it's special—track down Guji naturals while the harvest window is open and taste what the hype is about.\"",
-      "source_url": "https://sprudge.com/"
-    },
-    {
-      "name": "Kruve SIFTER Pro launch",
-      "buzz": "Kruve just released the SIFTER Pro, a larger-capacity version of their grind-particle separator, aimed at home baristas who want to dial in distribution curves without lab equipment.",
-      "tpl": "s4",
-      "src": "press",
-      "angle": "\"Sifting your grinds used to be science-lab territory—now you can geek out on particle size at home, or just ignore it and brew happy. Both are valid.\"",
-      "source_url": "https://dailycoffeenews.com/"
-    },
-    {
-      "name": "Bloom & bypass pour-over trend",
-      "buzz": "R/pourover is obsessed with \"bloom-and-bypass\" recipes: 30g bloom, fast center pour, then dilute the concentrate with hot water. Fans say it's foolproof and highlights origin character.",
+      "name": "Timemore Sculptor 078S grinder",
+      "buzz": "This grinder is being called a game-changer for home pourover enthusiasts who want high-end flat burrs without the $1k+ price tag.",
       "tpl": "s2",
       "src": "community",
-      "angle": "\"Think of it as pour-over meets Americano—bloom big, pour fast, add water. It's low-stress, high-reward, and perfect for mornings when your brain isn't awake yet.\"",
-      "source_url": "https://www.reddit.com/r/pourover/"
+      "angle": "Premium flat burrs at a price that won't make your wallet cry — specialty coffee shouldn't require a second mortgage.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dh3m2p/timemore_sculptor_078s_impressions/"
     },
     {
-      "name": "Lance Hedrick's Weber Workshops KEY unboxing",
-      "buzz": "Lance just posted a hands-on with the Weber KEY grinder, calling the new DLC-coated burrs \"shockingly low-retention\" and praising the stepless micro-adjust for single-dosing perfectionists.",
+      "name": "Fellow Aiden Precision Coffee Maker updates",
+      "buzz": "Fellow pushed firmware updates that improve temperature stability and bloom timing, sparking fresh discussion about batch brew vs. pourover quality.",
       "tpl": "s3",
-      "src": "review",
-      "angle": "\"The KEY is Weber's love letter to single-dosers—if you weigh every bean and hate leftover grinds, Lance says this might be your endgame (until the next one).\"",
-      "source_url": "https://www.youtube.com/@LanceHedrick"
-    },
-    {
-      "name": "Acaia Lunar 2 scale firmware 2.0",
-      "buzz": "Acaia pushed a major firmware update for the Lunar 2, adding auto-tare on cup detection and a \"ghost mode\" that hides the display during extraction to reduce obsessive staring.",
-      "tpl": "s4",
       "src": "community",
-      "angle": "\"'Ghost mode' is Acaia's gentle nudge to stop watching the numbers and start trusting your palate—though we won't judge if you peek anyway.\"",
-      "source_url": "https://www.reddit.com/r/espresso/"
+      "angle": "Automatic batch brew that respects the ritual — proof you don't have to hand-pour every cup to care about coffee.",
+      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1di8x4z/fellow_aiden_firmware_update_thoughts/"
     },
     {
-      "name": "Washed vs. natural processing TikTok explainer trend",
-      "buzz": "Coffee TikTok is flooded with side-by-side tastings of washed vs. natural beans from the same farm, making processing methods clickable for newcomers. Engagement is through the roof.",
+      "name": "Origami dripper surge",
+      "buzz": "The Origami continues to trend as a Swiss-army-knife brewer compatible with both cone and wave filters, beloved for travel and experimentation.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "One brewer, two filter styles, endless possibilities — perfect for anyone who loves to tinker without buying five drippers.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dgk2n1/origami_dripper_why_is_everyone_obsessed/"
+    },
+    {
+      "name": "Lance Hedrick's Stagg [X] review",
+      "buzz": "Lance Hedrick dropped a detailed video praising the Fellow Stagg [X]'s clever bloom chamber and foolproof immersion-meets-percolation hybrid design.",
+      "tpl": "s4",
+      "src": "review",
+      "angle": "Immersion + percolation in one sleek package — great coffee without needing a chemistry degree or perfect pouring technique.",
+      "source_url": "https://www.youtube.com/watch?v=6N3pQ8JhX9E"
+    },
+    {
+      "name": "Hario Switch 02 immersion hacks",
+      "buzz": "Reddit threads are full of creative Switch recipes using extended immersion for naturally processed beans, unlocking wild fruit flavors.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "The Switch proves there's no 'one true way' to brew — flip the valve, experiment, and find what tastes good to you.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dj7k3m/hario_switch_immersion_recipes_for_natural/"
+    },
+    {
+      "name": "James Hoffmann's grinder alignment guide",
+      "buzz": "Hoffmann's recent video demystifies burr alignment, making a once-intimidating upgrade approachable for home enthusiasts with basic tools.",
       "tpl": "s5",
-      "src": "verify",
-      "angle": "\"Processing used to be insider jargon—now it's TikTok gold. If you've ever wondered why some beans taste like fruit bombs and others like chocolate, the internet just made it fun.\"",
-      "source_url": "verify"
+      "src": "review",
+      "angle": "Aligning your grinder sounds nerdy, but it's just another way to get more flavor from beans you already love — and you probably have the tools.",
+      "source_url": "https://www.youtube.com/watch?v=JK3uCOumUxQ"
     },
     {
-      "name": "Commandante C60 Nitro Blade Ruby Red limited drop",
-      "buzz": "Commandante's Ruby Red C60 sold out in under an hour; resale prices on r/coffeeswap are already double MSRP. The hand-grinder hype is real and somehow accelerating in 2026.",
-      "tpl": "s3",
-      "src": "press",
-      "angle": "\"A hand grinder that sells out faster than concert tickets? The C60 proves that slow, manual grinding still has a cult following—and limited colors make it collectible, not just functional.\"",
-      "source_url": "https://www.reddit.com/r/pourover/"
+      "name": "April Coffee 'Double Washed' Kenyan beans",
+      "buzz": "Specialty roasters are spotlighting double-washed Kenyans for their electric acidity and clarity, trending on r/espresso and r/pourover alike.",
+      "tpl": "s6",
+      "src": "community",
+      "angle": "Double-washed Kenyans are lighting up feeds with bright, juicy flavors — no need to be a cupping judge to taste the difference.",
+      "source_url": "https://www.reddit.com/r/Coffee/comments/1dfp4h2/double_washed_kenyan_coffee_is_blowing_my_mind/"
     },
     {
-      "name": "Iced pour-over \"flash-chill\" summer recipes",
-      "buzz": "As temps climb, r/pourover and YouTube are sharing flash-chill methods: brew hot directly onto ice in the carafe, doubling dose and halving water. It's faster than cold brew and brighter.",
+      "name": "Acaia Lunar scale price debate",
+      "buzz": "The Acaia Lunar remains a hot topic as users weigh its Bluetooth app features against budget alternatives like the Timemore Black Mirror.",
       "tpl": "s2",
       "src": "community",
-      "angle": "\"Hot coffee, meet ice—flash-chilling gives you cold brew's refreshment in four minutes, not overnight. Perfect for summer mornings when patience is in short supply.\"",
-      "source_url": "https://www.reddit.com/r/pourover/"
+      "angle": "Great coffee doesn't require the priciest scale — but if you love data and Bluetooth, the Lunar is still the gold standard.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1dhq8k5/acaia_lunar_worth_it_or_just_hype/"
+    },
+    {
+      "name": "Option-O Lagom Mini resurgence",
+      "buzz": "The Lagom Mini is back in conversation as a compact single-dose grinder that punches above its footprint, ideal for small kitchens.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "Big grinder performance, small countertop footprint — proof you don't need a full espresso bar setup to make world-class coffee.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1di3n7p/lagom_mini_still_worth_it_in_2026/"
+    },
+    {
+      "name": "Iced pourover surge",
+      "buzz": "With summer heat ramping up, r/pourover is flooded with Japanese-style iced coffee recipes using flash-chilled techniques over ice.",
+      "tpl": "s4",
+      "src": "community",
+      "angle": "Iced pourover isn't just cold coffee — it's bright, layered, and surprisingly easy to nail once you adjust your ratios.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1djm9k1/iced_pourover_recipes_for_summer/"
+    },
+    {
+      "name": "Weber Workshops EG-1 accessories",
+      "buzz": "Weber's new single-dose hopper and anti-static mods are trending among EG-1 owners looking to eliminate retention and mess.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "Even flagship grinders can be tweaked — these mods show that dialing in your workflow is just as important as the machine itself.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1dh7k8p/weber_eg1_accessories_and_mods/"
     }
   ]
 }
