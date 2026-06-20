@@ -181,48 +181,64 @@ function buildUserMessage(sources, today, strict) {
     `Find this week's 6 most postable specialty-coffee trends. ` +
     `Prioritize these sources and similar ones:\n\n${sources}\n\n` +
     `Today is ${today}.\n\n` +
-    `If this exact week is thin, include notable gear/trends from roughly the ` +
-    `last 1–3 months, and mark anything you can't fully confirm as ` +
-    `src: "verify". Always return 6 items. Never return zero.\n\n` +
-    `Reply with ONLY a JSON array of 6 objects, each:\n` +
-    `{ "name": string, "src": "press"|"review"|"community"|"verify", ` +
+    `Return exactly 6 items. If this week is thin, include notable gear/trends ` +
+    `from the last ~3 months. Mark anything not fully confirmed as src: "verify". ` +
+    `Do not explain, apologize, or refuse — output the array only.\n\n` +
+    `Each object: { "name": string, "src": "press"|"review"|"community"|"verify", ` +
     `"buzz": string (1-2 sentences), "tpl": "s1".."s6", ` +
     `"angle": string (how DrewBrews should frame it — inclusive, no gatekeeping), ` +
-    `"source_url": a real link }\n` +
-    `No prose, no markdown fences — just the array.`;
+    `"source_url": a real link }`;
 
   if (!strict) return base;
 
   return (
     `CRITICAL: your previous reply could not be parsed as JSON. ` +
-    `Output the JSON array ONLY — start with "[" and end with "]". ` +
-    `No prose, no apology, no explanation, no code fences.\n\n` +
+    `Output the JSON array ONLY — no prose, no apology, no explanation, no code fences.\n\n` +
     base
   );
 }
 
+// Assistant prefill: by ending the request on an assistant turn whose content is
+// just "[", the model can only *continue* a JSON array — a prose refusal or
+// apology becomes structurally impossible. The API returns only the text it
+// generates AFTER the prefill, so we re-attach the "[" before parsing.
+// NOTE: prefill is supported on Sonnet 4.5; it returns 400 on the 4.6 family /
+// Opus 4.6+. If you ever set MODEL to one of those, remove this prefill.
+const PREFILL = '[';
+
+// max_tokens: comfortably above the ~2500 needed so a 6-item array can't be
+// truncated mid-JSON.
+const MAX_TOKENS = 4096;
+
 /**
- * Send one prompt to the model with web search enabled and return its text.
- * Handles the server-side tool's pause_turn loop (re-send to continue).
+ * Send one prompt to the model (web search enabled, JSON-array prefilled) and
+ * return its reply with the prefill re-attached. Handles the server-side tool's
+ * pause_turn loop (re-send to continue) and accumulates text across pauses.
  */
 async function askModel(client, userMessage, tools, label) {
-  const messages = [{ role: 'user', content: userMessage }];
-  let response = await withRetry(
-    () => client.messages.create({ model: MODEL, max_tokens: 4096, system: SYSTEM_PROMPT, tools, messages }),
-    label
-  );
+  const messages = [
+    { role: 'user', content: userMessage },
+    { role: 'assistant', content: PREFILL },
+  ];
+
+  const create = (lbl) =>
+    withRetry(
+      () => client.messages.create({ model: MODEL, max_tokens: MAX_TOKENS, system: SYSTEM_PROMPT, tools, messages }),
+      lbl
+    );
+
+  let response = await create(label);
+  let assembled = collectText(response);
 
   let continuations = 0;
   while (response.stop_reason === 'pause_turn' && continuations < MAX_CONTINUATIONS) {
     messages.push({ role: 'assistant', content: response.content });
-    response = await withRetry(
-      () => client.messages.create({ model: MODEL, max_tokens: 4096, system: SYSTEM_PROMPT, tools, messages }),
-      `${label} (continuation ${continuations + 1})`
-    );
+    response = await create(`${label} (continuation ${continuations + 1})`);
+    assembled += collectText(response);
     continuations++;
   }
 
-  return collectText(response);
+  return PREFILL + assembled;
 }
 
 // -----------------------------------------------------------------------------
