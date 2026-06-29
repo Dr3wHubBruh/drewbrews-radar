@@ -330,9 +330,9 @@ function buildUserMessage(sources, today, retry) {
 // Opus 4.6+. If you ever set MODEL to one of those, remove this prefill.
 const PREFILL = '[';
 
-// max_tokens: comfortably above the ~2500 needed so a 6-item array can't be
-// truncated mid-JSON.
-const MAX_TOKENS = 4096;
+// max_tokens: generous headroom so a full 12-item array plus the model's
+// interleaved web-search reasoning can't truncate the JSON mid-array.
+const MAX_TOKENS = 8192;
 
 /**
  * Send one prompt to the model (web search enabled, JSON-array prefilled) and
@@ -374,6 +374,12 @@ async function askModel(client, userMessage, tools, label) {
 async function getTrends(client, userMessage, tools, label, allow) {
   const text = await askModel(client, userMessage, tools, label);
   const cleaned = coerceTrends(parseTrends(text));
+
+  // Self-diagnosing: if nothing parsed, show the reply size + tail so a future
+  // 0-item run tells us whether it truncated, refused, or returned an empty array.
+  if (cleaned.length === 0) {
+    console.warn(`[scout] ${label}: parsed 0 items from a ${text.length}-char reply. Tail: ${JSON.stringify(text.slice(-400))}`);
+  }
 
   // 1) Synchronous allowlist: vetted subreddit thread, vetted article host, or
   //    a shape-valid YouTube link (its channel is verified next).
