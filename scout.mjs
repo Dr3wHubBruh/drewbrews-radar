@@ -148,7 +148,11 @@ function tryParse(s) {
 }
 
 function normalizeParsed(parsed) {
-  if (Array.isArray(parsed)) return parsed;
+  if (Array.isArray(parsed)) {
+    // Defense-in-depth: unwrap an accidental nested array, e.g. [[{...},{...}]].
+    if (parsed.length && parsed.every((e) => Array.isArray(e))) return parsed.flat();
+    return parsed;
+  }
   if (parsed && Array.isArray(parsed.trends)) return parsed.trends;
   return [];
 }
@@ -312,12 +316,12 @@ function buildUserMessage(sources, today, retry) {
   if (!retry) return base;
 
   return (
-    `CRITICAL: your previous result had too few items with specific, verifiable ` +
-    `source links. For each item, copy the EXACT full URL of a real web_search ` +
-    `result — a Reddit /comments/ thread, a YouTube watch?v= video, or a specific ` +
-    `article page. Do NOT use subreddit roots, channel/@profile pages, homepages, ` +
-    `or any URL from the source list. Omit any item you cannot back with such a ` +
-    `link. Output the array only.\n\n` +
+    `Your previous reply could not be used. Return a JSON array of the trends you ` +
+    `CAN back with a specific link from a vetted source — a Reddit /comments/ ` +
+    `thread in those subreddits, a video from those YouTube channels, or an ` +
+    `article on those sites. Fewer than 12 is fine — even 3 or 4 strong ones. ` +
+    `Do NOT explain, apologize, or describe what you cannot do — output ONLY the ` +
+    `JSON array.\n\n` +
     base
   );
 }
@@ -362,7 +366,12 @@ async function askModel(client, userMessage, tools, label) {
     continuations++;
   }
 
-  return PREFILL + assembled;
+  // The model usually CONTINUES our "[" prefill, but sometimes ignores it and
+  // emits its own complete array (often inside ```json fences). Strip fences and
+  // only re-attach the prefill when the reply didn't already open the array —
+  // otherwise we'd build a doubled "[[ … ]]" that parses as a useless nested array.
+  const stripped = assembled.replace(/```(?:json)?/gi, '').trim();
+  return stripped.startsWith('[') ? stripped : PREFILL + stripped;
 }
 
 /**
