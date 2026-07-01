@@ -1,62 +1,86 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-29T03:47:32.872Z",
+  "generatedAt": "2026-07-01T15:42:43.517Z",
   "trends": [
     {
-      "name": "Timemore Sculptor 078s grinder",
-      "buzz": "The new Sculptor 078s is getting huge attention as Timemore's latest flagship grinder with 78mm burrs and advanced grinding tech. Pour-over enthusiasts are excited about the clarity and consistency it's delivering.",
-      "tpl": "s2",
+      "name": "Orea V4 brewer release",
+      "buzz": "Orea just dropped the V4 dripper with a refined design and better flow control. Early adopters are calling it a game-changer for clarity-focused brews.",
+      "tpl": "s1",
       "src": "community",
-      "angle": "High-end grinders aren't just for espresso nerds — this one's built for anyone chasing sweeter, cleaner pour-overs at home.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1ds8h9z/timemore_sculptor_078s/"
+      "angle": "New Orea V4 makes dialing in pour-overs easier — perfect if you're chasing cleaner, brighter cups without fuss.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dv8k2j/orea_v4_first_impressions/"
     },
     {
-      "name": "Fellow Aiden Precision Coffee Maker",
-      "buzz": "People are still debating whether the Aiden lives up to the hype or if it's just expensive automation. Some love the programmability and bloom control; others say manual pour-over is simpler.",
+      "name": "Fellow Opus grinder popularity surge",
+      "buzz": "The Fellow Opus continues to dominate beginner and mid-tier grinder conversations. Redditors praise its versatility across brew methods and accessible price point.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "Fellow Opus is the grinder everyone's recommending right now — great for pour-over, French press, and beyond without breaking the bank.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dtm9x8/fellow_opus_vs_timemore_c3_pro/"
+    },
+    {
+      "name": "Ratio Six thermal carafe model",
+      "buzz": "Ratio announced a thermal carafe option for the Six, addressing the #1 complaint about heat retention. Coffee stays hot longer without a warming plate.",
+      "tpl": "s1",
+      "src": "review",
+      "angle": "Ratio Six now has a thermal carafe option — your coffee stays hot naturally, no burnt flavors from warming plates.",
+      "source_url": "https://sprudge.com/ratio-announces-thermal-carafe-for-ratio-six-coffee-maker-228674.html"
+    },
+    {
+      "name": "Normcore spring-loaded tamper trend",
+      "buzz": "Normcore's affordable spring-loaded tamper is all over r/espresso as a budget-friendly consistency tool. Users love the repeatable compression without guesswork.",
       "tpl": "s3",
       "src": "community",
-      "angle": "Automatic doesn't mean lazy — if you want great coffee without standing over a kettle every morning, there's no shame in that.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dp9k3m/fellow_aiden_precision_coffee_maker/"
+      "angle": "Normcore spring-loaded tamper takes the guesswork out of tamping — same pressure every time, and it won't cost you a fortune.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1dw3n7k/normcore_spring_loaded_tamper_worth_it/"
     },
     {
-      "name": "Hario Switch immersion brewer",
-      "buzz": "The Hario Switch keeps popping up as a beginner-friendly hybrid brewer that lets you toggle between pour-over and immersion modes. It's forgiving, versatile, and affordable.",
-      "tpl": "s1",
+      "name": "Osmotic flow brewing method",
+      "buzz": "Osmotic flow (steeping grounds in the server, then pouring through a filter) is gaining traction on pour-over forums. It's low-effort with surprisingly clean results.",
+      "tpl": "s4",
       "src": "community",
-      "angle": "One brewer, two methods — perfect for anyone who wants to experiment without buying a whole new setup.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dqxm8y/hario_switch_recipes/"
+      "angle": "Osmotic flow brewing is blowing minds — steep your grounds, pour through a filter, done. Super forgiving and tastes great.",
+      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1du5m8p/osmotic_flow_has_anyone_tried_this_method/"
     },
     {
-      "name": "Orea V4 brewer comparisons",
-      "buzz": "The Orea V4 flat-bottom brewer is generating fresh discussion as people compare it to Kalita Wave and April brewer for clarity and ease of use.",
+      "name": "Comandante X25 anniversary edition",
+      "buzz": "Comandante released a limited X25 anniversary edition hand grinder with upgraded burrs and a sleek colorway. Pre-orders sold out in hours.",
       "tpl": "s1",
-      "src": "community",
-      "angle": "Flat-bottom brewers are having a moment because they're more forgiving than V60 — same great coffee, less fuss.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dq3h7n/orea_v4_vs_kalita_wave/"
+      "src": "press",
+      "angle": "Comandante's X25 anniversary edition dropped with upgraded burrs and flew off shelves — proof hand grinding is still thriving.",
+      "source_url": "https://dailycoffeenews.com/2026/06/18/comandante-celebrates-25-years-with-limited-edition-x25-hand-grinder/"
     },
     {
-      "name": "1Zpresso K-Ultra grinder for pour-over",
-      "buzz": "The 1Zpresso K-Ultra hand grinder is getting praise for its precision, build quality, and exceptional clarity in pour-over extractions.",
+      "name": "Hario Switch 02 size popularity",
+      "buzz": "The larger Hario Switch 02 is trending as more people brew for two or experiment with longer immersion times. Redditors call it the ultimate hybrid brewer.",
       "tpl": "s2",
       "src": "community",
-      "angle": "Hand grinders have come a long way — this one rivals electric models for consistency, no countertop space required.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dqw9x5/1zpresso_kultra_impressions/"
+      "angle": "Hario Switch 02 is having a moment — brew for two, or go full immersion for richer body. It's the Swiss Army knife of pour-over.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dsy7n1/hario_switch_02_vs_01_which_size_should_i_get/"
     },
     {
-      "name": "Kruve sifting for pour-over consistency",
-      "buzz": "People are experimenting with Kruve sieves to remove fines and boulders from ground coffee, claiming it leads to more even extractions and cleaner cups.",
-      "tpl": "s5",
+      "name": "Kruve sifter for fines management",
+      "buzz": "Kruve sifters are trending again as pour-over enthusiasts chase clarity by removing fines. Users report cleaner, more transparent cups with minimal effort.",
+      "tpl": "s3",
       "src": "community",
-      "angle": "Sifting sounds nerdy, but it's just another tool — if you're curious about dialing in, it's worth a try.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dpz7k3/does_sifting_with_kruve_actually_help/"
+      "angle": "Kruve sifters are back in the spotlight — sift out fines for cleaner, brighter pour-overs. It's optional, but the results are real.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dvk4m9/kruve_sifter_is_it_worth_it_for_pour_over/"
     },
     {
-      "name": "April Pour Over Brewer in Tritan",
-      "buzz": "The April brewer in Tritan plastic is gaining traction as a durable, affordable alternative to glass or ceramic flat-bottom brewers with excellent clarity.",
-      "tpl": "s1",
+      "name": "Single-origin decaf spotlight",
+      "buzz": "Roasters are releasing more high-quality single-origin decafs using Swiss Water and CO2 processes. Decaf is shedding its stigma as specialty options multiply.",
+      "tpl": "s6",
+      "src": "press",
+      "angle": "Single-origin decaf is having its moment — Swiss Water and CO2 processes mean you can enjoy amazing coffee any time of day.",
+      "source_url": "https://perfectdailygrind.com/2026/06/why-specialty-decaf-coffee-is-finally-getting-the-recognition-it-deserves/"
+    },
+    {
+      "name": "Acaia Lunar scale firmware update",
+      "buzz": "Acaia's new Lunar firmware adds auto-tare and customizable flow-rate alerts. Espresso nerds are thrilled about the quality-of-life improvements.",
+      "tpl": "s3",
       "src": "community",
-      "angle": "Plastic doesn't mean cheap — modern brewers like this are engineered for consistency and nearly impossible to break.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dqf8h2/april_brewer_tritan_vs_glass/"
+      "angle": "Acaia Lunar just got a firmware glow-up — auto-tare and flow alerts make dialing in espresso even smoother.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1dtc8n6/acaia_lunar_firmware_update_features/"
     }
   ]
 }
