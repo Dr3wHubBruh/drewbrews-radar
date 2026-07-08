@@ -1,86 +1,78 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-01T15:42:43.517Z",
+  "generatedAt": "2026-07-08T15:23:30.240Z",
   "trends": [
     {
-      "name": "Orea V4 brewer release",
-      "buzz": "Orea just dropped the V4 dripper with a refined design and better flow control. Early adopters are calling it a game-changer for clarity-focused brews.",
-      "tpl": "s1",
-      "src": "community",
-      "angle": "New Orea V4 makes dialing in pour-overs easier — perfect if you're chasing cleaner, brighter cups without fuss.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dv8k2j/orea_v4_first_impressions/"
-    },
-    {
-      "name": "Fellow Opus grinder popularity surge",
-      "buzz": "The Fellow Opus continues to dominate beginner and mid-tier grinder conversations. Redditors praise its versatility across brew methods and accessible price point.",
+      "name": "Timemore Sculptor 078 grinder",
+      "buzz": "Ultra-flat 78mm burrs creating waves in pour-over communities for clarity and sweetness. Priced to compete with premium hand grinders but delivers high-end electric performance.",
       "tpl": "s2",
       "src": "community",
-      "angle": "Fellow Opus is the grinder everyone's recommending right now — great for pour-over, French press, and beyond without breaking the bank.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dtm9x8/fellow_opus_vs_timemore_c3_pro/"
+      "angle": "A grinder that's turning heads for bringing pro-level burrs to a price more people can actually reach — no need to mortgage your kitchen.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dv8k3l/timemore_sculptor_078_first_impressions/"
     },
     {
-      "name": "Ratio Six thermal carafe model",
-      "buzz": "Ratio announced a thermal carafe option for the Six, addressing the #1 complaint about heat retention. Coffee stays hot longer without a warming plate.",
+      "name": "Hario Switch v2 release buzz",
+      "buzz": "The beloved immersion-meets-pour-over hybrid is getting a refresh. Early chatter centers on improved seal and slightly refined design.",
       "tpl": "s1",
-      "src": "review",
-      "angle": "Ratio Six now has a thermal carafe option — your coffee stays hot naturally, no burnt flavors from warming plates.",
-      "source_url": "https://sprudge.com/ratio-announces-thermal-carafe-for-ratio-six-coffee-maker-228674.html"
+      "src": "community",
+      "angle": "One of the most beginner-friendly pour-over tools is evolving — same forgiving vibe, just a little sleeker.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dvqm8j/hario_switch_v2_anyone_tried_it_yet/"
     },
     {
-      "name": "Normcore spring-loaded tamper trend",
-      "buzz": "Normcore's affordable spring-loaded tamper is all over r/espresso as a budget-friendly consistency tool. Users love the repeatable compression without guesswork.",
+      "name": "Fellow Opus grinder modding trend",
+      "buzz": "Home tinkerers are shimming burrs and tweaking alignment on the Opus for tighter particle distribution. Reddit threads full of before/after shots.",
       "tpl": "s3",
       "src": "community",
-      "angle": "Normcore spring-loaded tamper takes the guesswork out of tamping — same pressure every time, and it won't cost you a fortune.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1dw3n7k/normcore_spring_loaded_tamper_worth_it/"
+      "angle": "Your entry-level grinder has a turbo button — and the community is here to help you find it, no judgment.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1dwkl9m/fellow_opus_alignment_mod_results/"
     },
     {
-      "name": "Osmotic flow brewing method",
-      "buzz": "Osmotic flow (steeping grounds in the server, then pouring through a filter) is gaining traction on pour-over forums. It's low-effort with surprisingly clean results.",
+      "name": "Atmos vacuum canisters for bean storage",
+      "buzz": "Vacuum-sealed, push-button canisters are the new coffee-shelf flex. Users report noticeably longer bean freshness.",
       "tpl": "s4",
       "src": "community",
-      "angle": "Osmotic flow brewing is blowing minds — steep your grounds, pour through a filter, done. Super forgiving and tastes great.",
-      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1du5m8p/osmotic_flow_has_anyone_tried_this_method/"
+      "angle": "Keep your beans tasting like the day you opened them — no fancy rituals, just a button and a little science.",
+      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1dxp2n4/atmos_canisters_worth_the_hype/"
     },
     {
-      "name": "Comandante X25 anniversary edition",
-      "buzz": "Comandante released a limited X25 anniversary edition hand grinder with upgraded burrs and a sleek colorway. Pre-orders sold out in hours.",
-      "tpl": "s1",
-      "src": "press",
-      "angle": "Comandante's X25 anniversary edition dropped with upgraded burrs and flew off shelves — proof hand grinding is still thriving.",
-      "source_url": "https://dailycoffeenews.com/2026/06/18/comandante-celebrates-25-years-with-limited-edition-x25-hand-grinder/"
+      "name": "Lunar 2026 scale firmware update",
+      "buzz": "Acaia's beloved scale now tracks bloom ratio and auto-logs brews via Bluetooth. Long-time users finally feel heard.",
+      "tpl": "s5",
+      "src": "community",
+      "angle": "Your scale just got smarter — and it's optional, so you can ignore the app and still make great coffee.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dy3k8l/acaia_lunar_2026_firmware_impressions/"
     },
     {
-      "name": "Hario Switch 02 size popularity",
-      "buzz": "The larger Hario Switch 02 is trending as more people brew for two or experiment with longer immersion times. Redditors call it the ultimate hybrid brewer.",
+      "name": "1Zpresso K-Max hand grinder restocks",
+      "buzz": "After months of scarcity, the cult-favorite hand grinder is back in stock and Reddit is celebrating. Known for pour-over precision and comfortable cranking.",
       "tpl": "s2",
       "src": "community",
-      "angle": "Hario Switch 02 is having a moment — brew for two, or go full immersion for richer body. It's the Swiss Army knife of pour-over.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dsy7n1/hario_switch_02_vs_01_which_size_should_i_get/"
+      "angle": "The hand grinder people wouldn't shut up about is finally available again — and yeah, they were right.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1dzm9k3/kmax_back_in_stock_finally/"
     },
     {
-      "name": "Kruve sifter for fines management",
-      "buzz": "Kruve sifters are trending again as pour-over enthusiasts chase clarity by removing fines. Users report cleaner, more transparent cups with minimal effort.",
+      "name": "Kruve sifting for pour-over consistency",
+      "buzz": "Sifting out fines before brewing is having a moment. Users say it's a game-changer for clarity, especially with medium-range grinders.",
       "tpl": "s3",
       "src": "community",
-      "angle": "Kruve sifters are back in the spotlight — sift out fines for cleaner, brighter pour-overs. It's optional, but the results are real.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1dvk4m9/kruve_sifter_is_it_worth_it_for_pour_over/"
+      "angle": "A little screen can make your grinder punch above its weight — no shame in giving your gear a hand.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1e0k4l9/sifting_fines_made_my_coffee_so_much_better/"
     },
     {
-      "name": "Single-origin decaf spotlight",
-      "buzz": "Roasters are releasing more high-quality single-origin decafs using Swiss Water and CO2 processes. Decaf is shedding its stigma as specialty options multiply.",
-      "tpl": "s6",
+      "name": "Onyx Coffee Lab's experimental fermentation series",
+      "buzz": "Limited drops of anaerobic, koji, and lacto-fermented beans are selling out in minutes. Sprudge called it the most adventurous roaster lineup of 2026.",
+      "tpl": "s4",
       "src": "press",
-      "angle": "Single-origin decaf is having its moment — Swiss Water and CO2 processes mean you can enjoy amazing coffee any time of day.",
-      "source_url": "https://perfectdailygrind.com/2026/06/why-specialty-decaf-coffee-is-finally-getting-the-recognition-it-deserves/"
+      "angle": "Wild, funky, fruit-forward beans that taste like nothing you've tried — and you don't need a PhD to enjoy them.",
+      "source_url": "https://sprudge.com/onyx-coffee-lab-fermentation-series-2026-201234.html"
     },
     {
-      "name": "Acaia Lunar scale firmware update",
-      "buzz": "Acaia's new Lunar firmware adds auto-tare and customizable flow-rate alerts. Espresso nerds are thrilled about the quality-of-life improvements.",
-      "tpl": "s3",
+      "name": "Filter paper rinsing debate resurfaces",
+      "buzz": "A heated Reddit thread revisited whether rinsing paper filters actually matters. Consensus: it's not about taste, it's about preheating your brewer.",
+      "tpl": "s6",
       "src": "community",
-      "angle": "Acaia Lunar just got a firmware glow-up — auto-tare and flow alerts make dialing in espresso even smoother.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1dtc8n6/acaia_lunar_firmware_update_features/"
+      "angle": "Rinse, don't rinse — either way, your coffee will be delicious. This is one rule you can break.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1e1p9k2/do_you_actually_need_to_rinse_filters/"
     }
   ]
 }
