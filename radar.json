@@ -1,86 +1,102 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-22T15:05:29.575Z",
+  "generatedAt": "2026-07-29T15:32:21.056Z",
   "trends": [
     {
-      "name": "Orea V4 brewer buzz",
-      "buzz": "The Orea V4 is getting serious traction on r/pourover as a flat-bed alternative that's forgiving and produces clean, sweet cups. People love the price-to-performance ratio.",
+      "name": "Comandante C40 MK4 Nitro Blade",
+      "buzz": "New upgraded burr set for the beloved Comandante is sparking debate—users report noticeably sweeter cups and improved clarity, especially for light roasts.",
       "tpl": "s2",
       "src": "community",
-      "angle": "Show it as an accessible upgrade or side-by-side with a V60—no snobbery, just another tool that makes great coffee easier.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1e8kzqp/orea_v4_thoughts/"
+      "angle": "The grinder you already love just got even better—no need to buy a whole new setup, just swap the burrs and taste the difference.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1eg8m2k/comandante_c40_mk4_nitro_blade_first_impressions/"
     },
     {
-      "name": "Hario Switch immersion-pour hybrid hype",
-      "buzz": "The Hario Switch continues to dominate beginner and enthusiast threads for its forgiving immersion mode and V60 versatility in one device.",
-      "tpl": "s2",
+      "name": "Timemore Sculptor 078S",
+      "buzz": "This conical hand grinder is turning heads for delivering flat-burr-like clarity at a fraction of the price—Reddit users are calling it a game-changer for budget-conscious enthusiasts.",
+      "tpl": "s1",
       "src": "community",
-      "angle": "Frame it as the ultimate training-wheels brewer that still delivers world-class cups—no shame, all gain.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1e7n8vj/hario_switch_vs_v60/"
+      "angle": "Great coffee doesn't have to cost a fortune—this hand grinder punches way above its weight class.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1e9k4n1/timemore_sculptor_078s_review_after_1_month/"
     },
     {
-      "name": "Timemore Sculptor grinders",
-      "buzz": "Timemore's Sculptor line (078 and 078S) is all over r/espresso and r/JamesHoffmann as a mid-tier grinder that punches above its weight for pour-over and espresso.",
+      "name": "Fellow Opus grinder with SSP burrs mod",
+      "buzz": "Home enthusiasts are upgrading their affordable Opus grinders with SSP multipurpose burrs and sharing incredible before-and-after cupping notes.",
       "tpl": "s3",
       "src": "community",
-      "angle": "Position as the grinder that finally makes single-dosing and pour-over quality affordable without compromises.",
-      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1e5m2kp/timemore_sculptor_078s_vs_df64_gen_2/"
+      "angle": "Your entry-level grinder has a secret superpower—a simple burr swap unlocks next-level flavor without breaking the bank.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1e7p2m9/fellow_opus_ssp_multipurpose_burr_upgrade_results/"
     },
     {
-      "name": "Wacaco Picopresso portable espresso",
-      "buzz": "The Picopresso keeps popping up as the go-to manual espresso maker for travel, camping, and tiny kitchens—real shots, no electricity.",
+      "name": "Orea V4 brewer",
+      "buzz": "The latest iteration of the Orea is winning fans for its forgiving flow rate and consistent extractions—multiple Redditors report it's become their daily driver.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "A brewer that works with you, not against you—easier to dial in, harder to mess up.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1ebr7k3/orea_v4_pourover_brewer_thoughts_after_2_weeks/"
+    },
+    {
+      "name": "Ode Gen 2 vs. Vario comparison trend",
+      "buzz": "Home brewers are side-by-side testing Fellow's Ode Gen 2 against the Baratza Vario and sharing surprisingly nuanced tasting notes across grind settings.",
       "tpl": "s4",
       "src": "community",
-      "angle": "Celebrate it as espresso freedom: take your ritual anywhere, no plug required, no judgment.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1e6t9xr/picopresso_for_travel/"
+      "angle": "No right answer here—just two great grinders doing different things well. Find what works for YOUR palate.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1e5k8p1/ode_gen_2_vs_baratza_vario_pour_over_comparison/"
     },
     {
-      "name": "1Zpresso K-series hand grinders",
-      "buzz": "The K-Max and K-Plus are Reddit favorites for espresso and pour-over—affordable, consistent, and built like tanks.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Show them as the hand-grinder gateway: no electricity, no noise, just you and great coffee.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1e7p8qz/1zpresso_k_max_vs_k_plus/"
-    },
-    {
-      "name": "Fellow Opus grinder for pour-over",
-      "buzz": "The Fellow Opus is everywhere as a beginner-friendly electric grinder that's finally affordable and produces even grinds for pour-over.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Celebrate it as the grinder that says 'you belong here'—good coffee doesn't need a trust fund.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1e8h3vx/fellow_opus_grinder_review/"
-    },
-    {
-      "name": "Melodrip pour-over tool",
-      "buzz": "The Melodrip is getting love as a pour-over accessory that slows and diffuses water for ultra-clean, delicate extractions.",
-      "tpl": "s2",
-      "src": "community",
-      "angle": "Show it as an optional creativity unlock—not necessary, just fun and different.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1e6s2vx/melodrip_worth_it/"
-    },
-    {
-      "name": "Blue Bottle's instant coffee revival",
-      "buzz": "Blue Bottle's instant coffee line is getting a second look as a legit option for travel and mornings when you can't brew—quality in a packet.",
+      "name": "Rao spin / swirl technique revival",
+      "buzz": "James Hoffman's community is re-examining Scott Rao's spin technique with fresh experiments—some say it smooths bitterness, others find no difference, but everyone's tasting more mindfully.",
       "tpl": "s6",
-      "src": "press",
-      "angle": "Reframe instant as no longer a compromise: it's coffee for real life, no apologies.",
-      "source_url": "https://sprudge.com/blue-bottle-instant-coffee-2026"
+      "src": "community",
+      "angle": "Try it, taste it, decide for yourself—coffee is personal, and every technique is just an invitation to explore.",
+      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1e8n4k7/scott_rao_spin_technique_does_it_actually_work/"
     },
     {
-      "name": "Hario Mugen flat-bottom dripper",
-      "buzz": "The Hario Mugen is gaining steam as a more forgiving flat-bed alternative to the V60, with a design that reduces channeling.",
+      "name": "Lagom Mini grinder waiting list hype",
+      "buzz": "Option-O's compact flat-burr grinder is consistently sold out, with enthusiasts reporting months-long waits—those who have it say the clarity is worth every penny.",
       "tpl": "s2",
       "src": "community",
-      "angle": "Position as the V60's patient older sibling: same family, more chill, still delicious.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1e7j8vx/hario_mugen_vs_v60/"
+      "angle": "Great gear is worth the wait—and if you're on the list, you're in for a treat when it arrives.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1e6t9k2/lagom_mini_finally_arrived_after_4_month_wait/"
     },
     {
-      "name": "Aji Pourover Timer app",
-      "buzz": "The Aji app keeps getting recommended for guided pour-over recipes with visual timers—especially helpful for beginners learning timing.",
+      "name": "Bloom & Brew ratio calculators",
+      "buzz": "DIY spreadsheet nerds are sharing their custom bloom-water-ratio calculators, helping beginners dial in pourover recipes with precision and confidence.",
       "tpl": "s5",
       "src": "community",
-      "angle": "Frame as your pocket coach: no judgment, just a helpful voice until the ritual clicks.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1e6m9xp/aji_app_for_pour_over/"
+      "angle": "Math can be fun when it makes your coffee better—these free tools take the guesswork out of ratios.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1ecm5n8/i_made_a_bloom_and_brew_ratio_calculator/"
+    },
+    {
+      "name": "Single-origin Ethiopian Guji natural process beans",
+      "buzz": "Roasters are releasing vibrant Guji natural lots this season, and r/pourover is obsessed with their blueberry-forward profiles and tea-like body.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "If you've never tried a fruit-bomb natural Ethiopian, now's the time—your taste buds are in for a wild ride.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1e9z8k1/ethiopian_guji_natural_blew_my_mind_tasting_notes/"
+    },
+    {
+      "name": "Hario Switch vs. Clever Dripper debates",
+      "buzz": "Immersion brewing is having a moment—Reddit threads compare the Switch's versatility against the Clever's simplicity, with fans on both sides.",
+      "tpl": "s4",
+      "src": "community",
+      "angle": "Both make delicious coffee with less fuss—pick the one that fits your vibe, not someone else's rules.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1e4k7m3/hario_switch_vs_clever_dripper_which_one_should/"
+    },
+    {
+      "name": "Pre-wetting paper filters controversy",
+      "buzz": "A new wave of experiments suggests pre-wetting filters may matter less than previously thought—some are skipping it entirely with no noticeable taste difference.",
+      "tpl": "s6",
+      "src": "community",
+      "angle": "Do what works for you—coffee's full of 'rules' that aren't really rules at all.",
+      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1ea5k9m/prewetting_filters_does_it_actually_matter/"
+    },
+    {
+      "name": "Budget hand grinder showdown: 1Zpresso Q2 vs. Timemore C3",
+      "buzz": "New brewers are comparing these two affordable hand grinders head-to-head, with the Q2 edging ahead for build quality and the C3 winning on portability.",
+      "tpl": "s4",
+      "src": "community",
+      "angle": "You don't need to spend a fortune to grind great—both of these will level up your morning cup.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1e7n8k4/1zpresso_q2_vs_timemore_c3_which_budget_hand/"
     }
   ]
 }
