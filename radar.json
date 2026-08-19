@@ -1,94 +1,54 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-12T14:21:42.356Z",
+  "generatedAt": "2026-08-19T13:43:42.616Z",
   "trends": [
     {
-      "name": "Hario Switch immersion dripper",
-      "buzz": "Gaining serious traction as the most versatile pour-over brewer—flip a valve to toggle between percolation and immersion. Forgiving for beginners, deep enough for geeks.",
+      "name": "Orea V4 Brewer Release",
+      "buzz": "The Orea V4 brewer is generating major excitement for its refined flow control and ease of use. Users are praising its consistency and forgiving nature for beginners.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "This is the kind of brewer that makes great coffee easier, not harder — perfect for anyone wanting to level up their pour-over game without overthinking it.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1evk3m2/orea_v4_review/"
+    },
+    {
+      "name": "Weber Workshops Key Grinder",
+      "buzz": "Weber's new Key grinder is being discussed as a compact, high-performance option that brings flagship specs into a smaller footprint.",
+      "tpl": "s2",
+      "src": "press",
+      "angle": "Premium grinding tech in a package that actually fits on your counter — this is what happens when design meets real kitchens.",
+      "source_url": "https://sprudge.com/weber-workshops-key-grinder-review-228341.html"
+    },
+    {
+      "name": "Hario Switch Immersion Dripper Popularity Surge",
+      "buzz": "The Hario Switch continues to dominate beginner and enthusiast discussions alike for its versatility and forgiving brewing style.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "One brewer, endless possibilities — the Switch lets you experiment without fear of messing up.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1etzqw8/hario_switch_is_it_worth_the_hype/"
+    },
+    {
+      "name": "Timemore Sculptor Grinder",
+      "buzz": "The Timemore Sculptor is being praised for delivering flat-burr quality at a mid-tier price point, making it a hot topic for upgrade-minded home brewers.",
       "tpl": "s2",
       "src": "community",
-      "angle": "The Switch gives you two brew styles in one $30 tool—no need to choose a side or buy twice.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1ep3h2j/hario_switch_is_amazing/"
+      "angle": "You don't need to spend flagship money to get flagship-quality coffee — this grinder is proof.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1ew5n3k/timemore_sculptor_078s_first_impressions/"
     },
     {
-      "name": "Fellow Opus grinder",
-      "buzz": "Constantly recommended as the best entry grinder under $200—covers pour-over and espresso with surprising consistency.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Opus keeps showing up because it nails the sweet spot: great grinds, no fuss, one machine for everything.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1eonqme/what_grinder_should_i_get_for_pourover/"
-    },
-    {
-      "name": "Timemore Sculptor grinders",
-      "buzz": "The 064s and 078s are being praised for exceptional grind quality at competitive prices, challenging grinders twice their cost.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Timemore's Sculptor line proves you don't need to spend $1k+ to get jaw-dropping clarity in the cup.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1eow8xu/timemore_sculptor_078s_first_impressions/"
-    },
-    {
-      "name": "Melodrip pour-over tool",
-      "buzz": "This flow diffuser sits over your dripper to gentle the pour and reduce channeling—splitting opinion between 'game-changer' and 'gimmick.'",
-      "tpl": "s2",
-      "src": "community",
-      "angle": "Melodrip is sparking debate: does slowing your pour unlock sweeter cups, or is good technique enough?",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1ent5yx/melodrip_worth_it/"
-    },
-    {
-      "name": "Orea V4 brewer",
-      "buzz": "Flat-bottom dripper with a cult following for clean, balanced cups—often compared favorably to Kalita Wave with easier cleanup.",
-      "tpl": "s2",
-      "src": "community",
-      "angle": "The Orea V4 delivers Kalita-level clarity without the fiddly tabs or filter fits—just brew.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1eojqvx/orea_v4_appreciation_post/"
-    },
-    {
-      "name": "WDT (Weiss Distribution Technique) tools",
-      "buzz": "Espresso prep technique using fine needles to break up clumps is crossing into pour-over—some swear it reduces channeling in the grounds bed.",
-      "tpl": "s4",
-      "src": "community",
-      "angle": "WDT started in espresso but pour-over folks are experimenting—worth a try if you've got clumpy grinds.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1eo8jth/do_you_wdt_for_pourover/"
-    },
-    {
-      "name": "Tetsu Kasuya 4:6 method",
-      "buzz": "The 4:6 split-pour recipe continues to be a go-to framework for dialing in new beans—adjusting sweetness vs. strength by pouring ratios.",
-      "tpl": "s4",
-      "src": "community",
-      "angle": "The 4:6 method gives you knobs to turn without guesswork—great starting point for any bean.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1enh4kp/46_method_help/"
-    },
-    {
-      "name": "Single-dose espresso grinders under $500",
-      "buzz": "DF64, Turin DF83, and Lagom Mini are dominating 'what grinder' threads—high-quality burrs, low retention, accessible pricing.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Single-dose grinders used to cost a fortune; now DF64 and friends bring pro-level consistency to everyone.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1eokr7t/best_single_dose_grinder_under_500/"
-    },
-    {
-      "name": "Osmotic flow pour-over technique",
-      "buzz": "Lower-agitation pouring method gaining steam—gentle center pours to minimize turbulence and highlight delicate, tea-like flavors.",
-      "tpl": "s4",
-      "src": "community",
-      "angle": "Osmotic flow is all about less is more: pour gently, let physics do the work, taste more nuance.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1eo2nkx/osmotic_flow_technique_discussion/"
-    },
-    {
-      "name": "Acaia Lunar scale for espresso",
-      "buzz": "The Lunar remains the most-discussed scale in espresso forums—real-time shot feedback and app integration, though the price tag ($250+) still sparks debate.",
+      "name": "Melodrip vs. Traditional Pouring",
+      "buzz": "Melodrip pouring tools are sparking debate on Reddit about whether they improve extraction or just slow things down unnecessarily.",
       "tpl": "s5",
       "src": "community",
-      "angle": "Acaia Lunar is the espresso scale everyone wants and half regret paying for—gorgeous, pricey, undeniably useful.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1eopq8n/is_acaia_lunar_worth_it/"
+      "angle": "Is it a game-changer or just extra gear? Either way, it's fun to experiment — no wrong answers here.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1eu8k2m/melodrip_worth_it_or_just_hype/"
     },
     {
-      "name": "Onyx Coffee Lab beans",
-      "buzz": "Onyx keeps popping up in 'best roaster' threads—especially their Geometry Blend and washed Ethiopian offerings for pour-over clarity.",
-      "tpl": "s6",
+      "name": "DF64 Gen 2 Grinder Buzz",
+      "buzz": "The DF64 Gen 2 is being discussed as a solid single-dose espresso grinder with improved ergonomics and lower retention than the original.",
+      "tpl": "s2",
       "src": "community",
-      "angle": "Onyx is a community favorite for a reason: transparent sourcing, dialed-in roasts, flavors that pop.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1eom3hx/best_coffee_roasters_for_pourover/"
+      "angle": "Affordable, upgradeable, and built for people who actually drink the coffee they grind — this is what practical looks like.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1evxc8p/df64_gen_2_first_impressions/"
     }
   ]
 }
