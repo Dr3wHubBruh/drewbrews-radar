@@ -1,102 +1,86 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-26T13:55:30.338Z",
+  "generatedAt": "2026-09-02T17:02:27.619Z",
   "trends": [
     {
-      "name": "Fellow Opus grinder popularity surge",
-      "buzz": "The Fellow Opus continues to dominate beginner-to-intermediate grinder recommendations across Reddit, praised for its grind quality at the $200 price point. Multiple threads this week highlight it as the go-to first grinder upgrade.",
-      "tpl": "s2",
-      "src": "community",
-      "angle": "Your first \"real\" grinder doesn't have to break the bank — the Opus is proof that great coffee starts at $200, no judgment if you've been hand-grinding or using a blade.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f1h8yz/fellow_opus_for_espresso/"
-    },
-    {
-      "name": "Orea V4 brewer gaining traction",
-      "buzz": "The Orea V4 pour-over brewer is seeing increased discussion for its flat-bottom design and consistent extractions. Users are sharing recipes and praising its forgiving brew window.",
+      "name": "Timemore 078S Grinder Launch",
+      "buzz": "The Timemore 078S is generating massive hype as an affordable flat-burr grinder that rivals high-end options. Early adopters are praising its grind quality and build at the sub-$300 price point.",
       "tpl": "s1",
       "src": "community",
-      "angle": "Flat-bottom brewers like the Orea V4 are having a moment — they're more forgiving than cones, so your morning coffee tastes great even if you're half-awake.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f0qm3k/orea_v4_recipes/"
+      "angle": "Finally, premium flat burrs without the premium price — this could be your entry into the grinder upgrade everyone's been talking about.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f6jq3h/timemore_078s_first_impressions/"
     },
     {
-      "name": "Timemore Sculptor grinders buzz",
-      "buzz": "Timemore's Sculptor line (064 and 078 models) is generating significant Reddit chatter as a mid-tier grinder option with impressive grind quality. Users debate whether it rivals grinders twice its price.",
+      "name": "OXO Rapid Brewer Community Growth",
+      "buzz": "The OXO Brew 9 Cup is seeing a surge in modding discussions and recipe sharing. Users are pushing boundaries with bypass techniques and custom brew profiles.",
       "tpl": "s2",
       "src": "community",
-      "angle": "The Timemore Sculptor is making waves as a grinder that punches way above its weight class — proof you don't need to spend $1000+ to get café-quality grounds at home.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f1j9kl/timemore_sculptor_064_vs_078/"
+      "angle": "The OXO crowd is proving that great coffee doesn't need to be complicated — just consistent, tweakable, and fun to experiment with.",
+      "source_url": "https://www.reddit.com/r/OXORapidBrewer/comments/1f5mnb2/my_oxo_brew_setup_and_workflow/"
     },
     {
-      "name": "WDT tool debates and DIY solutions",
-      "buzz": "Espresso enthusiasts are discussing WDT (Weiss Distribution Technique) tools this week, with many advocating for cheap DIY needle tools over expensive branded options. The focus is on clump-breaking, not perfection.",
-      "tpl": "s5",
-      "src": "community",
-      "angle": "WDT tools don't need to be fancy — a $5 acupuncture needle tool breaks up clumps just as well as a $50 one. It's about the technique, not the gear flex.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f0x7g2/wdt_tool_recommendations/"
-    },
-    {
-      "name": "Hario Switch brewing versatility",
-      "buzz": "The Hario Switch continues to be a Reddit favorite for its hybrid immersion/pour-over capabilities. Recent threads showcase creative recipes blending both methods in a single brew.",
-      "tpl": "s1",
-      "src": "community",
-      "angle": "The Hario Switch lets you experiment with immersion and pour-over in one brewer — it's like having two coffee setups without needing twice the shelf space.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f1c5m9/hario_switch_recipes_2026/"
-    },
-    {
-      "name": "Decent Espresso firmware updates",
-      "buzz": "Decent Espresso users are excited about recent firmware updates that add new profile capabilities and workflow tweaks. The community continues to share custom profiles and troubleshooting tips.",
+      "name": "Fellow Ode Gen 2 SSP Burr Swaps",
+      "buzz": "More users are upgrading their Fellow Ode Gen 2 with SSP burrs and sharing side-by-side comparisons. The mod is becoming a go-to for anyone wanting to unlock even more clarity.",
       "tpl": "s3",
       "src": "community",
-      "angle": "If you're into espresso geekery, Decent's latest firmware updates are like getting a new machine for free — more profiles, more control, same price.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f0z8t4/decent_espresso_latest_firmware/"
+      "angle": "Already love your Ode? The SSP swap is the next-level tweak that's lighting up forums — totally optional, totally worth exploring if you're curious.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f4xk9p/ode_gen_2_with_ssp_multipurpose_burrs_worth_it/"
     },
     {
-      "name": "Single-dose grinder workflows",
-      "buzz": "Single-dosing (weighing beans before grinding, zero retention) remains a hot workflow topic across espresso and pour-over subreddits. Users share tips for minimizing static and popcorning.",
-      "tpl": "s5",
-      "src": "community",
-      "angle": "Single-dosing isn't elitist — it just means you weigh your beans first and waste less coffee. A few extra seconds for fresher shots? Worth it.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f1k2l8/single_dose_workflow_tips/"
-    },
-    {
-      "name": "Bambino Plus as budget espresso starter",
-      "buzz": "The Breville Bambino Plus is repeatedly recommended this week as an affordable, capable first espresso machine. Beginners appreciate its fast heat-up and auto-steam wand.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "The Bambino Plus keeps showing up in \"first espresso machine\" threads because it's fast, forgiving, and doesn't require a second mortgage.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f0w9q1/bambino_plus_beginner_setup/"
-    },
-    {
-      "name": "Acaia Lunar scale durability concerns",
-      "buzz": "Some users are reporting durability issues with the Acaia Lunar scale after extended use, sparking debate about whether the premium price is justified. Others defend its accuracy and app integration.",
+      "name": "Hario Switch V60 Hybrid Recipes",
+      "buzz": "The Hario Switch continues to trend as brewers share new hybrid immersion-percolation recipes. It's beloved for its versatility and forgiving nature for beginners.",
       "tpl": "s4",
       "src": "community",
-      "angle": "The Acaia Lunar is gorgeous and precise, but some users are seeing wear after a year or two — worth knowing if you're deciding between it and cheaper scales.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f1a7g8/acaia_lunar_durability/"
+      "angle": "One brewer, infinite possibilities — the Switch lets you dial in your perfect cup without feeling locked into one method.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f3w8mn/hario_switch_recipe_recommendations/"
     },
     {
-      "name": "Light-roast espresso challenges",
-      "buzz": "Multiple threads discuss the difficulty of pulling great shots with light-roast specialty beans, with tips on longer pre-infusion and higher temps. The community is embracing the challenge.",
-      "tpl": "s6",
+      "name": "1Zpresso K-Max Grinder Popularity Surge",
+      "buzz": "The 1Zpresso K-Max hand grinder is dominating recommendation threads for pour-over enthusiasts. Users praise its grind consistency and ergonomic design at a competitive price.",
+      "tpl": "s1",
       "src": "community",
-      "angle": "Light roasts are tricky for espresso, but that's part of the fun — longer pre-infusion and hotter water help coax out those fruity, floral notes.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f1e3k9/light_roast_espresso_tips/"
+      "angle": "Hand grinding doesn't have to be a workout — the K-Max is winning fans for being smooth, precise, and worth every crank.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f2p5jk/just_upgraded_to_1zpresso_kmax_from_hario_mini/"
     },
     {
-      "name": "Comandante grinder hand-grinding fatigue",
-      "buzz": "Comandante owners love the grind quality but are candidly discussing arm fatigue, especially for espresso-range grinding. Some are considering electric upgrades.",
-      "tpl": "s2",
-      "src": "community",
-      "angle": "The Comandante is a hand-grinder legend, but it's okay to admit your arm gets tired — lots of folks use it for pour-over and save an electric grinder for espresso.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f0y6h3/comandante_hand_grinding_fatigue/"
-    },
-    {
-      "name": "Flair 58 manual espresso hype",
-      "buzz": "The Flair 58 manual lever machine is being praised for producing espresso that rivals high-end pumps, with recent discussions of pressure profiling techniques. It's a favorite for hands-on enthusiasts.",
+      "name": "Melodrip Pour-Over Tool Resurgence",
+      "buzz": "The Melodrip is seeing renewed interest as brewers experiment with ultra-gentle pours to reduce agitation. It's sparking debates about extraction control and flavor clarity.",
       "tpl": "s3",
       "src": "community",
-      "angle": "The Flair 58 proves you don't need a plug to pull world-class shots — it's all leverage and technique, and the community is here to help you dial it in.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f1f8n2/flair_58_pressure_profiling/"
+      "angle": "Curious about slowing down your pour? Melodrip is back in the conversation — a fun tool for the experimenters among us.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f0s9pk/melodrip_worth_it_in_2026/"
+    },
+    {
+      "name": "Acaia Lunar Scale Firmware Update",
+      "buzz": "Acaia released a new firmware update for the Lunar scale, improving Bluetooth stability and adding new auto-start features. Espresso enthusiasts are celebrating the smoother experience.",
+      "tpl": "s6",
+      "src": "community",
+      "angle": "Your scale just got smarter — Acaia's latest update proves that great gear keeps getting better, even after you buy it.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1ezx4km/acaia_lunar_firmware_update_august_2026/"
+    },
+    {
+      "name": "Tricolate Brewer Recipe Deep Dives",
+      "buzz": "The Tricolate is trending again with new recipe experiments focusing on ultra-low fines and high extractions. Brewers are sharing detailed notes on achieving sweetness without bitterness.",
+      "tpl": "s4",
+      "src": "community",
+      "angle": "The Tricolate isn't just a brewer — it's a playground for anyone who loves chasing the perfect extraction.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1eywq3l/tricolate_recipes_what_are_you_brewing/"
+    },
+    {
+      "name": "Weber Workshops Key Grinder Waitlist Buzz",
+      "buzz": "The Weber Workshops Key grinder remains one of the most anticipated releases, with waitlists growing. Early reviewers are calling it a game-changer for single-dosing and grind quality.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "The hype is real — if you've been eyeing an endgame grinder, the Key is the one everyone's talking about (and waiting for).",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1exn8rl/weber_key_grinder_shipping_updates/"
+    },
+    {
+      "name": "Kalita Wave 185 Revival",
+      "buzz": "The Kalita Wave 185 is seeing a resurgence as brewers rediscover its forgiving flat-bottom design. New users appreciate its consistency and ease compared to V60.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "The Wave's comeback is a reminder that sometimes the best brewer is the one that just works — no fuss, all flavor.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1ev5k8n/why_i_switched_back_to_kalita_wave_from_v60/"
     }
   ]
 }
