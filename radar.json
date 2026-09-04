@@ -1,94 +1,102 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T06:16:40.946Z",
+  "generatedAt": "2026-09-04T06:33:57.621Z",
   "trends": [
     {
-      "name": "Hario Switch V60 brewing experiments",
-      "buzz": "Pour-over fans are sharing immersion-hybrid recipes with the Switch, claiming smoother cups and more forgiving brews than traditional V60.",
+      "name": "April Coffee Drops New Manual Grinder",
+      "buzz": "April Coffee just launched a manual grinder into production. Known for their thoughtful brew gear, this could be a game-changer for portable, precision grinding at home or on the go.",
+      "tpl": "s1",
+      "src": "press",
+      "angle": "Perfect for pour-over fans who want café-quality grinds anywhere. Manual grinders are having a moment, and April's design philosophy makes specialty approachable for everyone.",
+      "source_url": "https://dailycoffeenews.com/2026/09/01/april-coffee-springs-a-manual-grinder-into-production/"
+    },
+    {
+      "name": "How Filter Coffee Became Specialty's Favourite",
+      "buzz": "Filter coffee has officially become the drink of choice in specialty cafés worldwide. Pour-overs, batch brews, and drip methods are now the stars of the menu, not just espresso's sidekick.",
       "tpl": "s2",
-      "src": "community",
-      "angle": "The Switch lets you steal immersion's forgiveness without leaving pour-over behind—perfect for dialing in new beans or busy mornings.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f7xk3m/hario_switch_recipes/"
+      "src": "press",
+      "angle": "This is our love language. Filter coffee celebrates the bean, the brewer, and the ritual. It's approachable, delicious, and puts pour-over front and center where it belongs.",
+      "source_url": "https://perfectdailygrind.com/2026/09/how-filter-coffee-became-specialty-favourite/"
     },
     {
-      "name": "Fellow Opus grinder discussions",
-      "buzz": "Reddit threads highlight the Opus as a versatile entry grinder that handles pour-over and espresso surprisingly well for the price.",
+      "name": "How to Curate an Exceptional Home Coffee Setup",
+      "buzz": "A fresh guide to building your dream home coffee station. From choosing the right brewer to pairing it with grinders, kettles, and beans that work together beautifully.",
       "tpl": "s3",
-      "src": "community",
-      "angle": "The Opus is the anti-gatekeeping grinder: one machine, every method, no shame if you're not ready to drop four figures.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f8p2rn/fellow_opus_for_espresso/"
+      "src": "review",
+      "angle": "No gatekeeping here — just practical advice to help anyone build a setup that makes great coffee and feels good to use. Same team, better mornings.",
+      "source_url": "https://perfectdailygrind.com/2026/09/curate-exceptional-home-coffee-setup/"
     },
     {
-      "name": "Osmotic flow brewing theory",
-      "buzz": "Lance Hedrick and community members are debating osmotic flow—whether water diffuses through the coffee bed differently than we thought.",
-      "tpl": "s5",
-      "src": "community",
-      "angle": "Osmotic flow sounds nerdy, but it's just asking: does water move through grounds the way we've always assumed? Curiosity, not gatekeeping.",
-      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1f6m9p4/osmotic_flow_in_coffee_brewing/"
+      "name": "MiiR Launches First Ceramic Collection",
+      "buzz": "MiiR, beloved for their insulated drinkware, just dropped their first-ever line of handcrafted ceramics. Beautiful, functional pieces designed for coffee lovers who care about craft.",
+      "tpl": "s1",
+      "src": "press",
+      "angle": "Gear that feels as good as it looks. MiiR's move into ceramics means more thoughtfully designed tools for your daily ritual — no snobbery, just beautiful coffee moments.",
+      "source_url": "https://sprudge.com/miir-expands-beyond-drinkware-with-its-first-collection-of-handcrafted-ceramics-1307146.html"
     },
     {
-      "name": "Timemore 064S grinder buzz",
-      "buzz": "The 064S is gaining traction as a mid-tier hand grinder with 64mm burrs, praised for pour-over clarity and build quality.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Big burrs, hand-crank price: the 064S brings pour-over precision without the electric-grinder sticker shock.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f5z8km/timemore_064s_impressions/"
-    },
-    {
-      "name": "Orea V4 brewer updates",
-      "buzz": "The Orea V4 is drawing attention for its flat-bottom geometry and fast flow, appealing to brewers chasing clean, tea-like cups.",
-      "tpl": "s2",
-      "src": "community",
-      "angle": "Flat-bottom, fast flow, zero fuss—Orea's V4 is for anyone who wants clarity without rituals.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f4n7px/orea_v4_first_impressions/"
-    },
-    {
-      "name": "WDT tool debates",
-      "buzz": "Espresso communities are split on whether WDT (Weiss Distribution Technique) needles are essential or overthinking; consensus: they help, but aren't magic.",
+      "name": "Specialty Coffee Pops Up in Transit Hubs",
+      "buzz": "Train stations and transit hubs are becoming surprise hotspots for specialty coffee kiosks. No more settling for bad airport coffee — quality pour-overs are coming to the commute.",
       "tpl": "s4",
       "src": "community",
-      "angle": "WDT tools declump grounds—helpful, not mandatory. If your shots taste good without one, you're doing it right.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f3h8kl/is_wdt_really_necessary/"
+      "angle": "Coffee shouldn't require a detour. Bringing specialty to where people actually are makes great coffee more accessible, not more exclusive. We're here for it.",
+      "source_url": "https://sprudge.com/train-station-transit-hub-theres-a-specialty-coffee-kiosk-for-that-1232248.html"
     },
     {
-      "name": "Rao spin technique resurgence",
-      "buzz": "The Rao spin—swirling the brewer mid-brew to level the bed—is seeing fresh discussion as a simple way to improve extraction evenness.",
+      "name": "What Makes a Truly Excellent Coffee Shop?",
+      "buzz": "A deep dive into what separates great cafés from unforgettable ones. Spoiler: it's not just the beans or the brewer — it's the whole vibe, the people, and the welcome.",
+      "tpl": "s2",
+      "src": "review",
+      "angle": "Specialty should feel like home, not a test. The best shops make you feel like you belong, whether it's your first pour-over or your thousandth.",
+      "source_url": "https://perfectdailygrind.com/2026/09/what-makes-an-excellent-coffee-shop/"
+    },
+    {
+      "name": "Meet the New US AeroPress Champion",
+      "buzz": "The 2026 US AeroPress Championship crowned a new champ. Creative recipes, approachable techniques, and a reminder that great coffee doesn't require a $3,000 espresso machine.",
       "tpl": "s5",
       "src": "community",
-      "angle": "A quick swirl levels your coffee bed and can rescue uneven extractions. No special gear, just physics.",
-      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1f2p9qm/rao_spin_actually_works/"
+      "angle": "AeroPress proves specialty coffee is for everyone. It's fun, affordable, and endlessly creative. Competitions like this celebrate skill without the snob factor.",
+      "source_url": "https://dailycoffeenews.com/2026/08/28/weekly-coffee-news-us-aeropress-champion-coffee-101-with-the-howells/"
     },
     {
-      "name": "Single-dose espresso grinder trend",
-      "buzz": "Single-dose grinders (like DF64 and Niche) dominate espresso forums, with users praising low retention and easy bean switching.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Single-dose grinders let you hop between beans without waste—great for curious drinkers, not just purists.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1f1k4np/single_dose_grinder_recommendations/"
+      "name": "Coffee's Heart Health Benefits Shine Without Sugar",
+      "buzz": "New research shows coffee's heart health perks are strongest when you skip the sweeteners. Black coffee drinkers, this one's for you.",
+      "tpl": "s6",
+      "src": "verify",
+      "angle": "Good news for pour-over purists and anyone learning to taste coffee on its own terms. Health benefits are a bonus — but flavor is the real reward.",
+      "source_url": "https://dailycoffeenews.com/2026/09/01/coffees-heart-health-link-looks-stronger-without-sweeteners/"
     },
     {
-      "name": "Bloom time experiments",
-      "buzz": "Pour-over brewers are testing longer blooms (60–90 seconds) for darker roasts, reporting better sweetness and less bitterness.",
+      "name": "Is Gesha Losing Its Grip on Coffee Competitions?",
+      "buzz": "Gesha's once-dominant reign in coffee competitions might be shifting. New varieties and unexpected origins are stealing the spotlight — and we're here for the diversity.",
+      "tpl": "s2",
+      "src": "press",
+      "angle": "More variety means more discovery. Specialty thrives when we celebrate all great coffees, not just the usual suspects. Let's explore together.",
+      "source_url": "https://perfectdailygrind.com/2026/08/gesha-coffee-competitions-auctions/"
+    },
+    {
+      "name": "Robusta Might Not Be Climate's Silver Bullet After All",
+      "buzz": "A new study challenges the idea that robusta coffee can simply replace arabica as temperatures rise. Turns out the 'internet myth' oversimplified a complex climate problem.",
+      "tpl": "s6",
+      "src": "verify",
+      "angle": "Climate solutions need nuance, not shortcuts. Understanding the real challenges helps us support sustainable farming and better beans for everyone's future.",
+      "source_url": "https://sprudge.com/an-internet-myth-study-finds-robusta-may-not-be-the-answer-to-climate-change-after-all-1304058.html"
+    },
+    {
+      "name": "Why the Protein Coffee Boom Won't Last",
+      "buzz": "Protein coffee exploded in popularity, but industry insiders predict the trend is already fading. Turns out, not every mashup has staying power.",
+      "tpl": "s2",
+      "src": "press",
+      "angle": "Coffee is already perfect — it doesn't need to be everything at once. Let's focus on what makes coffee coffee: flavor, ritual, and great brewing.",
+      "source_url": "https://perfectdailygrind.com/2026/08/protein-coffee-boom-wont-last/"
+    },
+    {
+      "name": "Graffeo Giving Away Ferrari with Espresso Machine in Engine",
+      "buzz": "Yes, you read that right. Graffeo is giving away a Ferrari — with an espresso machine built into the engine bay. The most ridiculous, delightful coffee giveaway ever.",
       "tpl": "s5",
       "src": "community",
-      "angle": "Longer blooms can tame dark-roast bite—try 60+ seconds and taste the difference. No wrong answer.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1ezy8km/longer_bloom_times_for_dark_roasts/"
-    },
-    {
-      "name": "Comandante grinder hand-crank loyalty",
-      "buzz": "Comandante remains a cult favorite for pour-over, with users defending its consistency and grind quality despite the workout.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Comandante's hand-crank ritual isn't for everyone, but its grind quality keeps pour-over fans loyal—worth the arm workout if you're in.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1eyx7km/comandante_still_worth_it_in_2026/"
-    },
-    {
-      "name": "Acaia Lunar scale for espresso",
-      "buzz": "The Acaia Lunar's auto-start timer and app connectivity are making it a go-to for espresso dial-in, despite the premium price.",
-      "tpl": "s4",
-      "src": "community",
-      "angle": "Acaia Lunar's auto-timer takes one variable off your plate—helpful for dialing in, not a requirement for good espresso.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1exw6km/acaia_lunar_worth_the_cost/"
+      "angle": "Pure coffee joy. Sometimes specialty needs to be fun, weird, and totally over-the-top. This is the energy we love.",
+      "source_url": "https://sprudge.com/graffeo-is-giving-away-their-ferrari-with-an-espresso-machine-in-the-engine-1294606.html"
     }
   ]
 }
