@@ -1,86 +1,78 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-02T17:02:27.619Z",
+  "generatedAt": "2026-09-04T05:42:13.078Z",
   "trends": [
     {
-      "name": "Timemore 078S Grinder Launch",
-      "buzz": "The Timemore 078S is generating massive hype as an affordable flat-burr grinder that rivals high-end options. Early adopters are praising its grind quality and build at the sub-$300 price point.",
-      "tpl": "s1",
-      "src": "community",
-      "angle": "Finally, premium flat burrs without the premium price — this could be your entry into the grinder upgrade everyone's been talking about.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f6jq3h/timemore_078s_first_impressions/"
-    },
-    {
-      "name": "OXO Rapid Brewer Community Growth",
-      "buzz": "The OXO Brew 9 Cup is seeing a surge in modding discussions and recipe sharing. Users are pushing boundaries with bypass techniques and custom brew profiles.",
+      "name": "Orea V4 Brewer",
+      "buzz": "The Orea V4 is generating serious excitement as a flat-bottom brewer that consistently produces clean, sweet cups with less fuss than conical pour-overs.",
       "tpl": "s2",
       "src": "community",
-      "angle": "The OXO crowd is proving that great coffee doesn't need to be complicated — just consistent, tweakable, and fun to experiment with.",
-      "source_url": "https://www.reddit.com/r/OXORapidBrewer/comments/1f5mnb2/my_oxo_brew_setup_and_workflow/"
+      "angle": "A flat-bottom brewer that makes dialing in easier — perfect if you want clarity without the V60 learning curve. No wrong answers here.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f7k2mp/orea_v4_thoughts/"
     },
     {
-      "name": "Fellow Ode Gen 2 SSP Burr Swaps",
-      "buzz": "More users are upgrading their Fellow Ode Gen 2 with SSP burrs and sharing side-by-side comparisons. The mod is becoming a go-to for anyone wanting to unlock even more clarity.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "Already love your Ode? The SSP swap is the next-level tweak that's lighting up forums — totally optional, totally worth exploring if you're curious.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f4xk9p/ode_gen_2_with_ssp_multipurpose_burrs_worth_it/"
-    },
-    {
-      "name": "Hario Switch V60 Hybrid Recipes",
-      "buzz": "The Hario Switch continues to trend as brewers share new hybrid immersion-percolation recipes. It's beloved for its versatility and forgiving nature for beginners.",
-      "tpl": "s4",
-      "src": "community",
-      "angle": "One brewer, infinite possibilities — the Switch lets you dial in your perfect cup without feeling locked into one method.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f3w8mn/hario_switch_recipe_recommendations/"
-    },
-    {
-      "name": "1Zpresso K-Max Grinder Popularity Surge",
-      "buzz": "The 1Zpresso K-Max hand grinder is dominating recommendation threads for pour-over enthusiasts. Users praise its grind consistency and ergonomic design at a competitive price.",
+      "name": "Timemore Sculptor 078s Grinder",
+      "buzz": "Timemore's new Sculptor 078s is being praised as a versatile grinder that handles both pour-over and espresso surprisingly well at a competitive price point.",
       "tpl": "s1",
       "src": "community",
-      "angle": "Hand grinding doesn't have to be a workout — the K-Max is winning fans for being smooth, precise, and worth every crank.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f2p5jk/just_upgraded_to_1zpresso_kmax_from_hario_mini/"
+      "angle": "A single grinder that does pour-over AND espresso without breaking the bank? The Sculptor 078s is turning heads as the do-it-all option.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1f7m3n4/timemore_sculptor_078s_first_impressions/"
     },
     {
-      "name": "Melodrip Pour-Over Tool Resurgence",
-      "buzz": "The Melodrip is seeing renewed interest as brewers experiment with ultra-gentle pours to reduce agitation. It's sparking debates about extraction control and flavor clarity.",
+      "name": "Fellow Ode Gen 2 SSP Burr Upgrades",
+      "buzz": "Coffee enthusiasts are upgrading their Ode Gen 2 grinders with aftermarket SSP burrs and reporting transformative improvements in clarity and sweetness.",
       "tpl": "s3",
       "src": "community",
-      "angle": "Curious about slowing down your pour? Melodrip is back in the conversation — a fun tool for the experimenters among us.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1f0s9pk/melodrip_worth_it_in_2026/"
+      "angle": "Already have an Ode Gen 2? The community is buzzing about SSP burr swaps that unlock next-level flavor — a fun upgrade path if you're curious.",
+      "source_url": "https://www.reddit.com/r/JamesHoffmann/comments/1f6q8r9/ode_gen_2_ssp_burr_upgrade_worth_it/"
     },
     {
-      "name": "Acaia Lunar Scale Firmware Update",
-      "buzz": "Acaia released a new firmware update for the Lunar scale, improving Bluetooth stability and adding new auto-start features. Espresso enthusiasts are celebrating the smoother experience.",
-      "tpl": "s6",
-      "src": "community",
-      "angle": "Your scale just got smarter — Acaia's latest update proves that great gear keeps getting better, even after you buy it.",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1ezx4km/acaia_lunar_firmware_update_august_2026/"
-    },
-    {
-      "name": "Tricolate Brewer Recipe Deep Dives",
-      "buzz": "The Tricolate is trending again with new recipe experiments focusing on ultra-low fines and high extractions. Brewers are sharing detailed notes on achieving sweetness without bitterness.",
-      "tpl": "s4",
-      "src": "community",
-      "angle": "The Tricolate isn't just a brewer — it's a playground for anyone who loves chasing the perfect extraction.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1eywq3l/tricolate_recipes_what_are_you_brewing/"
-    },
-    {
-      "name": "Weber Workshops Key Grinder Waitlist Buzz",
-      "buzz": "The Weber Workshops Key grinder remains one of the most anticipated releases, with waitlists growing. Early reviewers are calling it a game-changer for single-dosing and grind quality.",
-      "tpl": "s1",
-      "src": "community",
-      "angle": "The hype is real — if you've been eyeing an endgame grinder, the Key is the one everyone's talking about (and waiting for).",
-      "source_url": "https://www.reddit.com/r/espresso/comments/1exn8rl/weber_key_grinder_shipping_updates/"
-    },
-    {
-      "name": "Kalita Wave 185 Revival",
-      "buzz": "The Kalita Wave 185 is seeing a resurgence as brewers rediscover its forgiving flat-bottom design. New users appreciate its consistency and ease compared to V60.",
+      "name": "Hario Switch 03 Immersion Technique",
+      "buzz": "The Hario Switch continues to gain traction as brewers discover hybrid immersion-percolation recipes that deliver forgiving, full-bodied cups.",
       "tpl": "s2",
       "src": "community",
-      "angle": "The Wave's comeback is a reminder that sometimes the best brewer is the one that just works — no fuss, all flavor.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1ev5k8n/why_i_switched_back_to_kalita_wave_from_v60/"
+      "angle": "Switch it up: the Hario Switch lets you brew immersion-style for more body and forgiveness. Experimenting is half the fun.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f5t9m8/hario_switch_immersion_recipes/"
+    },
+    {
+      "name": "Wacaco Picopresso Portable Espresso",
+      "buzz": "The Picopresso is trending among travelers and campers who want genuine espresso on the go without electricity or bulk.",
+      "tpl": "s5",
+      "src": "community",
+      "angle": "Take real espresso anywhere: Picopresso is pocket-sized, manual, and surprisingly capable. Adventure coffee, leveled up.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1f5k3l9/picopresso_camping_espresso_setup/"
+    },
+    {
+      "name": "Kruve Sifter for Pour-Over Consistency",
+      "buzz": "Brewers are using the Kruve Sifter to remove fines and boulders from their grind, reporting cleaner, more predictable extractions.",
+      "tpl": "s3",
+      "src": "community",
+      "angle": "Sifting your coffee grounds sounds extra, but it's a fun way to dial in consistency and troubleshoot muddy brews. No judgment either way.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f3q2k7/kruve_sifter_pour_over_results/"
+    },
+    {
+      "name": "April Pour-Over Brewer Restock Hype",
+      "buzz": "The April brewer's latest restock sold out in hours, with the community praising its elegant design and forgiving flat-bottom geometry.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "April brewers fly off the shelves every restock — beautiful, forgiving, and built to last. Worth the wait if you can snag one.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f2n8k1/april_brewer_restock_sold_out_fast/"
+    },
+    {
+      "name": "Weber Workshops EG-1 Grinder Hype",
+      "buzz": "The Weber EG-1 continues to dominate enthusiast conversations as the ultimate grinder for those who want uncompromising clarity and zero retention.",
+      "tpl": "s1",
+      "src": "community",
+      "angle": "The EG-1 is the dream grinder for clarity obsessives — pricey, but if grind quality is everything to you, this is the endgame.",
+      "source_url": "https://www.reddit.com/r/espresso/comments/1f1k7m2/weber_eg1_is_it_worth_the_hype/"
+    },
+    {
+      "name": "Kalita Wave 185 Large-Batch Brewing",
+      "buzz": "The Kalita Wave 185 is seeing renewed interest for brewing larger batches with consistent results, especially for households and small gatherings.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "Brewing for a crowd? The Kalita 185 scales up beautifully without sacrificing flavor. Same great Wave stability, bigger servings.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1f0m3k9/kalita_185_large_batch_brewing_tips/"
     }
   ]
 }
