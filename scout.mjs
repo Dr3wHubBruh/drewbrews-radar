@@ -280,6 +280,26 @@ async function youtubeChannelVetted(videoUrl, vettedChannels) {
   }
 }
 
+/**
+ * Confirm a URL actually exists by fetching it. Only drops on a confirmed 404
+ * (the post doesn't exist). Timeouts, 403s, 429s, 5xx → keep (network flakiness
+ * shouldn't silently wipe items that may be real). YouTube oEmbed is handled
+ * separately so we don't double-fetch those.
+ */
+async function urlReachable(url, timeout = 8000) {
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      signal: AbortSignal.timeout(timeout),
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DrewBrews-Radar/1.0)' },
+      redirect: 'follow',
+    });
+    return res.status !== 404;
+  } catch {
+    return true; // network error or timeout → assume reachable, don't drop
+  }
+}
+
 /** Pull all text blocks out of a Messages API response and join them. */
 function collectText(message) {
   return (message.content || [])
@@ -394,17 +414,27 @@ async function getTrends(client, userMessage, tools, label, allow) {
   //    a shape-valid YouTube link (its channel is verified next).
   const onList = cleaned.filter((t) => isAllowedSourceUrl(t.source_url, allow.subs, allow.hosts));
 
-  // 2) Verify each surviving YouTube link's channel via keyless oEmbed.
+  // 2) Verify each surviving YouTube link's channel via keyless oEmbed, and
+  //    confirm every other URL actually returns non-404 (catches hallucinated
+  //    Reddit comment IDs that pass the shape check but don't exist).
   const kept = [];
   for (const t of onList) {
-    if (isYouTubeUrl(t.source_url) && !(await youtubeChannelVetted(t.source_url, allow.channels))) {
-      continue; // unverifiable or off-list channel → drop
+    if (isYouTubeUrl(t.source_url)) {
+      if (!(await youtubeChannelVetted(t.source_url, allow.channels))) {
+        console.log(`[scout] ${label}: dropped YouTube URL (unverified channel): ${t.source_url}`);
+        continue;
+      }
+    } else {
+      if (!(await urlReachable(t.source_url))) {
+        console.log(`[scout] ${label}: dropped 404 URL (hallucinated?): ${t.source_url}`);
+        continue;
+      }
     }
     kept.push(t);
   }
 
   const dropped = cleaned.length - kept.length;
-  if (dropped > 0) console.log(`[scout] ${label}: dropped ${dropped} item(s) off the vetted allowlist.`);
+  if (dropped > 0) console.log(`[scout] ${label}: dropped ${dropped} item(s) off the vetted allowlist or 404.`);
   return kept;
 }
 
