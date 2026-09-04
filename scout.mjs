@@ -194,7 +194,7 @@ const hostAllowed = (host, list) => list.includes(host) || list.some((h) => host
 function ytChannelKey(u) {
   let url;
   try { url = new URL(u); } catch { return null; }
-  const host = url.hostname.replace(/^www\./, '');
+  const host = url.hostname.replace(/^\/www\./, '');
   if (host !== 'youtube.com' && host !== 'youtu.be') return null;
   const seg = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
   if (!seg.length) return null;
@@ -280,13 +280,37 @@ async function youtubeChannelVetted(videoUrl, vettedChannels) {
   }
 }
 
+// Stop-words excluded from trend-name keyword matching (too common to be meaningful).
+const TITLE_STOP_WORDS = new Set([
+  'with', 'from', 'that', 'this', 'they', 'have', 'been', 'more', 'than',
+  'your', 'will', 'what', 'when', 'some', 'also', 'into', 'just', 'like',
+  'over', 'after', 'back', 'good', 'well', 'very', 'make', 'does', 'gets',
+]);
+
+// Coffee-domain keywords: if the page title contains any of these it's on topic.
+const COFFEE_TITLE_KEYWORDS = [
+  'coffee', 'espresso', 'brew', 'brewer', 'grinder', 'pour', 'roast', 'bean',
+  'cafe', 'barista', 'extraction', 'filter', 'kettle', 'scale', 'tamper',
+  'aeropress', 'chemex', 'v60', 'kalita', 'hario', 'timemore', 'fellow',
+  'wacaco', 'kruve', 'weber', 'orea', 'april', 'ssp', 'burr', 'puck',
+  'portafilter', 'shot', 'latte', 'cappuccino', 'cortado', 'drip',
+];
+
 /**
- * Confirm a URL actually exists by fetching it. Only drops on a confirmed 404
- * (the post doesn't exist). Timeouts, 403s, 429s, 5xx → keep (network flakiness
- * shouldn't silently wipe items that may be real). YouTube oEmbed is handled
- * separately so we don't double-fetch those.
+ * Fetch a URL, confirm it exists (non-404), AND verify the page title contains
+ * at least one word from the trend name OR a known coffee keyword.
+ *
+ * This catches hallucinated Reddit post IDs that happen to resolve to real-but-
+ * unrelated (or NSFW) posts — the 404 check alone can't catch those.
+ *
+ * Conservative failure policy:
+ *   - Confirmed 404           → false  (definitely wrong — drop it)
+ *   - Title found, no match   → false  (confirmed off-topic — drop it)
+ *   - No title extractable    → true   (can't verify, give benefit of the doubt)
+ *   - Network error / timeout → true   (transient; don't silently wipe real items)
+ *   - Non-404 HTTP error      → true   (same transient reasoning)
  */
-async function urlReachable(url, timeout = 8000) {
+async function urlVerified(url, trendName, timeout = 12000) {
   try {
     const res = await fetch(url, {
       method: 'GET',
@@ -294,9 +318,47 @@ async function urlReachable(url, timeout = 8000) {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DrewBrews-Radar/1.0)' },
       redirect: 'follow',
     });
-    return res.status !== 404;
+
+    // Confirmed dead link.
+    if (res.status === 404) return false;
+
+    // Non-404 error (403, 429, 5xx) → network issue, not a content problem. Keep.
+    if (!res.ok) return true;
+
+    // Read only first 32 KB — enough to contain the <title> tag.
+    const reader = res.body?.getReader();
+    if (!reader) return true;
+    let html = '';
+    while (html.length < 32768) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      html += new TextDecoder().decode(value);
+      if (html.includes('</title>')) break;
+    }
+    reader.cancel().catch(() => {});
+
+    const titleMatch = html.match(/<title[^>]*>([^<]{2,300})<\/title>/i);
+    if (!titleMatch) return true; // no <title> extractable — give benefit of the doubt
+
+    const title = titleMatch[1].toLowerCase();
+
+    // Meaningful words from the trend name (4+ chars, not stop-words).
+    const nameWords = trendName
+      .toLowerCase()
+      .split(/[\s\-\/]+/)
+      .map((w) => w.replace(/[^a-z0-9]/g, ''))
+      .filter((w) => w.length >= 4 && !TITLE_STOP_WORDS.has(w));
+
+    const titleHasTrendWord = nameWords.some((w) => title.includes(w));
+    const titleHasCoffeeWord = COFFEE_TITLE_KEYWORDS.some((w) => title.includes(w));
+
+    const ok = titleHasTrendWord || titleHasCoffeeWord;
+    if (!ok) {
+      console.log(`[scout] content-mismatch: "${trendName}" → title was: "${titleMatch[1].slice(0, 120)}"`);
+    }
+    return ok;
   } catch {
-    return true; // network error or timeout → assume reachable, don't drop
+    return true; // network error or timeout → assume real, don't drop
   }
 }
 
@@ -425,8 +487,8 @@ async function getTrends(client, userMessage, tools, label, allow) {
         continue;
       }
     } else {
-      if (!(await urlReachable(t.source_url))) {
-        console.log(`[scout] ${label}: dropped 404 URL (hallucinated?): ${t.source_url}`);
+      if (!(await urlVerified(t.source_url, t.name))) {
+        console.log(`[scout] ${label}: dropped off-topic/404 URL: ${t.source_url}`);
         continue;
       }
     }
