@@ -75,3 +75,17 @@ jobs:
 
           echo "::error::Failed to push radar.json after 5 attempts."
           exit 1
+
+      - name: Publish radar.json to Gist
+        if: ${{ secrets.GIST_TOKEN != '' && secrets.GIST_ID != '' }}
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -X PATCH \
+            -H "Authorization: token $GIST_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"files\":{\"radar.json\":{\"content\":$(cat radar.json | jq -Rs .)}}}" \
+            "https://api.github.com/gists/$GIST_ID" \
+          | grep -qE '^2' && echo "Gist updated." || echo "::warning::Gist update failed (non-2xx response)."
