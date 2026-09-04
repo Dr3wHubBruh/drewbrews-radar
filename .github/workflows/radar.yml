@@ -77,7 +77,6 @@ jobs:
           exit 1
 
       - name: Publish radar.json to Gist
-        if: ${{ secrets.GIST_TOKEN != '' && secrets.GIST_ID != '' }}
         env:
           GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
           GIST_ID: ${{ secrets.GIST_ID }}
