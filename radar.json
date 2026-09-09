@@ -1,102 +1,102 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T06:33:57.621Z",
+  "generatedAt": "2026-09-09T17:06:14.078Z",
   "trends": [
     {
-      "name": "April Coffee Drops New Manual Grinder",
-      "buzz": "April Coffee just launched a manual grinder into production. Known for their thoughtful brew gear, this could be a game-changer for portable, precision grinding at home or on the go.",
-      "tpl": "s1",
-      "src": "press",
-      "angle": "Perfect for pour-over fans who want café-quality grinds anywhere. Manual grinders are having a moment, and April's design philosophy makes specialty approachable for everyone.",
-      "source_url": "https://dailycoffeenews.com/2026/09/01/april-coffee-springs-a-manual-grinder-into-production/"
-    },
-    {
-      "name": "How Filter Coffee Became Specialty's Favourite",
-      "buzz": "Filter coffee has officially become the drink of choice in specialty cafés worldwide. Pour-overs, batch brews, and drip methods are now the stars of the menu, not just espresso's sidekick.",
+      "name": "How to curate an exceptional home coffee setup",
+      "buzz": "Perfect Daily Grind breaks down what actually matters when building your home coffee station. Spoiler: it's not about buying everything at once.",
       "tpl": "s2",
       "src": "press",
-      "angle": "This is our love language. Filter coffee celebrates the bean, the brewer, and the ritual. It's approachable, delicious, and puts pour-over front and center where it belongs.",
-      "source_url": "https://perfectdailygrind.com/2026/09/how-filter-coffee-became-specialty-favourite/"
-    },
-    {
-      "name": "How to Curate an Exceptional Home Coffee Setup",
-      "buzz": "A fresh guide to building your dream home coffee station. From choosing the right brewer to pairing it with grinders, kettles, and beans that work together beautifully.",
-      "tpl": "s3",
-      "src": "review",
-      "angle": "No gatekeeping here — just practical advice to help anyone build a setup that makes great coffee and feels good to use. Same team, better mornings.",
+      "angle": "DrewBrews take: Your setup grows with you. Start with what excites you most—a great brewer, a solid grinder—then build from there. No pressure, no perfect formula, just coffee you're pumped to make.",
       "source_url": "https://perfectdailygrind.com/2026/09/curate-exceptional-home-coffee-setup/"
     },
     {
-      "name": "MiiR Launches First Ceramic Collection",
-      "buzz": "MiiR, beloved for their insulated drinkware, just dropped their first-ever line of handcrafted ceramics. Beautiful, functional pieces designed for coffee lovers who care about craft.",
+      "name": "How filter coffee became specialty's favourite drink",
+      "buzz": "Filter coffee—pour-over, drip, immersion—has quietly become the star of the specialty scene. Here's how it happened and why it's still evolving.",
+      "tpl": "s3",
+      "src": "press",
+      "angle": "DrewBrews loves this. Filter coffee is approachable, endlessly tweakable, and celebrates the bean. It's where most of us start, and where many of us stay happily ever after.",
+      "source_url": "https://perfectdailygrind.com/2026/09/how-filter-coffee-became-specialty-favourite/"
+    },
+    {
+      "name": "Old meets new: How heritage is shaping modern coffee equipment",
+      "buzz": "Today's best gear borrows from yesterday's classics. Designers are blending vintage aesthetics with modern performance—and it's working beautifully.",
+      "tpl": "s4",
+      "src": "press",
+      "angle": "DrewBrews angle: You don't have to choose between style and function. Whether you love retro vibes or minimalist modernity, there's gear that performs *and* looks incredible on your counter.",
+      "source_url": "https://perfectdailygrind.com/2026/09/heritage-shaping-modern-coffee-equipment/"
+    },
+    {
+      "name": "Why more pressure doesn't necessarily mean faster espresso",
+      "buzz": "Espresso physics are wild: cranking up pressure doesn't always speed things up. Daily Coffee News dives into flow dynamics and what actually controls extraction time.",
+      "tpl": "s5",
+      "src": "press",
+      "angle": "DrewBrews take: Even if you're a pour-over person, this stuff is fascinating. Understanding extraction helps you dial in *any* brew method—it's all connected.",
+      "source_url": "https://dailycoffeenews.com/2026/09/08/why-more-pressure-doesnt-necessarily-mean-faster-espresso/"
+    },
+    {
+      "name": "Heist hopes its decaf can steal a share of the high-end coffee category",
+      "buzz": "Decaf is having a moment. Heist is betting that top-tier decaf can compete with the best caffeinated coffees—no compromises, just great coffee without the buzz.",
       "tpl": "s1",
       "src": "press",
-      "angle": "Gear that feels as good as it looks. MiiR's move into ceramics means more thoughtfully designed tools for your daily ritual — no snobbery, just beautiful coffee moments.",
-      "source_url": "https://sprudge.com/miir-expands-beyond-drinkware-with-its-first-collection-of-handcrafted-ceramics-1307146.html"
+      "angle": "DrewBrews loves to see it. Decaf drinkers deserve the same love as everyone else. Great processing, great roasting, great brewing—caffeine is just one variable.",
+      "source_url": "https://dailycoffeenews.com/2026/09/09/heist-hopes-its-decaf-can-steal-a-share-of-the-high-end-coffee-category/"
     },
     {
-      "name": "Specialty Coffee Pops Up in Transit Hubs",
-      "buzz": "Train stations and transit hubs are becoming surprise hotspots for specialty coffee kiosks. No more settling for bad airport coffee — quality pour-overs are coming to the commute.",
-      "tpl": "s4",
-      "src": "community",
-      "angle": "Coffee shouldn't require a detour. Bringing specialty to where people actually are makes great coffee more accessible, not more exclusive. We're here for it.",
-      "source_url": "https://sprudge.com/train-station-transit-hub-theres-a-specialty-coffee-kiosk-for-that-1232248.html"
+      "name": "Anaerobic natural processing lifts quality scores in China",
+      "buzz": "Chinese coffee producers are experimenting with anaerobic naturals—and the cup scores are climbing. It's an exciting sign for a fast-growing origin.",
+      "tpl": "s6",
+      "src": "press",
+      "angle": "DrewBrews take: Processing innovation is happening everywhere, not just in traditional origins. Keep your palate open—the next great coffee could come from anywhere.",
+      "source_url": "https://dailycoffeenews.com/2026/09/09/anaerobic-natural-processing-lifts-quality-scores-in-china/"
     },
     {
-      "name": "What Makes a Truly Excellent Coffee Shop?",
-      "buzz": "A deep dive into what separates great cafés from unforgettable ones. Spoiler: it's not just the beans or the brewer — it's the whole vibe, the people, and the welcome.",
-      "tpl": "s2",
-      "src": "review",
-      "angle": "Specialty should feel like home, not a test. The best shops make you feel like you belong, whether it's your first pour-over or your thousandth.",
-      "source_url": "https://perfectdailygrind.com/2026/09/what-makes-an-excellent-coffee-shop/"
-    },
-    {
-      "name": "Meet the New US AeroPress Champion",
-      "buzz": "The 2026 US AeroPress Championship crowned a new champ. Creative recipes, approachable techniques, and a reminder that great coffee doesn't require a $3,000 espresso machine.",
+      "name": "Coffee type might affect rate of biological aging in humans, study finds",
+      "buzz": "New research suggests the *type* of coffee you drink—not just whether you drink it—could influence biological aging markers. Science is still sorting it out.",
       "tpl": "s5",
-      "src": "community",
-      "angle": "AeroPress proves specialty coffee is for everyone. It's fun, affordable, and endlessly creative. Competitions like this celebrate skill without the snob factor.",
-      "source_url": "https://dailycoffeenews.com/2026/08/28/weekly-coffee-news-us-aeropress-champion-coffee-101-with-the-howells/"
-    },
-    {
-      "name": "Coffee's Heart Health Benefits Shine Without Sugar",
-      "buzz": "New research shows coffee's heart health perks are strongest when you skip the sweeteners. Black coffee drinkers, this one's for you.",
-      "tpl": "s6",
       "src": "verify",
-      "angle": "Good news for pour-over purists and anyone learning to taste coffee on its own terms. Health benefits are a bonus — but flavor is the real reward.",
-      "source_url": "https://dailycoffeenews.com/2026/09/01/coffees-heart-health-link-looks-stronger-without-sweeteners/"
+      "angle": "DrewBrews angle: We're here for the flavor, not the fountain of youth. But if your morning pour-over has bonus perks? We'll take it. Drink what makes you happy.",
+      "source_url": "https://dailycoffeenews.com/2026/09/07/coffee-type-might-affect-rate-of-biological-aging-in-humans-study-finds/"
     },
     {
-      "name": "Is Gesha Losing Its Grip on Coffee Competitions?",
-      "buzz": "Gesha's once-dominant reign in coffee competitions might be shifting. New varieties and unexpected origins are stealing the spotlight — and we're here for the diversity.",
-      "tpl": "s2",
-      "src": "press",
-      "angle": "More variety means more discovery. Specialty thrives when we celebrate all great coffees, not just the usual suspects. Let's explore together.",
-      "source_url": "https://perfectdailygrind.com/2026/08/gesha-coffee-competitions-auctions/"
-    },
-    {
-      "name": "Robusta Might Not Be Climate's Silver Bullet After All",
-      "buzz": "A new study challenges the idea that robusta coffee can simply replace arabica as temperatures rise. Turns out the 'internet myth' oversimplified a complex climate problem.",
-      "tpl": "s6",
+      "name": "Coffee's impact on Parkinson's disease may depend on your genetics",
+      "buzz": "New study shows coffee's neuroprotective effects might be tied to your individual genetics. It's a reminder that coffee affects us all a little differently.",
+      "tpl": "s5",
       "src": "verify",
-      "angle": "Climate solutions need nuance, not shortcuts. Understanding the real challenges helps us support sustainable farming and better beans for everyone's future.",
-      "source_url": "https://sprudge.com/an-internet-myth-study-finds-robusta-may-not-be-the-answer-to-climate-change-after-all-1304058.html"
+      "angle": "DrewBrews take: Coffee science is complex and personal. Whether you drink it for health, flavor, or ritual—there's no one-size-fits-all. You do you.",
+      "source_url": "https://sprudge.com/coffees-impact-on-parkinsons-disease-may-depend-on-your-genetics-1308716.html"
     },
     {
-      "name": "Why the Protein Coffee Boom Won't Last",
-      "buzz": "Protein coffee exploded in popularity, but industry insiders predict the trend is already fading. Turns out, not every mashup has staying power.",
-      "tpl": "s2",
+      "name": "Why the protein coffee boom won't last",
+      "buzz": "Protein coffee is everywhere right now, but Perfect Daily Grind argues the trend is built on shaky foundations—and might fizzle out sooner than you think.",
+      "tpl": "s3",
       "src": "press",
-      "angle": "Coffee is already perfect — it doesn't need to be everything at once. Let's focus on what makes coffee coffee: flavor, ritual, and great brewing.",
+      "angle": "DrewBrews shrug: If you love it, enjoy it. But specialty coffee is already complete—complex, delicious, energizing. You don't need to turn it into a meal replacement.",
       "source_url": "https://perfectdailygrind.com/2026/08/protein-coffee-boom-wont-last/"
     },
     {
-      "name": "Graffeo Giving Away Ferrari with Espresso Machine in Engine",
-      "buzz": "Yes, you read that right. Graffeo is giving away a Ferrari — with an espresso machine built into the engine bay. The most ridiculous, delightful coffee giveaway ever.",
-      "tpl": "s5",
+      "name": "Global Coffee Awards crown the best roasters in US & Canada",
+      "buzz": "The Global Coffee Awards just announced top roasters across the US and Canada. It's a great snapshot of who's doing exceptional work right now.",
+      "tpl": "s1",
+      "src": "press",
+      "angle": "DrewBrews loves this. Awards highlight great roasters, but your favorite coffee is the one *you* love brewing. Try the winners, but trust your own palate too.",
+      "source_url": "https://perfectdailygrind.com/2026/09/global-coffee-awards-us-canada-winners-2026/"
+    },
+    {
+      "name": "The 2027 US Barista Championship schedule has been announced",
+      "buzz": "Next year's US Barista Championship dates are locked in. Competitions push creativity and skill—and often inspire new techniques that trickle down to home brewing.",
+      "tpl": "s1",
       "src": "community",
-      "angle": "Pure coffee joy. Sometimes specialty needs to be fun, weird, and totally over-the-top. This is the energy we love.",
-      "source_url": "https://sprudge.com/graffeo-is-giving-away-their-ferrari-with-an-espresso-machine-in-the-engine-1294606.html"
+      "angle": "DrewBrews take: Competitions aren't just for pros. The innovation happening on stage—dialing in extraction, experimenting with recipes—eventually shows up in your kitchen.",
+      "source_url": "https://sprudge.com/the-2027-us-barista-championship-schedule-has-been-announced-1324042.html"
+    },
+    {
+      "name": "Rocket Espresso presents Rocket X Audi",
+      "buzz": "Rocket Espresso just unveiled a collab with Audi—luxury espresso machine meets luxury automaker. It's stunning, if wildly aspirational.",
+      "tpl": "s6",
+      "src": "press",
+      "angle": "DrewBrews angle: We're pour-over people, but we respect the craft. If espresso is your thing and you want a showpiece? Go for it. Just remember: great coffee comes from technique, not price tags.",
+      "source_url": "https://sprudge.com/rocket-espresso-presents-rocket-x-audi-1326918.html"
     }
   ]
 }
