@@ -1,94 +1,86 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-16T17:34:37.844Z",
+  "generatedAt": "2026-09-23T17:47:19.154Z",
   "trends": [
     {
-      "name": "Pumpkin Spice Backlash: Fall's Getting a Glow-Up",
-      "buzz": "The coffee world is officially over pumpkin spice. Sprudge reports roasters and cafes are pivoting to more creative fall flavors—think spiced apple, cardamom, and seasonal single-origins that let the coffee shine.",
+      "name": "Cafe Imports Goes 100% Employee-Owned",
+      "buzz": "One of specialty coffee's biggest green-bean importers just became fully employee-owned. This is a huge win for the people who source, QC, and ship the beans you brew every morning.",
       "tpl": "s2",
       "src": "press",
-      "angle": "Frame this as permission to skip the hype and explore what YOU actually want to drink this fall. No judgment if you still love PSL, but there's a whole world of fall flavors waiting.",
-      "source_url": "https://sprudge.com/pumpkin-spice-is-dead-1339584.html"
+      "angle": "Frame as a feel-good industry shift that connects home brewers to the supply chain. Celebrate worker ownership as good for coffee quality and ethics — no jargon, just 'the folks doing the work now own the company.'",
+      "source_url": "https://sprudge.com/cafe-imports-is-now-100-employee-owned-1356707.html"
     },
     {
-      "name": "New Coffee Gadgets Drop: Sprudge's Latest Gear Roundup",
-      "buzz": "Sprudge just dropped their latest gadget roundup, covering new tools, brewers, and accessories hitting the market. If you've been eyeing an upgrade to your pour-over setup, this is your sign.",
-      "tpl": "s1",
-      "src": "press",
-      "angle": "Position this as a fun window-shopping moment. New gear doesn't mean your current setup is wrong—it just means there's always something cool to learn about or aspire to.",
-      "source_url": "https://sprudge.com/gearly-beloved-we-are-gathered-here-today-for-more-coffee-gadgets-1332253.html"
-    },
-    {
-      "name": "More Americans Are Drinking Specialty Coffee Than Ever",
-      "buzz": "New NCA data shows specialty coffee drinking is up across the U.S., with more people ordering by app and seeking out quality at home. The movement is growing—and you're part of it.",
+      "name": "Cascara Fizz: The Coffee Cherry RTD Taking Off",
+      "buzz": "Cascara Cabinet is turning coffee cherry husks into a sparkling RTD drink. It's caffeinated, fruity, and a zero-waste win — plus it's just hitting shelves nationwide.",
       "tpl": "s3",
-      "src": "press",
-      "angle": "Celebrate this as validation: specialty coffee isn't niche or snobby anymore. It's mainstream, accessible, and you're on the right side of the trend. Everyone's invited to the party.",
-      "source_url": "https://dailycoffeenews.com/2026/09/15/nca-more-americans-are-drinking-specialty-coffee-and-ordering-by-app/"
+      "src": "review",
+      "angle": "Position as a fun, approachable way to experience cascara without needing a brew recipe. Emphasize sustainability + flavor, not preciousness. 'If you love cold brew but want something lighter, this is your move.'",
+      "source_url": "https://sprudge.com/ready-to-drink-the-cascara-fizz-boom-from-cascara-cabinet-1278625.html"
     },
     {
-      "name": "Heritage Meets Innovation in Coffee Equipment Design",
-      "buzz": "Perfect Daily Grind explores how modern brewers and grinders are drawing inspiration from vintage designs—blending classic aesthetics with cutting-edge engineering for gear that performs and looks stunning.",
+      "name": "Electrified Cold Brew Speeds Up Your Summer Sips",
+      "buzz": "Atomic Coffee and Overpotential teamed up to create cold brew that extracts in minutes using electrification tech. It's faster, cleaner-tasting, and opens up new brewing possibilities at home.",
       "tpl": "s4",
       "src": "press",
-      "angle": "Frame this as the best of both worlds: you don't have to choose between beautiful, timeless design and high performance. Highlight how pour-over culture honors craft and history.",
-      "source_url": "https://perfectdailygrind.com/2026/09/heritage-shaping-modern-coffee-equipment/"
+      "angle": "Make it exciting for gear nerds and beginners alike. Frame as 'cold brew without the 12-hour wait' — no pretense, just a practical innovation. Hint at future home brewers being sold if the tech scales.",
+      "source_url": "https://dailycoffeenews.com/2026/09/23/atomic-coffee-and-overpotential-combine-for-electrified-cold-brew/"
     },
     {
-      "name": "Fresh Roaster Lineup Drops: Sprudge Roaster's Village Update",
-      "buzz": "Sprudge's Roaster's Village just showcased a new roster of standout roasters and their latest beans. It's a great chance to discover small-batch coffees you won't find at the grocery store.",
+      "name": "Solar-Powered Coffee Roasting Is Now a Real Thing",
+      "buzz": "A New Mexico experiment is using solar heat to roast coffee beans. It's early-stage but could change how roasters think about energy and sustainability — especially in sunny climates.",
+      "tpl": "s1",
+      "src": "press",
+      "angle": "Frame as 'the future is weird and cool.' Celebrate the innovation without overpromising. Tie it to home brewing: 'The beans you buy tomorrow might be sun-roasted — and that's awesome.'",
+      "source_url": "https://dailycoffeenews.com/2026/09/21/new-mexico-experiment-brings-solar-heat-to-the-roasting-drum/"
+    },
+    {
+      "name": "New Study Links Coffee to Muscle, Fat & Testosterone",
+      "buzz": "Fresh research shows coffee consumption is associated with body composition and hormone levels. Whether you brew for gains or just love the ritual, coffee keeps surprising scientists.",
+      "tpl": "s5",
+      "src": "verify",
+      "angle": "Keep it light and inclusive — no bro-science. Frame as 'coffee does more than wake you up,' and invite curiosity. Avoid health claims; just celebrate the science as interesting, not prescriptive.",
+      "source_url": "https://dailycoffeenews.com/2026/09/23/study-finds-coffee-associations-with-fat-muscle-and-testosterone/"
+    },
+    {
+      "name": "MLB Pitcher's Espresso Machine Mystery Goes Viral",
+      "buzz": "Dodgers ace Tarik Skubal's espresso setup became a social media detective story. Fans are debating the machine, the grinder, and whether he pulls his own shots before games.",
+      "tpl": "s6",
+      "src": "community",
+      "angle": "Lean into the fun. 'Same team' vibes — pros and beginners alike geek out over gear. Use it to normalize coffee obsession and show that even elite athletes care about their morning pour-over (or shot).",
+      "source_url": "https://sprudge.com/the-plot-thickens-on-dodgers-pitcher-tarik-skubals-espresso-machine-1348212.html"
+    },
+    {
+      "name": "SCA Invests $1M in UC Davis Coffee Research",
+      "buzz": "The Specialty Coffee Association just gave UC Davis a million dollars for a new research fellowship. Expect breakthroughs in agronomy, flavor science, and brewing tech in the next few years.",
+      "tpl": "s2",
+      "src": "press",
+      "angle": "Frame as 'your coffee is about to get even better.' Celebrate investment in science as benefiting everyone — from farmers to home brewers. No gatekeeping: 'This research will level up the beans you buy.'",
+      "source_url": "https://dailycoffeenews.com/2026/09/22/sca-gives-uc-davis-coffee-center-1-million-for-research-fellowship/"
+    },
+    {
+      "name": "Blends Build Loyalty, Micro Lots Get the Glory",
+      "buzz": "A new industry deep-dive argues that while single-origin micro lots dominate hype, it's blends that keep customers coming back. Consistency beats novelty for most home brewers.",
       "tpl": "s5",
       "src": "press",
-      "angle": "Position this as an adventure: exploring new roasters is one of the best parts of specialty coffee. No right or wrong answers—just delicious experiments waiting to happen.",
-      "source_url": "https://sprudge.com/a-fresh-roster-of-fresh-coffees-from-the-sprudge-roasters-village-1332178.html"
+      "angle": "Validate the everyday coffee drinker. Frame blends as smart, not boring. 'You don't need a $40 Gesha to make killer coffee — a great blend and good technique beat hype every time.'",
+      "source_url": "https://perfectdailygrind.com/2026/09/specialty-coffee-blends-longevity/"
+    },
+    {
+      "name": "Should Coffee Invest More in Baristas as Automation Rises?",
+      "buzz": "As superautomatics and smart brewers flood the market, a new essay asks: are we investing enough in the humans who teach, inspire, and innovate? The debate is heating up.",
+      "tpl": "s5",
+      "src": "community",
+      "angle": "Frame as relevant to home brewers: 'The people who taught you to brew deserve support, even as gear gets smarter.' Celebrate human expertise as irreplaceable, not threatened.",
+      "source_url": "https://perfectdailygrind.com/2026/09/automation-in-coffee-investing-in-baristas/"
     },
     {
       "name": "World's Best Baristas Are Going on Tour",
-      "buzz": "Champion baristas are hitting the road, hosting pop-ups, demos, and tastings around the globe. Perfect Daily Grind covers why these tours are bridging the gap between competition and everyday coffee lovers.",
-      "tpl": "s6",
-      "src": "press",
-      "angle": "Make this feel accessible: these aren't untouchable coffee gods—they're sharing what they know because they want YOU to love coffee more. Same team, no ego.",
-      "source_url": "https://perfectdailygrind.com/2026/09/baristas-going-on-tour/"
-    },
-    {
-      "name": "Shanghai's Coffee Boom Is Driving Demand for Quality Beans",
-      "buzz": "Daily Coffee News reports Shanghai's exploding cafe scene is intensifying global competition for high-quality coffees. The city's specialty market is red-hot, and roasters worldwide are taking note.",
-      "tpl": "s2",
-      "src": "press",
-      "angle": "Highlight the global coffee story: what's happening in Shanghai affects what you can buy at home. Specialty coffee is a connected, exciting world—and you're part of it.",
-      "source_url": "https://dailycoffeenews.com/2026/09/14/shanghai-coffee-boom-intensifies-competition-for-quality-coffees/"
-    },
-    {
-      "name": "Best Roasters in Latin America Crowned at Global Coffee Awards",
-      "buzz": "The Global Coffee Awards just announced the top roasters across Latin America. It's a celebration of the region's incredible coffee culture and the people pushing quality forward.",
+      "buzz": "Top competitive baristas are hitting the road with live demos, tastings, and Q&As. It's part masterclass, part coffee concert — and tickets are selling fast in major cities.",
       "tpl": "s3",
-      "src": "press",
-      "angle": "Frame this as inspiration: these roasters are proof that great coffee comes from passion and craft, not gatekeeping. Celebrate the winners and the story behind your beans.",
-      "source_url": "https://perfectdailygrind.com/2026/09/global-coffee-awards-latin-america-winners-2026/"
-    },
-    {
-      "name": "Vietnam Opens World Coffee Museum to Tell a Global Story",
-      "buzz": "A new World Coffee Museum in Vietnam is chronicling coffee's journey across cultures and continents. Sprudge visits this ambitious space that honors the drink's rich, interconnected history.",
-      "tpl": "s4",
-      "src": "press",
-      "angle": "Position this as a love letter to coffee's diversity. The story of coffee is everyone's story—Vietnamese robusta to Ethiopian heirloom. No hierarchy, just appreciation.",
-      "source_url": "https://sprudge.com/in-vietnam-the-world-coffee-museum-tells-a-global-story-1250720.html"
-    },
-    {
-      "name": "What Actually Makes a Great Coffee Shop?",
-      "buzz": "Perfect Daily Grind digs into what separates a truly excellent cafe from the rest—spoiler: it's not just the espresso machine. Vibe, hospitality, and intention all matter.",
-      "tpl": "s6",
-      "src": "press",
-      "angle": "Use this to empower home brewers: great coffee isn't about fancy spaces. It's about care, curiosity, and making people feel welcome—things you can do in your own kitchen.",
-      "source_url": "https://perfectdailygrind.com/2026/09/what-makes-an-excellent-coffee-shop/"
-    },
-    {
-      "name": "PSA: Very Hot Coffee May Increase Cancer Risk",
-      "buzz": "Sprudge covers new research linking very hot beverages to increased esophageal cancer risk. The takeaway? Let your coffee cool a bit before you sip—flavor improves, too.",
-      "tpl": "s2",
-      "src": "verify",
-      "angle": "Keep it practical and shame-free: this isn't about fear, it's about a simple tweak. Bonus: coffee tastes better at lower temps anyway. Win-win.",
-      "source_url": "https://sprudge.com/very-hot-coffee-increases-your-risk-of-esophageal-cancer-1329665.html"
+      "src": "community",
+      "angle": "Make it accessible: 'You don't need to compete to learn from champions.' Frame as a fun, inclusive way to level up your brewing. Encourage people to grab tickets and geek out together.",
+      "source_url": "https://perfectdailygrind.com/2026/09/baristas-going-on-tour/"
     }
   ]
 }
