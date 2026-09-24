@@ -41,9 +41,9 @@ jobs:
           echo "===== COLLECTED (Reddit) ====="
           jq -r '.[] | select(.kind=="reddit") | "\(.source) | \(.created) | \(.title) | \(.url)\n    TEXT: \(.body[0:220])"' qa/collected.json || true
           echo "===== COLLECTED (YouTube) ====="
-          jq -r '.[] | select(.kind=="youtube") | "\(.source) | \(.created) | \(.title) | \(.url)"' qa/collected.json || true
+          jq -r '.[] | select(.kind=="youtube") | "\(.source) | \(.created) | \(.title) | \(.url)\n    TEXT: \(.body[0:400])"' qa/collected.json || true
           echo "===== COLLECTED (Articles) ====="
-          jq -r '.[] | select(.kind=="article") | "\(.source) | \(.created) | \(.title)\n    TEXT: \(.body[0:160])"' qa/collected.json || true
+          jq -r '.[] | select(.kind=="article") | "\(.source) | \(.created) | \(.title)\n    TEXT: \(.body[0:400])"' qa/collected.json || true
           echo "===== RADAR ====="
           cat qa/radar.qa.json || true
 

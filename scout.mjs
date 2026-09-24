@@ -92,13 +92,14 @@ function parseSources(text) {
 // Retry helper
 // ---------------------------------------------------------------------------
 
-async function withRetry(fn, label, attempts = 2) {
+async function withRetry(fn, label, attempts = 2, extraRetryStatuses = []) {
   for (let i = 0; i < attempts; i++) {
     try {
       return await fn();
     } catch (err) {
       const status = err?.status;
-      const transient = status === 429 || (typeof status === 'number' && status >= 500) || status === undefined;
+      const transient = status === 429 || (typeof status === 'number' && status >= 500) ||
+        status === undefined || extraRetryStatuses.includes(status);
       if (!transient || i === attempts - 1) throw err;
       const delay = (i + 1) * 5000;
       console.warn(`[scout] ${label} failed (${status ?? 'network'}). Retrying in ${delay / 1000}s…`);
@@ -382,8 +383,9 @@ async function fetchYouTubeVideos(channels) {
       }
 
       const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-      // YouTube's feed endpoint intermittently 500s — retry a few times
-      const rRes = await withRetry(() => fetchOk(feedUrl, { signal: AbortSignal.timeout(10000) }), `YouTube ${label} feed`, 3);
+      // YouTube's feed endpoint intermittently 500s *and* 404s for valid
+      // channels (seen in QA on known-good IDs) — retry both a few times
+      const rRes = await withRetry(() => fetchOk(feedUrl, { signal: AbortSignal.timeout(10000) }), `YouTube ${label} feed`, 3, [404]);
       const xml = await rRes.text();
       const entries = parseRss(xml).slice(0, 5);
 
