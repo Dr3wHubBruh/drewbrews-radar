@@ -38,6 +38,9 @@ const MAX_TOKENS = 16000;
 // Picking + short copy doesn't need deep reasoning; medium keeps it quick and cheap
 const EFFORT = process.env.EFFORT || 'medium';
 
+// At most this many trends from one subreddit / site / channel
+const MAX_PER_SOURCE = 4;
+
 const VALID_TPL = new Set(['s1', 's2', 's3', 's4', 's5', 's6']);
 const VALID_SRC = new Set(['press', 'review', 'community', 'verify']);
 
@@ -494,7 +497,8 @@ function buildCurationPrompt(items, today) {
   return (
     `Today is ${today}. Pick up to 12 of the most postable specialty-coffee trends ` +
     `from the list below — the ones a DrewBrews audience would find exciting, useful, or interesting. ` +
-    `Order them best-first. If fewer than 12 are truly postable, return fewer — quality over quantity.\n\n` +
+    `Order them best-first. If fewer than 12 are truly postable, return fewer — quality over quantity. ` +
+    `Keep the mix varied: no more than 4 picks from any single subreddit, site, or channel.\n\n` +
     `For each pick, write fresh "buzz" and "angle" copy in DrewBrews voice. ` +
     `Set "index" to the item's number. Do NOT invent items not on this list.\n\n` +
     `ITEMS:\n\n${numbered}\n\n` +
@@ -535,6 +539,7 @@ async function curateTrends(client, items, today) {
 
   // Map picks back to real collected items
   const trends = [];
+  const perSource = new Map();
   for (const pick of picks) {
     const idx = typeof pick.index === 'number' ? pick.index - 1 : -1;
     if (idx < 0 || idx >= items.length) {
@@ -543,6 +548,9 @@ async function curateTrends(client, items, today) {
     }
     const item = items[idx];
     if (!pick.name?.trim() || !pick.buzz?.trim()) continue;
+    const n = (perSource.get(item.source) ?? 0) + 1;
+    if (n > MAX_PER_SOURCE) continue; // keep the radar varied
+    perSource.set(item.source, n);
 
     trends.push({
       name: String(pick.name).trim().slice(0, 80),
