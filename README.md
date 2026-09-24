@@ -172,9 +172,11 @@ untouched**.
   posts it does bring carry no upvote counts, so the AI can't tell a popular
   thread from noise. Each run shows a ⚠️ warning for this; that's expected until
   setup step 6 is done.
-- **`tpl` (s1–s6) has no written definition.** Its meaning lives in the
-  Studio, so the AI currently guesses which template fits. Add the definitions
-  to the prompt in `scout.mjs` once they're known.
+- **`tpl` (s1–s6) picks the Instagram story template** each trend is posted
+  with in the Studio. The scout doesn't know what each template looks like, so
+  the AI picks one by feel. A one-line description of each template (e.g. "s3 =
+  gear close-up") added to the prompt in `scout.mjs` would let it choose on
+  purpose.
 
 ## The contract (`radar.json`)
 

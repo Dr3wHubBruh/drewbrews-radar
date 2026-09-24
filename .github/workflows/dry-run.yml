@@ -34,10 +34,12 @@ jobs:
         run: |
           echo "===== COLLECTED ====="
           jq -r '.[] | "[\(.kind)] \(.source) | \(.created) | \(if .score then "▲\(.score) 💬\(.comments) | " else "" end)\(.title)\n    \(.url)"' preview/collected.json || true
-          echo "===== RADAR PREVIEW ====="
-          cat preview/radar.preview.json || true
+          echo "===== RADAR PREVIEW (each pick next to the source text it was written from) ====="
+          jq -r --slurpfile c preview/collected.json '.trends[] as $t
+            | ($c[0][] | select(.url == $t.source_url)) as $i
+            | "\n### \($t.name)   [src: \($t.src) · tpl: \($t.tpl)]\nBUZZ:   \($t.buzz)\nANGLE:  \($t.angle // "")\nSOURCE: [\($i.kind)] \($i.source) | \($i.title)\nTEXT:   \(($i.body // "")[0:500])\nLINK:   \($t.source_url)"' preview/radar.preview.json || cat preview/radar.preview.json || true
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: dry-run-results
