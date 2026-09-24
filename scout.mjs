@@ -330,7 +330,7 @@ async function fetchRssArticles(hosts) {
           const ms = entry.date ? Date.parse(entry.date) : NaN;
           if (!isNaN(ms) && now - ms > maxAgeSec) continue; // too old
           entry.summary = stripFeedBoilerplate(entry.summary);
-          // Headline-only, name-like entries (e.g. notabarista.org profile pages) aren't news
+          // Headline-only, name-like entries (e.g. author profile pages) aren't news
           if (!entry.summary && entry.title.split(/\s+/).length <= 4) continue;
           items.push({
             kind: 'article',
@@ -488,7 +488,9 @@ Output: your picks, best first. For each:
   "index": the item's number from the list
   "name": short trend name (≤ 80 chars)
   "buzz": 1-2 sentences describing the trend (≤ 400 chars)
-  "tpl": one of "s1" "s2" "s3" "s4" "s5" "s6" (pick based on content type)
+  "tpl": one of "s1" "s2" "s3" "s4" "s5" "s6": which of the Studio's six Instagram
+         story templates this becomes. Pick the layout that best fits the content,
+         and vary templates across picks rather than reusing one for everything
   "src": "press" | "review" | "community" | "verify"
   "angle": how DrewBrews should frame it — inclusive, no gatekeeping (≤ 400 chars)`;
 
