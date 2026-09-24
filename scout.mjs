@@ -34,7 +34,6 @@ const COLLECTED_PATH = process.env.COLLECTED_PATH || null;
 
 const MODEL = process.env.MODEL || 'claude-sonnet-4-5';
 const MAX_TOKENS = 8192;
-const MAX_CONTINUATIONS = 6;
 
 const VALID_TPL = new Set(['s1', 's2', 's3', 's4', 's5', 's6']);
 const VALID_SRC = new Set(['press', 'review', 'community', 'verify']);
@@ -436,16 +435,41 @@ Honesty rules:
   (prices, dates, teams, sales, "selling fast") that aren't in front of you.
 - Skip items that are off-topic for coffee, ads/promotions, or too vague to post.
 
-Output format (critical):
-Output ONLY a JSON array. Each object must have:
-  "index": the number of the item you picked (integer, from the list)
+Output: call the submit_picks tool once with your picks, best first. For each:
+  "index": the item's number from the list
   "name": short trend name (≤ 80 chars)
   "buzz": 1-2 sentences describing the trend (≤ 400 chars)
   "tpl": one of "s1" "s2" "s3" "s4" "s5" "s6" (pick based on content type)
   "src": "press" | "review" | "community" | "verify"
-  "angle": how DrewBrews should frame it — inclusive, no gatekeeping (≤ 400 chars)
+  "angle": how DrewBrews should frame it — inclusive, no gatekeeping (≤ 400 chars)`;
 
-Never output prose, apologies, or markdown fences. Output only the JSON array.`;
+// Forced tool call = the API hands back already-parsed JSON, so a stray quote
+// in a post title can't break parsing (the old "[" prefill approach could).
+const PICKS_TOOL = {
+  name: 'submit_picks',
+  description: 'Submit the curated trend picks for this week\'s radar, best first.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      picks: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            index: { type: 'integer', description: 'Item number from the list' },
+            name: { type: 'string' },
+            buzz: { type: 'string' },
+            tpl: { type: 'string', enum: [...VALID_TPL] },
+            src: { type: 'string', enum: [...VALID_SRC] },
+            angle: { type: 'string' },
+          },
+          required: ['index', 'name', 'buzz', 'tpl', 'src', 'angle'],
+        },
+      },
+    },
+    required: ['picks'],
+  },
+};
 
 function buildCurationPrompt(items, today) {
   const numbered = items
@@ -467,68 +491,33 @@ function buildCurationPrompt(items, today) {
     `For each pick, write fresh "buzz" and "angle" copy in DrewBrews voice. ` +
     `Set "index" to the item's number. Do NOT invent items not on this list.\n\n` +
     `ITEMS:\n\n${numbered}\n\n` +
-    `Output only the JSON array.`
+    `Submit your picks with the submit_picks tool.`
   );
-}
-
-/** Pull text blocks from a Messages API response. */
-function collectText(message) {
-  return (message.content || [])
-    .filter(b => b.type === 'text')
-    .map(b => b.text)
-    .join('\n')
-    .trim();
-}
-
-function tryParse(s) {
-  try { return JSON.parse(s); } catch { return null; }
-}
-
-function parsePicks(text) {
-  if (!text) return [];
-  let t = text.replace(/```(?:json)?/gi, '').trim();
-  const direct = tryParse(t);
-  if (Array.isArray(direct)) return direct;
-  const start = t.indexOf('['); const end = t.lastIndexOf(']');
-  if (start !== -1 && end > start) {
-    const arr = tryParse(t.slice(start, end + 1));
-    if (Array.isArray(arr)) return arr;
-  }
-  return [];
 }
 
 async function curateTrends(client, items, today) {
   if (items.length === 0) return [];
 
-  const userMessage = buildCurationPrompt(items, today);
-  const messages = [
-    { role: 'user', content: userMessage },
-    { role: 'assistant', content: '[' },
-  ];
-
-  const create = () => withRetry(
-    () => client.messages.create({ model: MODEL, max_tokens: MAX_TOKENS, system: SYSTEM_PROMPT, messages }),
+  const response = await withRetry(
+    () => client.messages.create({
+      model: MODEL,
+      max_tokens: MAX_TOKENS,
+      system: SYSTEM_PROMPT,
+      tools: [PICKS_TOOL],
+      tool_choice: { type: 'tool', name: PICKS_TOOL.name },
+      messages: [{ role: 'user', content: buildCurationPrompt(items, today) }],
+    }),
     'curation request'
   );
 
-  let response = await create();
-  let assembled = collectText(response);
-
-  let continuations = 0;
-  while (response.stop_reason === 'pause_turn' && continuations < MAX_CONTINUATIONS) {
-    messages.push({ role: 'assistant', content: response.content });
-    response = await create();
-    assembled += collectText(response);
-    continuations++;
-  }
-
-  const stripped = assembled.replace(/```(?:json)?/gi, '').trim();
-  const text = stripped.startsWith('[') ? stripped : '[' + stripped;
-
-  const picks = parsePicks(text);
+  const call = response.content.find(b => b.type === 'tool_use' && b.name === PICKS_TOOL.name);
+  const picks = Array.isArray(call?.input?.picks) ? call.input.picks : [];
   if (picks.length === 0) {
-    console.warn(`[scout] curation: parsed 0 picks. Reply tail: ${JSON.stringify(text.slice(-300))}`);
+    console.warn(`[scout] curation: 0 picks (stop_reason: ${response.stop_reason}).`);
     return [];
+  }
+  if (response.stop_reason === 'max_tokens') {
+    console.warn('[scout] curation: hit max_tokens — picks may be incomplete.');
   }
 
   // Map picks back to real collected items
