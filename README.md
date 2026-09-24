@@ -84,6 +84,13 @@ You don't have to wait for Wednesday. Repo → **Actions** tab →
 **Weekly Trend Radar** → **Run workflow**. It researches, writes `radar.json`,
 and commits it back. Refresh the Studio and you'll see it update.
 
+## How to preview without publishing ("Dry run")
+
+Repo → **Actions** → **Radar dry run** → **Run workflow**. It does everything
+the weekly run does but publishes nothing. The log shows every item it
+collected (with upvotes/comments when Reddit's API is connected) and the radar
+it *would* have posted. Handy after changing `sources.txt` or adding secrets.
+
 ## When does it run automatically?
 
 Every **Wednesday at 13:00 UTC** — that's **5am Pacific in winter (PST), 6am in

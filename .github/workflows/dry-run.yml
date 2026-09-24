@@ -1,0 +1,43 @@
+# Manual "dry run": runs the full scout but NEVER publishes — no commit, no
+# radar.json change, no Gist update. Use it to preview a radar or to check a
+# change (e.g. new Reddit API secrets) before the Wednesday run.
+# Actions tab → "Radar dry run" → Run workflow. Results: the run's log and
+# the "dry-run-results" download at the bottom of the run page.
+name: Radar dry run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Run the scout (preview only)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          OUTPUT_PATH: preview/radar.preview.json
+          COLLECTED_PATH: preview/collected.json
+        run: mkdir -p preview && node scout.mjs
+
+      - name: Show what was collected and picked
+        if: always()
+        run: |
+          echo "===== COLLECTED ====="
+          jq -r '.[] | "[\(.kind)] \(.source) | \(.created) | \(if .score then "▲\(.score) 💬\(.comments) | " else "" end)\(.title)\n    \(.url)"' preview/collected.json || true
+          echo "===== RADAR PREVIEW ====="
+          cat preview/radar.preview.json || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dry-run-results
+          path: preview/

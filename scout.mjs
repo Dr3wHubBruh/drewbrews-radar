@@ -432,7 +432,9 @@ Honesty rules:
 - Do NOT invent items that aren't on the list.
 - "buzz" may only state facts found in that item's title or text. If an item is
   just a headline, keep the buzz to what the headline says — never add details
-  (prices, dates, teams, sales, "selling fast") that aren't in front of you.
+  (prices, dates, teams, sales, "selling fast") that aren't in front of you,
+  never name products or brands the item doesn't name, and don't claim
+  something is "everywhere" or "blowing up" from a single post.
 - Skip items that are off-topic for coffee, ads/promotions, or too vague to post.
 
 Output: call the submit_picks tool once with your picks, best first. For each:
