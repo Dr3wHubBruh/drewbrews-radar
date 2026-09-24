@@ -429,9 +429,11 @@ async function fetchYouTubeVideos(channels) {
         ? await fetchChannelApi(channelId, label, key)
         : await fetchChannelFeed(channelId, label);
 
+      let recent = 0;
       for (const entry of entries) {
         const ms = entry.date ? Date.parse(entry.date) : NaN;
         if (!isNaN(ms) && now - ms > maxAgeSec) continue;
+        recent++;
         items.push({
           kind: 'youtube',
           source: label,
@@ -444,7 +446,7 @@ async function fetchYouTubeVideos(channels) {
         });
       }
 
-      console.log(`[scout] ${label}: ${entries.length} videos via ${mode}`);
+      console.log(`[scout] ${label}: ${recent} recent videos (of ${entries.length} fetched via ${mode})`);
     } catch (err) {
       console.warn(`[scout] ${label}: ${err.message} — skipping`);
     }
@@ -516,7 +518,7 @@ const PICKS_SCHEMA = {
   additionalProperties: false,
 };
 
-function buildCurationPrompt(items, today) {
+function buildCurationPrompt(items, today, lastWeek = []) {
   const numbered = items
     .map((item, i) => {
       const parts = [`[${i + 1}] ${item.kind.toUpperCase()} from ${item.source}`];
@@ -536,12 +538,16 @@ function buildCurationPrompt(items, today) {
     `Keep the mix varied: no more than 4 picks from any single subreddit, site, or channel.\n\n` +
     `For each pick, write fresh "buzz" and "angle" copy in DrewBrews voice. ` +
     `Set "index" to the item's number. Do NOT invent items not on this list.\n\n` +
+    (lastWeek.length
+      ? `LAST WEEK'S RADAR already covered these stories. Don't pick the same story again, ` +
+        `even if it comes from a different outlet:\n${lastWeek.map(n => `- ${n}`).join('\n')}\n\n`
+      : '') +
     `ITEMS:\n\n${numbered}\n\n` +
     `Return your picks, best first.`
   );
 }
 
-async function curateTrends(client, items, today) {
+async function curateTrends(client, items, today, lastWeek = []) {
   if (items.length === 0) return [];
 
   const response = await withRetry(
@@ -550,7 +556,7 @@ async function curateTrends(client, items, today) {
       max_tokens: MAX_TOKENS,
       system: SYSTEM_PROMPT,
       output_config: { effort: EFFORT, format: { type: 'json_schema', schema: PICKS_SCHEMA } },
-      messages: [{ role: 'user', content: buildCurationPrompt(items, today) }],
+      messages: [{ role: 'user', content: buildCurationPrompt(items, today, lastWeek) }],
     }),
     'curation request'
   );
@@ -606,12 +612,13 @@ async function curateTrends(client, items, today) {
 // week's radar, so each refresh is actually fresh.
 // ---------------------------------------------------------------------------
 
-async function previousUrls() {
+async function previousRadar() {
   try {
     const prev = JSON.parse(await readFile(join(__dirname, 'radar.json'), 'utf8'));
-    return new Set((prev.trends ?? []).map(t => t.source_url));
+    const trends = prev.trends ?? [];
+    return { urls: new Set(trends.map(t => t.source_url)), names: trends.map(t => t.name) };
   } catch {
-    return new Set();
+    return { urls: new Set(), names: [] };
   }
 }
 
@@ -681,8 +688,10 @@ async function main() {
     fetchYouTubeVideos(ytChannels),
   ]);
 
-  const allItems = dedupe([...redditPosts, ...rssArticles, ...ytVideos], await previousUrls());
-  console.log(`[scout] Collected ${allItems.length} items total (${redditPosts.length} Reddit, ${rssArticles.length} articles, ${ytVideos.length} YouTube)`);
+  const previous = await previousRadar();
+  const allItems = dedupe([...redditPosts, ...rssArticles, ...ytVideos], previous.urls);
+  const kept = kind => allItems.filter(i => i.kind === kind).length;
+  console.log(`[scout] Collected ${allItems.length} items after de-duplication (${kept('reddit')} Reddit, ${kept('article')} articles, ${kept('youtube')} YouTube)`);
   await reportSourceHealth([
     ['Reddit', subs.length, redditPosts.length],
     ['Articles', rssHosts.length, rssArticles.length],
@@ -697,7 +706,7 @@ async function main() {
 
   // ── Phase 2: Claude curates ──────────────────────────────────────────────
   const client = new Anthropic();
-  let trends = await curateTrends(client, allItems, today);
+  let trends = await curateTrends(client, allItems, today, previous.names);
 
   if (trends.length === 0) {
     console.error('[scout] No trends selected by curation. radar.json left untouched.');
