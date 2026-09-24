@@ -69,12 +69,35 @@ runaway-bug backstop — see "First-time setup" below.
    Gist when the `GIST_TOKEN` and `GIST_ID` secrets are set. If they're missing
    the step just logs a warning.
 
-6. **(Recommended) Reddit API credentials.** Without them Reddit is read through
-   its public RSS feed, which Reddit heavily rate-limits for GitHub's servers
-   (often returning nothing). With them, the scout uses Reddit's official API and
-   also gets upvote and comment counts. Create a "script" app at
-   <https://www.reddit.com/prefs/apps> and add two repository secrets:
-   `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET`.
+6. **(Not done yet: see "Known gaps") Reddit API credentials.** Without them
+   Reddit is read through its public RSS feed, which Reddit heavily rate-limits
+   for GitHub's servers (in testing, 3 of 25 fetches got through). With them, the
+   scout uses Reddit's official API and also gets upvote and comment counts.
+   Reddit now requires approval before API use:
+   1. Create a "script" app at <https://www.reddit.com/prefs/apps>. Its page
+      shows the client ID and secret.
+   2. Request access through Reddit's support form
+      (<https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=360000600232>),
+      choosing the **developer** category. Describe the project honestly:
+      read-only, 5 subreddits, about 5 requests a week, and posts are summarized
+      by an AI (not used for training). Mention it if DrewBrews earns money from
+      this, since commercial use needs separate approval.
+   3. Once approved, add repository secrets `REDDIT_CLIENT_ID` and
+      `REDDIT_CLIENT_SECRET`, then press **Radar dry run** to confirm the log
+      says `Reddit mode: OAuth API`.
+
+7. **(Recommended) YouTube Data API key.** YouTube's public feeds fail more often
+   than not from GitHub's servers (0–3 of 8 channels per try in testing). With
+   a key, the scout reads each channel's uploads through the official API instead.
+   It's free: each weekly run uses about 8 of the 10,000 daily quota units.
+   1. In the Google Cloud console (<https://console.cloud.google.com/>), create
+      a project (e.g. "drewbrews-radar").
+   2. **APIs & Services → Library** → enable **YouTube Data API v3**.
+   3. **APIs & Services → Credentials → Create credentials → API key**. Then
+      **Edit API key → API restrictions → Restrict key → YouTube Data API v3**,
+      so the key can't be used for anything else.
+   4. Add it as the repository secret `YOUTUBE_API_KEY`, then press **Radar dry
+      run** and look for `YouTube mode: Data API` in the log.
 
 ---
 
@@ -132,7 +155,7 @@ outputs works.
 | Studio shows the old / built-in radar | `RADAR_URL` not set, or the file isn't reachable | Confirm GitHub Pages is on and the URL is exactly right. Open the Pages URL in a browser — you should see JSON. |
 | Want different sources | — | Edit `sources.txt`, commit. |
 | ⚠️ "Reddit source is empty" on a run | No Reddit API secrets, so it fell back to rate-limited RSS | Add `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` (setup step 6). |
-| ⚠️ "YouTube source is empty" | YouTube's feed endpoint was down, or a channel ID is wrong | Usually clears next week. Check the IDs in `sources.txt`. |
+| ⚠️ "YouTube source is empty" | No `YOUTUBE_API_KEY`, so the flaky public feeds were used; or the key is wrong or out of quota | Add the key (setup step 7). If one is set, check it in the Google Cloud console. |
 | The same story shows up two weeks running | — | It shouldn't: anything already in the current `radar.json` is skipped. |
 
 **A bad week never blanks the radar.** If Claude returns nothing usable or the
@@ -141,6 +164,17 @@ result fails schema validation, the scout logs the problem, exits with an error
 untouched**.
 
 ---
+
+## Known gaps
+
+- **Reddit API access isn't set up yet.** Until it is, Reddit comes from the
+  rate-limited RSS feed: most weeks it contributes few or no posts, and the
+  posts it does bring carry no upvote counts, so the AI can't tell a popular
+  thread from noise. Each run shows a ⚠️ warning for this; that's expected until
+  setup step 6 is done.
+- **`tpl` (s1–s6) has no written definition.** Its meaning lives in the
+  Studio, so the AI currently guesses which template fits. Add the definitions
+  to the prompt in `scout.mjs` once they're known.
 
 ## The contract (`radar.json`)
 

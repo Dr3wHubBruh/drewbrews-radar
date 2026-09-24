@@ -41,6 +41,8 @@ jobs:
           # (scores + comment counts); without them it falls back to RSS.
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          # Optional: YouTube Data API key (reliable); without it, public feeds (flaky).
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: node scout.mjs
 
       - name: Commit radar.json if it changed

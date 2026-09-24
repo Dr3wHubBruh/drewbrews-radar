@@ -373,10 +373,48 @@ async function resolveChannelId(handle) {
   return id;
 }
 
+/**
+ * Latest uploads via the YouTube Data API (needs YOUTUBE_API_KEY).
+ * Reads the channel's "uploads" playlist (UC… → UU…) with playlistItems.list,
+ * which costs 1 quota unit per call (search.list costs 100) and, unlike search,
+ * lists every upload rather than what the search index happens to return.
+ */
+async function fetchChannelApi(channelId, label, key) {
+  const params = new URLSearchParams({
+    part: 'snippet', maxResults: '5', playlistId: 'UU' + channelId.slice(2), key,
+  });
+  const res = await withRetry(
+    () => fetchOk(`https://www.googleapis.com/youtube/v3/playlistItems?${params}`, { signal: AbortSignal.timeout(10000) }),
+    `YouTube API ${label}`
+  );
+  const data = await res.json();
+  return (data.items ?? [])
+    .map(i => i.snippet)
+    .filter(sn => sn?.resourceId?.videoId && sn.title && !/^(private|deleted) video$/i.test(sn.title))
+    .map(sn => ({
+      title: sn.title,
+      url: `https://www.youtube.com/watch?v=${sn.resourceId.videoId}`,
+      date: sn.publishedAt,
+      summary: sn.description || '',
+    }));
+}
+
+/** Latest uploads via the public feed (no key). Flaky from GitHub runners. */
+async function fetchChannelFeed(channelId, label) {
+  const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  // The feed endpoint intermittently 500s *and* 404s for valid channels
+  // (seen in QA on known-good IDs) — retry both a few times
+  const res = await withRetry(() => fetchOk(feedUrl, { signal: AbortSignal.timeout(10000) }), `YouTube ${label} feed`, 3, [404]);
+  return parseRss(await res.text()).slice(0, 5);
+}
+
 async function fetchYouTubeVideos(channels) {
   const items = [];
   const maxAgeSec = MAX_POST_AGE_DAYS * 86400 * 1000;
   const now = Date.now();
+  const key = process.env.YOUTUBE_API_KEY;
+  const mode = key ? 'api' : 'feed';
+  console.log(`[scout] YouTube mode: ${key ? 'Data API' : 'public feeds (no YOUTUBE_API_KEY set)'}`);
 
   for (const { handle, id } of channels) {
     const label = handle ? `@${handle}` : id;
@@ -387,12 +425,9 @@ async function fetchYouTubeVideos(channels) {
         console.log(`[scout] ${label}: resolved to ${channelId} (pin it in sources.txt to skip this lookup)`);
       }
 
-      const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-      // YouTube's feed endpoint intermittently 500s *and* 404s for valid
-      // channels (seen in QA on known-good IDs) — retry both a few times
-      const rRes = await withRetry(() => fetchOk(feedUrl, { signal: AbortSignal.timeout(10000) }), `YouTube ${label} feed`, 3, [404]);
-      const xml = await rRes.text();
-      const entries = parseRss(xml).slice(0, 5);
+      const entries = mode === 'api'
+        ? await fetchChannelApi(channelId, label, key)
+        : await fetchChannelFeed(channelId, label);
 
       for (const entry of entries) {
         const ms = entry.date ? Date.parse(entry.date) : NaN;
@@ -409,7 +444,7 @@ async function fetchYouTubeVideos(channels) {
         });
       }
 
-      console.log(`[scout] ${label}: ${entries.length} videos`);
+      console.log(`[scout] ${label}: ${entries.length} videos via ${mode}`);
     } catch (err) {
       console.warn(`[scout] ${label}: ${err.message} — skipping`);
     }
@@ -600,12 +635,17 @@ function dedupe(items, skipUrls) {
 // Emits GitHub Actions ::warning:: annotations and a job-summary table.
 // ---------------------------------------------------------------------------
 
+const HEALTH_HINTS = {
+  Reddit: process.env.REDDIT_CLIENT_ID ? '' : ' Known gap: Reddit API access not set up yet (see README → Known gaps).',
+  YouTube: process.env.YOUTUBE_API_KEY ? ' Check the YOUTUBE_API_KEY secret and its quota.' : ' No YOUTUBE_API_KEY set, so the flaky public feeds were used (see README setup step 7).',
+};
+
 async function reportSourceHealth(rows) {
   const lines = ['### Radar source health', '', '| Source | Configured | Items collected |', '|---|---|---|'];
   for (const [name, configured, collected] of rows) {
     const ok = configured === 0 || collected > 0;
     lines.push(`| ${ok ? '✅' : '❌'} ${name} | ${configured} | ${collected} |`);
-    if (!ok) console.log(`::warning title=${name} source is empty::${configured} ${name} sources configured but 0 items collected this run.`);
+    if (!ok) console.log(`::warning title=${name} source is empty::${configured} ${name} sources configured but 0 items collected this run.${HEALTH_HINTS[name] ?? ''}`);
   }
   if (process.env.GITHUB_STEP_SUMMARY) {
     await appendFile(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n');
@@ -681,7 +721,7 @@ async function main() {
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
-export { parseSources, parseRss, feedText, stripFeedBoilerplate };
+export { parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi };
 
 // Run only when executed directly (importing for tests must not start a scout run)
 if (process.argv[1] === fileURLToPath(import.meta.url)) main().catch(err => {
