@@ -439,6 +439,10 @@ Honesty rules:
   never name products or brands the item doesn't name, and don't claim
   something is "everywhere" or "blowing up" from a single post.
 - Skip items that are off-topic for coffee, ads/promotions, or too vague to post.
+- Set "src" to "verify" when the item makes a claim DrewBrews should double-check
+  before posting (a single user's report, a rumor or leak, a health or science
+  claim) and keep that buzz cautious. Otherwise: "press" = publication/news,
+  "review" = gear or product review/demo, "community" = Reddit or creator chatter.
 
 Output: your picks, best first. For each:
   "index": the item's number from the list
