@@ -17,7 +17,7 @@
 // script logs, exits non-zero, and leaves the existing radar.json untouched.
 // -----------------------------------------------------------------------------
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { appendFile, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import Anthropic from '@anthropic-ai/sdk';
@@ -27,19 +27,31 @@ import addFormats from 'ajv-formats';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SCHEMA_PATH = join(__dirname, 'radar.schema.json');
 const SOURCES_PATH = join(__dirname, 'sources.txt');
-const OUTPUT_PATH = join(__dirname, 'radar.json');
+// OUTPUT_PATH / COLLECTED_PATH overrides let a QA run write somewhere other
+// than the live radar.json (and dump everything collected for review).
+const OUTPUT_PATH = process.env.OUTPUT_PATH || join(__dirname, 'radar.json');
+const COLLECTED_PATH = process.env.COLLECTED_PATH || null;
 
-const MODEL = process.env.MODEL || 'claude-sonnet-4-5';
-const MAX_TOKENS = 8192;
-const MAX_CONTINUATIONS = 6;
+const MODEL = process.env.MODEL || 'claude-sonnet-5';
+// Sonnet 5 thinks (adaptively) by default — leave room for thinking + ~12 picks
+const MAX_TOKENS = 16000;
+// Picking + short copy doesn't need deep reasoning; medium keeps it quick and cheap
+const EFFORT = process.env.EFFORT || 'medium';
+
+// At most this many trends from one subreddit / site / channel
+const MAX_PER_SOURCE = 4;
 
 const VALID_TPL = new Set(['s1', 's2', 's3', 's4', 's5', 's6']);
 const VALID_SRC = new Set(['press', 'review', 'community', 'verify']);
 
-// How many posts to pull per subreddit (hot listing)
-const REDDIT_POST_LIMIT = 30;
-// Minimum score to include a post (filters out very new/low-signal posts)
+const USER_AGENT = 'DrewBrews-Radar/2.0 (weekly coffee trend scout; contact via GitHub)';
+
+// How many posts to pull per subreddit (top-of-the-week listing)
+const REDDIT_POST_LIMIT = 25;
+// Minimum score to include a post (API mode only — RSS carries no scores)
 const REDDIT_MIN_SCORE = 10;
+// Recurring mod threads that are never a "trend" (RSS can't see the stickied flag)
+const REDDIT_MOD_THREAD = /\b(weekly|daily|monthly)\b.*\b(thread|discussion|questions?)\b|megathread|\brules\b|\bama\b/i;
 // How many articles per RSS feed
 const RSS_ARTICLE_LIMIT = 10;
 // Minimum age: skip posts newer than 2 hours (avoid very fresh/unvetted content)
@@ -61,8 +73,14 @@ function parseSources(text) {
     const redditMatch = line.match(/reddit\.com\/r\/([a-z0-9_]+)\/?$/i);
     if (redditMatch) { subs.push(redditMatch[1]); continue; }
 
-    const ytMatch = line.match(/youtube\.com\/@([a-z0-9_-]+)\/?$/i);
-    if (ytMatch) { ytChannels.push(ytMatch[1]); continue; }
+    // YouTube: "…/channel/UC…" (preferred — no lookup) or "…/@handle",
+    // optionally both on one line: "https://www.youtube.com/@handle UCxxxx"
+    if (/youtube\.com\//i.test(line)) {
+      const handle = line.match(/youtube\.com\/@([a-z0-9_.-]+)/i)?.[1] ?? null;
+      const id = line.match(/\b(UC[a-zA-Z0-9_-]{22})\b/)?.[1] ?? null;
+      if (handle || id) ytChannels.push({ handle, id });
+      continue;
+    }
 
     try {
       const host = new URL(line).hostname.replace(/^www\./, '');
@@ -79,13 +97,14 @@ function parseSources(text) {
 // Retry helper
 // ---------------------------------------------------------------------------
 
-async function withRetry(fn, label, attempts = 2) {
+async function withRetry(fn, label, attempts = 2, extraRetryStatuses = []) {
   for (let i = 0; i < attempts; i++) {
     try {
       return await fn();
     } catch (err) {
       const status = err?.status;
-      const transient = status === 429 || (typeof status === 'number' && status >= 500) || status === undefined;
+      const transient = status === 429 || (typeof status === 'number' && status >= 500) ||
+        status === undefined || extraRetryStatuses.includes(status);
       if (!transient || i === attempts - 1) throw err;
       const delay = (i + 1) * 5000;
       console.warn(`[scout] ${label} failed (${status ?? 'network'}). Retrying in ${delay / 1000}s…`);
@@ -94,65 +113,130 @@ async function withRetry(fn, label, attempts = 2) {
   }
 }
 
+/** fetch that throws on non-2xx (with .status), so withRetry can retry 429/5xx. */
+async function fetchOk(url, opts) {
+  const res = await fetch(url, opts);
+  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status });
+  return res;
+}
+
 // ---------------------------------------------------------------------------
-// Phase 1a: Reddit collection via public JSON API
+// Phase 1a: Reddit collection
+//   • With REDDIT_CLIENT_ID + REDDIT_CLIENT_SECRET: official OAuth API
+//     (scores, comment counts, stickied flag — the good signal).
+//   • Without them: public RSS feed (titles + post text, but no scores).
+//   Unauthenticated JSON (reddit.com/…/hot.json) is 403'd from GitHub runners.
 // ---------------------------------------------------------------------------
 
+async function getRedditToken() {
+  const id = process.env.REDDIT_CLIENT_ID;
+  const secret = process.env.REDDIT_CLIENT_SECRET;
+  if (!id || !secret) return null;
+  try {
+    const res = await fetch('https://www.reddit.com/api/v1/access_token', {
+      method: 'POST',
+      signal: AbortSignal.timeout(15000),
+      headers: {
+        'Authorization': 'Basic ' + Buffer.from(`${id}:${secret}`).toString('base64'),
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': USER_AGENT,
+      },
+      body: 'grant_type=client_credentials',
+    });
+    if (!res.ok) {
+      console.warn(`[scout] Reddit OAuth: HTTP ${res.status} — falling back to RSS`);
+      return null;
+    }
+    return (await res.json()).access_token ?? null;
+  } catch (err) {
+    console.warn(`[scout] Reddit OAuth failed (${err.message}) — falling back to RSS`);
+    return null;
+  }
+}
+
+async function fetchRedditApi(sub, token) {
+  const url = `https://oauth.reddit.com/r/${sub}/top?t=week&limit=${REDDIT_POST_LIMIT}&raw_json=1`;
+  const res = await withRetry(
+    () => fetchOk(url, {
+      signal: AbortSignal.timeout(15000),
+      headers: { 'Authorization': `Bearer ${token}`, 'User-Agent': USER_AGENT },
+    }),
+    `Reddit API r/${sub}`
+  );
+  const data = await res.json();
+  return (data?.data?.children ?? [])
+    .map(c => c?.data)
+    .filter(p => p && !p.stickied && !p.over_18 && (p.score ?? 0) >= REDDIT_MIN_SCORE)
+    .map(p => ({
+      title: p.title,
+      body: p.selftext || '',
+      url: `https://www.reddit.com${p.permalink}`,
+      score: p.score,
+      comments: p.num_comments,
+      flair: p.link_flair_text || null,
+      createdMs: p.created_utc * 1000,
+    }));
+}
+
+async function fetchRedditRss(sub) {
+  const url = `https://www.reddit.com/r/${sub}/top/.rss?t=week&limit=${REDDIT_POST_LIMIT}`;
+  const res = await withRetry(
+    () => fetchOk(url, { signal: AbortSignal.timeout(15000), headers: { 'User-Agent': USER_AGENT } }),
+    `Reddit RSS r/${sub}`
+  );
+  return parseRss(await res.text()).map(e => ({
+    title: e.title,
+    // Reddit appends "submitted by /u/x [link] [comments]" to every entry
+    body: e.summary.replace(/\s*submitted by\s+\/u\/\S+[\s\S]*$/i, ''),
+    url: e.url,
+    score: null,
+    comments: null,
+    flair: null,
+    createdMs: e.date ? Date.parse(e.date) : NaN,
+  }));
+}
+
 async function fetchRedditPosts(subreddits) {
-  const now = Date.now() / 1000; // Unix seconds
-  const minAge = MIN_POST_AGE_HOURS * 3600;
-  const maxAge = MAX_POST_AGE_DAYS * 86400;
+  const now = Date.now();
+  const minAgeMs = MIN_POST_AGE_HOURS * 3600 * 1000;
+  const maxAgeMs = MAX_POST_AGE_DAYS * 86400 * 1000;
+  const token = await getRedditToken();
+  const mode = token ? 'api' : 'rss';
+  console.log(`[scout] Reddit mode: ${mode === 'api' ? 'OAuth API' : 'RSS (no REDDIT_CLIENT_ID/SECRET set)'}`);
   const items = [];
 
   for (const sub of subreddits) {
-    const url = `https://www.reddit.com/r/${sub}/hot.json?limit=${REDDIT_POST_LIMIT}&raw_json=1`;
-    console.log(`[scout] Fetching r/${sub}…`);
-
-    let data;
+    let posts;
     try {
-      const res = await withRetry(
-        () => fetch(url, {
-          signal: AbortSignal.timeout(15000),
-          headers: {
-            'User-Agent': 'DrewBrews-Radar/2.0 (weekly coffee trend scout; contact via GitHub)',
-            'Accept': 'application/json',
-          },
-        }),
-        `Reddit r/${sub}`
-      );
-      if (!res.ok) {
-        console.warn(`[scout] r/${sub}: HTTP ${res.status} — skipping`);
-        continue;
-      }
-      data = await res.json();
+      posts = mode === 'api' ? await fetchRedditApi(sub, token) : await fetchRedditRss(sub);
     } catch (err) {
-      console.warn(`[scout] r/${sub}: fetch failed (${err.message}) — skipping`);
+      console.warn(`[scout] r/${sub}: ${err.message} — skipping`);
       continue;
     }
 
-    const posts = data?.data?.children ?? [];
     let kept = 0;
-    for (const child of posts) {
-      const p = child?.data;
-      if (!p || p.stickied || p.is_video) continue;
-      const age = now - p.created_utc;
-      if (age < minAge || age > maxAge) continue;
-      if ((p.score ?? 0) < REDDIT_MIN_SCORE) continue;
-      if (!p.title?.trim()) continue;
+    for (const p of posts) {
+      if (!p.title?.trim() || REDDIT_MOD_THREAD.test(p.title)) continue;
+      // Only real discussion threads — never a bare subreddit or off-site link
+      if (!/^https:\/\/www\.reddit\.com\/r\/[^/]+\/comments\//i.test(p.url)) continue;
+      const age = now - p.createdMs;
+      if (!isNaN(age) && (age < minAgeMs || age > maxAgeMs)) continue;
 
       items.push({
         kind: 'reddit',
         source: `r/${sub}`,
+        via: mode,
         title: p.title.trim(),
-        body: (p.selftext || '').trim().slice(0, 600),
-        url: `https://www.reddit.com${p.permalink}`,
+        body: p.body.trim().slice(0, 600),
+        url: p.url,
         score: p.score,
-        comments: p.num_comments,
-        created: new Date(p.created_utc * 1000).toISOString().slice(0, 10),
+        comments: p.comments,
+        flair: p.flair,
+        created: isNaN(p.createdMs) ? null : new Date(p.createdMs).toISOString().slice(0, 10),
       });
       kept++;
     }
-    console.log(`[scout] r/${sub}: kept ${kept} posts (of ${posts.length} fetched)`);
+    console.log(`[scout] r/${sub}: kept ${kept} posts (of ${posts.length} fetched via ${mode})`);
   }
 
   return items;
@@ -162,29 +246,64 @@ async function fetchRedditPosts(subreddits) {
 // Phase 1b: RSS collection from vetted publication sites
 // ---------------------------------------------------------------------------
 
-/** Minimal RSS/Atom parser: returns [{title, url, date}] */
+const NAMED_ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“' };
+
+function decodeEntities(s) {
+  return s.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, e) => {
+    if (e[0] === '#') {
+      const code = e[1].toLowerCase() === 'x' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : m;
+    }
+    return NAMED_ENTITIES[e.toLowerCase()] ?? m;
+  });
+}
+
+/** Feed field → plain text: unwrap CDATA, decode entities, strip any HTML inside. */
+function feedText(raw) {
+  if (!raw) return '';
+  let s = raw.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+  s = decodeEntities(s);            // escaped HTML (&lt;p&gt;) → real tags
+  s = s.replace(/<[^>]+>/g, ' ');   // strip tags
+  return decodeEntities(s).replace(/\s+/g, ' ').trim();
+}
+
+function tag(inner, name) {
+  return inner.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`, 'i'))?.[1];
+}
+
+/** Minimal RSS/Atom parser: returns [{title, url, date, summary}] */
 function parseRss(xml) {
   const items = [];
   // RSS <item> blocks
   for (const block of xml.matchAll(/<item[^>]*>([\s\S]*?)<\/item>/gi)) {
     const inner = block[1];
-    const title = inner.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i)?.[1]?.trim();
-    const link = (
-      inner.match(/<link[^>]*>([\s\S]*?)<\/link>/i)?.[1]?.trim() ||
-      inner.match(/<guid[^>]*isPermaLink="true"[^>]*>([\s\S]*?)<\/guid>/i)?.[1]?.trim()
-    );
-    const date = inner.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/i)?.[1]?.trim();
-    if (title && link && link.startsWith('http')) items.push({ title, url: link, date });
+    const title = feedText(tag(inner, 'title'));
+    const link = feedText(tag(inner, 'link')) ||
+      inner.match(/<guid[^>]*isPermaLink="true"[^>]*>([\s\S]*?)<\/guid>/i)?.[1]?.trim();
+    const date = tag(inner, 'pubDate')?.trim();
+    const summary = feedText(tag(inner, 'description') || tag(inner, 'content:encoded'));
+    if (title && link && link.startsWith('http')) items.push({ title, url: link, date, summary });
   }
-  // Atom <entry> blocks
+  // Atom <entry> blocks (Reddit, YouTube)
   for (const block of xml.matchAll(/<entry[^>]*>([\s\S]*?)<\/entry>/gi)) {
     const inner = block[1];
-    const title = inner.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i)?.[1]?.trim();
+    const title = feedText(tag(inner, 'title'));
     const link = inner.match(/<link[^>]*href="([^"]+)"/i)?.[1]?.trim();
-    const date = inner.match(/<(?:published|updated)[^>]*>([\s\S]*?)<\/(?:published|updated)>/i)?.[1]?.trim();
-    if (title && link && link.startsWith('http')) items.push({ title, url: link, date });
+    const date = (tag(inner, 'published') || tag(inner, 'updated'))?.trim();
+    const summary = feedText(tag(inner, 'summary') || tag(inner, 'content') || tag(inner, 'media:description'));
+    if (title && link && link.startsWith('http')) items.push({ title, url: decodeEntities(link), date, summary });
   }
   return items;
+}
+
+// Publisher footers that carry no information about the story
+const FEED_BOILERPLATE = [
+  /This article is from the coffee website Sprudge at \S+ \. This is the RSS feed version\.\s*/gi,
+  /The post .{1,200}? appeared first on .{1,80}?\.\s*$/i,
+];
+
+function stripFeedBoilerplate(text) {
+  return FEED_BOILERPLATE.reduce((t, re) => t.replace(re, ''), text).trim();
 }
 
 async function fetchRssArticles(hosts) {
@@ -210,11 +329,14 @@ async function fetchRssArticles(hosts) {
         for (const entry of parsed) {
           const ms = entry.date ? Date.parse(entry.date) : NaN;
           if (!isNaN(ms) && now - ms > maxAgeSec) continue; // too old
+          entry.summary = stripFeedBoilerplate(entry.summary);
+          // Headline-only, name-like entries (e.g. notabarista.org profile pages) aren't news
+          if (!entry.summary && entry.title.split(/\s+/).length <= 4) continue;
           items.push({
             kind: 'article',
             source: host,
             title: entry.title,
-            body: '',
+            body: entry.summary.slice(0, 600),
             url: entry.url,
             score: null,
             comments: null,
@@ -237,36 +359,84 @@ async function fetchRssArticles(hosts) {
 // Phase 1c: YouTube RSS (no API key needed — YouTube exposes per-channel RSS)
 // ---------------------------------------------------------------------------
 
-async function fetchYouTubeVideos(channelHandles) {
+/** @handle → UC… channel ID by reading the channel page (oEmbed only works for videos). */
+async function resolveChannelId(handle) {
+  const res = await fetch(`https://www.youtube.com/@${handle}`, {
+    signal: AbortSignal.timeout(10000),
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DrewBrews-Radar/2.0)', 'Accept-Language': 'en', 'Cookie': 'CONSENT=YES+1' },
+  });
+  if (!res.ok) throw new Error(`channel page HTTP ${res.status}`);
+  const html = await res.text();
+  const id = html.match(/"externalId":"(UC[a-zA-Z0-9_-]{22})"/)?.[1] ||
+    html.match(/<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(UC[a-zA-Z0-9_-]{22})"/)?.[1];
+  if (!id) throw new Error('channel ID not found on page');
+  return id;
+}
+
+/**
+ * Latest uploads via the YouTube Data API (needs YOUTUBE_API_KEY).
+ * Reads the channel's "uploads" playlist (UC… → UU…) with playlistItems.list,
+ * which costs 1 quota unit per call (search.list costs 100) and, unlike search,
+ * lists every upload rather than what the search index happens to return.
+ */
+async function fetchChannelApi(channelId, label, key) {
+  const params = new URLSearchParams({
+    part: 'snippet', maxResults: '5', playlistId: 'UU' + channelId.slice(2), key,
+  });
+  const res = await withRetry(
+    () => fetchOk(`https://www.googleapis.com/youtube/v3/playlistItems?${params}`, { signal: AbortSignal.timeout(10000) }),
+    `YouTube API ${label}`
+  );
+  const data = await res.json();
+  return (data.items ?? [])
+    .map(i => i.snippet)
+    .filter(sn => sn?.resourceId?.videoId && sn.title && !/^(private|deleted) video$/i.test(sn.title))
+    .map(sn => ({
+      title: sn.title,
+      url: `https://www.youtube.com/watch?v=${sn.resourceId.videoId}`,
+      date: sn.publishedAt,
+      summary: sn.description || '',
+    }));
+}
+
+/** Latest uploads via the public feed (no key). Flaky from GitHub runners. */
+async function fetchChannelFeed(channelId, label) {
+  const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  // The feed endpoint intermittently 500s *and* 404s for valid channels
+  // (seen in QA on known-good IDs) — retry both a few times
+  const res = await withRetry(() => fetchOk(feedUrl, { signal: AbortSignal.timeout(10000) }), `YouTube ${label} feed`, 3, [404]);
+  return parseRss(await res.text()).slice(0, 5);
+}
+
+async function fetchYouTubeVideos(channels) {
   const items = [];
   const maxAgeSec = MAX_POST_AGE_DAYS * 86400 * 1000;
   const now = Date.now();
+  const key = process.env.YOUTUBE_API_KEY;
+  const mode = key ? 'api' : 'feed';
+  console.log(`[scout] YouTube mode: ${key ? 'Data API' : 'public feeds (no YOUTUBE_API_KEY set)'}`);
 
-  for (const handle of channelHandles) {
-    // Resolve @handle → channel ID via oEmbed, then fetch the channel RSS
+  for (const { handle, id } of channels) {
+    const label = handle ? `@${handle}` : id;
     try {
-      const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/@${handle}`)}&format=json`;
-      const oRes = await fetch(oembedUrl, { signal: AbortSignal.timeout(8000) });
-      if (!oRes.ok) continue;
-      const oembed = await oRes.json();
-      // author_url is like https://www.youtube.com/channel/UCxxxx
-      const channelId = oembed?.author_url?.match(/\/channel\/(UC[a-zA-Z0-9_-]+)/)?.[1];
-      if (!channelId) continue;
+      let channelId = id;
+      if (!channelId) {
+        channelId = await resolveChannelId(handle);
+        console.log(`[scout] ${label}: resolved to ${channelId} (pin it in sources.txt to skip this lookup)`);
+      }
 
-      const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-      const rRes = await fetch(feedUrl, { signal: AbortSignal.timeout(10000) });
-      if (!rRes.ok) continue;
-      const xml = await rRes.text();
-      const entries = parseRss(xml).slice(0, 5);
+      const entries = mode === 'api'
+        ? await fetchChannelApi(channelId, label, key)
+        : await fetchChannelFeed(channelId, label);
 
       for (const entry of entries) {
         const ms = entry.date ? Date.parse(entry.date) : NaN;
         if (!isNaN(ms) && now - ms > maxAgeSec) continue;
         items.push({
           kind: 'youtube',
-          source: `@${handle}`,
+          source: label,
           title: entry.title,
-          body: '',
+          body: entry.summary.slice(0, 600),
           url: entry.url,
           score: null,
           comments: null,
@@ -274,9 +444,9 @@ async function fetchYouTubeVideos(channelHandles) {
         });
       }
 
-      if (entries.length > 0) console.log(`[scout] @${handle}: ${entries.length} videos`);
+      console.log(`[scout] ${label}: ${entries.length} videos via ${mode}`);
     } catch (err) {
-      console.warn(`[scout] @${handle}: ${err.message} — skipping`);
+      console.warn(`[scout] ${label}: ${err.message} — skipping`);
     }
   }
 
@@ -301,24 +471,58 @@ Honesty rules:
 - NEVER fabricate products, quotes, links, or events.
 - You are given a numbered list of REAL posts and articles. Pick the best ones.
 - Do NOT invent items that aren't on the list.
+- "buzz" may only state facts found in that item's title or text. If an item is
+  just a headline, keep the buzz to what the headline says — never add details
+  (prices, dates, teams, sales, "selling fast") that aren't in front of you,
+  never name products or brands the item doesn't name, and don't claim
+  something is "everywhere" or "blowing up" from a single post.
+- Skip items that are off-topic for coffee, ads/promotions, or too vague to post.
+- Set "src" to "verify" when the item makes a claim DrewBrews should double-check
+  before posting (a single user's report, a rumor or leak, a health or science
+  claim) and keep that buzz cautious. Otherwise: "press" = publication/news,
+  "review" = gear or product review/demo, "community" = Reddit or creator chatter.
 
-Output format (critical):
-Output ONLY a JSON array. Each object must have:
-  "index": the number of the item you picked (integer, from the list)
+Output: your picks, best first. For each:
+  "index": the item's number from the list
   "name": short trend name (≤ 80 chars)
   "buzz": 1-2 sentences describing the trend (≤ 400 chars)
   "tpl": one of "s1" "s2" "s3" "s4" "s5" "s6" (pick based on content type)
   "src": "press" | "review" | "community" | "verify"
-  "angle": how DrewBrews should frame it — inclusive, no gatekeeping (≤ 400 chars)
+  "angle": how DrewBrews should frame it — inclusive, no gatekeeping (≤ 400 chars)`;
 
-Never output prose, apologies, or markdown fences. Output only the JSON array.`;
+// Structured output: the API guarantees the reply matches this schema, so a
+// stray quote in a post title can't break parsing (the old "[" prefill could).
+const PICKS_SCHEMA = {
+  type: 'object',
+  properties: {
+    picks: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          index: { type: 'integer', description: 'Item number from the list' },
+          name: { type: 'string' },
+          buzz: { type: 'string' },
+          tpl: { type: 'string', enum: [...VALID_TPL] },
+          src: { type: 'string', enum: [...VALID_SRC] },
+          angle: { type: 'string' },
+        },
+        required: ['index', 'name', 'buzz', 'tpl', 'src', 'angle'],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ['picks'],
+  additionalProperties: false,
+};
 
 function buildCurationPrompt(items, today) {
   const numbered = items
     .map((item, i) => {
       const parts = [`[${i + 1}] ${item.kind.toUpperCase()} from ${item.source}`];
       parts.push(`Title: ${item.title}`);
-      if (item.body) parts.push(`Body excerpt: ${item.body.slice(0, 200)}`);
+      if (item.flair) parts.push(`Flair: ${item.flair}`);
+      if (item.body) parts.push(`Text: ${item.body.slice(0, 400)}`);
       if (item.score != null) parts.push(`Score: ${item.score}, Comments: ${item.comments}`);
       if (item.created) parts.push(`Date: ${item.created}`);
       return parts.join('\n');
@@ -328,76 +532,49 @@ function buildCurationPrompt(items, today) {
   return (
     `Today is ${today}. Pick up to 12 of the most postable specialty-coffee trends ` +
     `from the list below — the ones a DrewBrews audience would find exciting, useful, or interesting. ` +
-    `Order them best-first. If fewer than 12 are truly postable, return fewer — quality over quantity.\n\n` +
+    `Order them best-first. If fewer than 12 are truly postable, return fewer — quality over quantity. ` +
+    `Keep the mix varied: no more than 4 picks from any single subreddit, site, or channel.\n\n` +
     `For each pick, write fresh "buzz" and "angle" copy in DrewBrews voice. ` +
     `Set "index" to the item's number. Do NOT invent items not on this list.\n\n` +
     `ITEMS:\n\n${numbered}\n\n` +
-    `Output only the JSON array.`
+    `Return your picks, best first.`
   );
-}
-
-/** Pull text blocks from a Messages API response. */
-function collectText(message) {
-  return (message.content || [])
-    .filter(b => b.type === 'text')
-    .map(b => b.text)
-    .join('\n')
-    .trim();
-}
-
-function tryParse(s) {
-  try { return JSON.parse(s); } catch { return null; }
-}
-
-function parsePicks(text) {
-  if (!text) return [];
-  let t = text.replace(/```(?:json)?/gi, '').trim();
-  const direct = tryParse(t);
-  if (Array.isArray(direct)) return direct;
-  const start = t.indexOf('['); const end = t.lastIndexOf(']');
-  if (start !== -1 && end > start) {
-    const arr = tryParse(t.slice(start, end + 1));
-    if (Array.isArray(arr)) return arr;
-  }
-  return [];
 }
 
 async function curateTrends(client, items, today) {
   if (items.length === 0) return [];
 
-  const userMessage = buildCurationPrompt(items, today);
-  const messages = [
-    { role: 'user', content: userMessage },
-    { role: 'assistant', content: '[' },
-  ];
-
-  const create = () => withRetry(
-    () => client.messages.create({ model: MODEL, max_tokens: MAX_TOKENS, system: SYSTEM_PROMPT, messages }),
+  const response = await withRetry(
+    () => client.messages.create({
+      model: MODEL,
+      max_tokens: MAX_TOKENS,
+      system: SYSTEM_PROMPT,
+      output_config: { effort: EFFORT, format: { type: 'json_schema', schema: PICKS_SCHEMA } },
+      messages: [{ role: 'user', content: buildCurationPrompt(items, today) }],
+    }),
     'curation request'
   );
 
-  let response = await create();
-  let assembled = collectText(response);
-
-  let continuations = 0;
-  while (response.stop_reason === 'pause_turn' && continuations < MAX_CONTINUATIONS) {
-    messages.push({ role: 'assistant', content: response.content });
-    response = await create();
-    assembled += collectText(response);
-    continuations++;
-  }
-
-  const stripped = assembled.replace(/```(?:json)?/gi, '').trim();
-  const text = stripped.startsWith('[') ? stripped : '[' + stripped;
-
-  const picks = parsePicks(text);
-  if (picks.length === 0) {
-    console.warn(`[scout] curation: parsed 0 picks. Reply tail: ${JSON.stringify(text.slice(-300))}`);
+  if (response.stop_reason === 'refusal' || response.stop_reason === 'max_tokens') {
+    console.warn(`[scout] curation: stopped early (${response.stop_reason}) — no usable picks.`);
     return [];
   }
+  let picks = [];
+  try {
+    const text = response.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    picks = JSON.parse(text).picks ?? [];
+  } catch (err) {
+    console.warn(`[scout] curation: reply wasn't valid JSON (${err.message}).`);
+  }
+  if (picks.length === 0) {
+    console.warn(`[scout] curation: 0 picks (stop_reason: ${response.stop_reason}).`);
+    return [];
+  }
+  console.log(`[scout] curation usage: ${response.usage.input_tokens} in / ${response.usage.output_tokens} out`);
 
   // Map picks back to real collected items
   const trends = [];
+  const perSource = new Map();
   for (const pick of picks) {
     const idx = typeof pick.index === 'number' ? pick.index - 1 : -1;
     if (idx < 0 || idx >= items.length) {
@@ -406,12 +583,15 @@ async function curateTrends(client, items, today) {
     }
     const item = items[idx];
     if (!pick.name?.trim() || !pick.buzz?.trim()) continue;
+    const n = (perSource.get(item.source) ?? 0) + 1;
+    if (n > MAX_PER_SOURCE) continue; // keep the radar varied
+    perSource.set(item.source, n);
 
     trends.push({
       name: String(pick.name).trim().slice(0, 80),
       buzz: String(pick.buzz).trim().slice(0, 400),
       tpl: VALID_TPL.has(pick.tpl) ? pick.tpl : 's5',
-      src: VALID_SRC.has(pick.src) ? pick.src : (item.kind === 'article' || item.kind === 'press' ? 'press' : 'community'),
+      src: VALID_SRC.has(pick.src) ? pick.src : (item.kind === 'article' ? 'press' : item.kind === 'youtube' ? 'review' : 'community'),
       ...(pick.angle?.trim() ? { angle: String(pick.angle).trim().slice(0, 400) } : {}),
       source_url: item.url, // ← REAL URL from our collection, never from the model
     });
@@ -419,6 +599,57 @@ async function curateTrends(client, items, today) {
 
   console.log(`[scout] curation: ${trends.length} trends from ${picks.length} picks`);
   return trends.slice(0, 12);
+}
+
+// ---------------------------------------------------------------------------
+// De-duplication — drop re-uploads (same title) and anything already on last
+// week's radar, so each refresh is actually fresh.
+// ---------------------------------------------------------------------------
+
+async function previousUrls() {
+  try {
+    const prev = JSON.parse(await readFile(join(__dirname, 'radar.json'), 'utf8'));
+    return new Set((prev.trends ?? []).map(t => t.source_url));
+  } catch {
+    return new Set();
+  }
+}
+
+function dedupe(items, skipUrls) {
+  const seenTitles = new Set();
+  const out = [];
+  let repeats = 0;
+  for (const item of items) {
+    if (skipUrls.has(item.url)) { repeats++; continue; }
+    const key = item.title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    if (seenTitles.has(key)) continue;
+    seenTitles.add(key);
+    out.push(item);
+  }
+  if (repeats) console.log(`[scout] Skipped ${repeats} items already on last week's radar`);
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Source health — a whole source type going dark must be loud, not silent.
+// Emits GitHub Actions ::warning:: annotations and a job-summary table.
+// ---------------------------------------------------------------------------
+
+const HEALTH_HINTS = {
+  Reddit: process.env.REDDIT_CLIENT_ID ? '' : ' Known gap: Reddit API access not set up yet (see README → Known gaps).',
+  YouTube: process.env.YOUTUBE_API_KEY ? ' Check the YOUTUBE_API_KEY secret and its quota.' : ' No YOUTUBE_API_KEY set, so the flaky public feeds were used (see README setup step 7).',
+};
+
+async function reportSourceHealth(rows) {
+  const lines = ['### Radar source health', '', '| Source | Configured | Items collected |', '|---|---|---|'];
+  for (const [name, configured, collected] of rows) {
+    const ok = configured === 0 || collected > 0;
+    lines.push(`| ${ok ? '✅' : '❌'} ${name} | ${configured} | ${collected} |`);
+    if (!ok) console.log(`::warning title=${name} source is empty::${configured} ${name} sources configured but 0 items collected this run.${HEALTH_HINTS[name] ?? ''}`);
+  }
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    await appendFile(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n');
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -441,7 +672,7 @@ async function main() {
   console.log(`[scout] Sources — subreddits: ${subs.join(', ')} | sites: ${rssHosts.join(', ')} | yt: ${ytChannels.length} channels`);
 
   const today = new Date().toISOString().slice(0, 10);
-  console.log(`[scout] Model: ${MODEL} | date: ${today}`);
+  console.log(`[scout] Model: ${MODEL} (effort ${EFFORT}) | date: ${today}`);
 
   // ── Phase 1: Collect real content ──────────────────────────────────────────
   const [redditPosts, rssArticles, ytVideos] = await Promise.all([
@@ -450,8 +681,14 @@ async function main() {
     fetchYouTubeVideos(ytChannels),
   ]);
 
-  const allItems = [...redditPosts, ...rssArticles, ...ytVideos];
+  const allItems = dedupe([...redditPosts, ...rssArticles, ...ytVideos], await previousUrls());
   console.log(`[scout] Collected ${allItems.length} items total (${redditPosts.length} Reddit, ${rssArticles.length} articles, ${ytVideos.length} YouTube)`);
+  await reportSourceHealth([
+    ['Reddit', subs.length, redditPosts.length],
+    ['Articles', rssHosts.length, rssArticles.length],
+    ['YouTube', ytChannels.length, ytVideos.length],
+  ]);
+  if (COLLECTED_PATH) await writeFile(COLLECTED_PATH, JSON.stringify(allItems, null, 2) + '\n', 'utf8');
 
   if (allItems.length === 0) {
     console.error('[scout] No items collected — all sources failed. radar.json left untouched.');
@@ -484,7 +721,10 @@ async function main() {
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
-main().catch(err => {
+export { parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi };
+
+// Run only when executed directly (importing for tests must not start a scout run)
+if (process.argv[1] === fileURLToPath(import.meta.url)) main().catch(err => {
   console.error('[scout] Fatal error. radar.json left untouched.');
   console.error(err?.stack || err?.message || err);
   process.exit(1);
