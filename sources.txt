@@ -10,14 +10,17 @@ https://www.reddit.com/r/barista/
 https://www.reddit.com/r/OXORapidBrewer/
 
 # --- YouTube ---
-https://www.youtube.com/@LanceHedrick
-https://www.youtube.com/@jameshoffmann
-https://www.youtube.com/@SpecialtyCoffeeAssociation
-https://www.youtube.com/@Eightouncecoffee
-https://www.youtube.com/@BrianQuan
-https://www.youtube.com/@DaddyGotCoffee
-https://www.youtube.com/@Wholelattelovepage
-https://www.youtube.com/@Sprometheus
+# Format: channel URL, then its channel ID (UC…). The ID lets the scout read the
+# channel's video feed directly. New channel without an ID? Just add the URL —
+# the scout looks the ID up and prints it in the run log so you can pin it here.
+https://www.youtube.com/@LanceHedrick UCR2_8uHyWcTSV6iIw6BN4rg
+https://www.youtube.com/@jameshoffmann UCMb0O2CdPBNi-QqPk5T3gsQ
+https://www.youtube.com/@SpecialtyCoffeeAssociation UC3KqjxjVuqxXpjvLxFzyd9g
+https://www.youtube.com/@Eightouncecoffee UCtz9CYhNfDnuQ80QHZMS_sQ
+https://www.youtube.com/@BrianQuan UCwT72F8AWH-nbQYs-1GUBZQ
+https://www.youtube.com/@DaddyGotCoffee UCu7x43fFlwbBykF1r04T_wQ
+https://www.youtube.com/@Wholelattelovepage UCJwRmBtnYh_7Xs9oXUrLhZg
+https://www.youtube.com/@Sprometheus UCiolFxnJSOPMmV1mh9EYyIQ
 
 # --- Publications / blogs ---
 https://notabarista.org/

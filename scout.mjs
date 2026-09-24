@@ -107,6 +107,13 @@ async function withRetry(fn, label, attempts = 2) {
   }
 }
 
+/** fetch that throws on non-2xx (with .status), so withRetry can retry 429/5xx. */
+async function fetchOk(url, opts) {
+  const res = await fetch(url, opts);
+  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status });
+  return res;
+}
+
 // ---------------------------------------------------------------------------
 // Phase 1a: Reddit collection
 //   • With REDDIT_CLIENT_ID + REDDIT_CLIENT_SECRET: official OAuth API
@@ -144,13 +151,12 @@ async function getRedditToken() {
 async function fetchRedditApi(sub, token) {
   const url = `https://oauth.reddit.com/r/${sub}/top?t=week&limit=${REDDIT_POST_LIMIT}&raw_json=1`;
   const res = await withRetry(
-    () => fetch(url, {
+    () => fetchOk(url, {
       signal: AbortSignal.timeout(15000),
       headers: { 'Authorization': `Bearer ${token}`, 'User-Agent': USER_AGENT },
     }),
     `Reddit API r/${sub}`
   );
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
   return (data?.data?.children ?? [])
     .map(c => c?.data)
@@ -169,10 +175,9 @@ async function fetchRedditApi(sub, token) {
 async function fetchRedditRss(sub) {
   const url = `https://www.reddit.com/r/${sub}/top/.rss?t=week&limit=${REDDIT_POST_LIMIT}`;
   const res = await withRetry(
-    () => fetch(url, { signal: AbortSignal.timeout(15000), headers: { 'User-Agent': USER_AGENT } }),
+    () => fetchOk(url, { signal: AbortSignal.timeout(15000), headers: { 'User-Agent': USER_AGENT } }),
     `Reddit RSS r/${sub}`
   );
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return parseRss(await res.text()).map(e => ({
     title: e.title,
     // Reddit appends "submitted by /u/x [link] [comments]" to every entry
@@ -285,6 +290,16 @@ function parseRss(xml) {
   return items;
 }
 
+// Publisher footers that carry no information about the story
+const FEED_BOILERPLATE = [
+  /This article is from the coffee website Sprudge at \S+ \. This is the RSS feed version\.\s*/gi,
+  /The post .{1,200}? appeared first on .{1,80}?\.\s*$/i,
+];
+
+function stripFeedBoilerplate(text) {
+  return FEED_BOILERPLATE.reduce((t, re) => t.replace(re, ''), text).trim();
+}
+
 async function fetchRssArticles(hosts) {
   const maxAgeSec = MAX_POST_AGE_DAYS * 86400 * 1000; // ms
   const now = Date.now();
@@ -308,6 +323,9 @@ async function fetchRssArticles(hosts) {
         for (const entry of parsed) {
           const ms = entry.date ? Date.parse(entry.date) : NaN;
           if (!isNaN(ms) && now - ms > maxAgeSec) continue; // too old
+          entry.summary = stripFeedBoilerplate(entry.summary);
+          // Headline-only, name-like entries (e.g. notabarista.org profile pages) aren't news
+          if (!entry.summary && entry.title.split(/\s+/).length <= 4) continue;
           items.push({
             kind: 'article',
             source: host,
@@ -364,8 +382,8 @@ async function fetchYouTubeVideos(channels) {
       }
 
       const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-      const rRes = await withRetry(() => fetch(feedUrl, { signal: AbortSignal.timeout(10000) }), `YouTube ${label}`);
-      if (!rRes.ok) throw new Error(`feed HTTP ${rRes.status}`);
+      // YouTube's feed endpoint intermittently 500s — retry a few times
+      const rRes = await withRetry(() => fetchOk(feedUrl, { signal: AbortSignal.timeout(10000) }), `YouTube ${label} feed`, 3);
       const xml = await rRes.text();
       const entries = parseRss(xml).slice(0, 5);
 
@@ -537,6 +555,35 @@ async function curateTrends(client, items, today) {
 }
 
 // ---------------------------------------------------------------------------
+// De-duplication — drop re-uploads (same title) and anything already on last
+// week's radar, so each refresh is actually fresh.
+// ---------------------------------------------------------------------------
+
+async function previousUrls() {
+  try {
+    const prev = JSON.parse(await readFile(join(__dirname, 'radar.json'), 'utf8'));
+    return new Set((prev.trends ?? []).map(t => t.source_url));
+  } catch {
+    return new Set();
+  }
+}
+
+function dedupe(items, skipUrls) {
+  const seenTitles = new Set();
+  const out = [];
+  let repeats = 0;
+  for (const item of items) {
+    if (skipUrls.has(item.url)) { repeats++; continue; }
+    const key = item.title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    if (seenTitles.has(key)) continue;
+    seenTitles.add(key);
+    out.push(item);
+  }
+  if (repeats) console.log(`[scout] Skipped ${repeats} items already on last week's radar`);
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // Source health — a whole source type going dark must be loud, not silent.
 // Emits GitHub Actions ::warning:: annotations and a job-summary table.
 // ---------------------------------------------------------------------------
@@ -582,7 +629,7 @@ async function main() {
     fetchYouTubeVideos(ytChannels),
   ]);
 
-  const allItems = [...redditPosts, ...rssArticles, ...ytVideos];
+  const allItems = dedupe([...redditPosts, ...rssArticles, ...ytVideos], await previousUrls());
   console.log(`[scout] Collected ${allItems.length} items total (${redditPosts.length} Reddit, ${rssArticles.length} articles, ${ytVideos.length} YouTube)`);
   await reportSourceHealth([
     ['Reddit', subs.length, redditPosts.length],
@@ -622,7 +669,7 @@ async function main() {
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
-export { parseSources, parseRss, feedText };
+export { parseSources, parseRss, feedText, stripFeedBoilerplate };
 
 // Run only when executed directly (importing for tests must not start a scout run)
 if (process.argv[1] === fileURLToPath(import.meta.url)) main().catch(err => {
