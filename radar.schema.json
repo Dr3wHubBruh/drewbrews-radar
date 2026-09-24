@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "DrewBrews Trend Radar feed",
-  "description": "Contract between scout.mjs (writer) and the DrewBrews Trend Studio (reader). v1.",
+  "description": "Contract between scout.mjs (writer) and the DrewBrews Trend Studio (reader). v1, with optional image fields (v1.1, backwards compatible — schemaVersion stays 1).",
   "type": "object",
   "required": ["schemaVersion", "generatedAt", "trends"],
   "properties": {
@@ -20,7 +20,30 @@
           "buzz": { "type": "string", "minLength": 1, "maxLength": 400 },
           "tpl": { "type": "string", "enum": ["s1", "s2", "s3", "s4", "s5", "s6"] },
           "angle": { "type": "string", "maxLength": 400 },
-          "source_url": { "type": "string", "minLength": 1, "pattern": "^https?://[^/]+/.+" }
+          "source_url": {
+            "type": "string",
+            "description": "The EXACT page the buzz came from — a specific thread / watch?v= video / article. Not a homepage, channel, or subreddit root.",
+            "pattern": "^https?://[^/]+\\.[^/]+/[^\\s]+$",
+            "maxLength": 500
+          },
+          "image_url": {
+            "type": "string",
+            "description": "OPTIONAL. The article's og:image, downloaded into the radar repo and served from GitHub Pages (hotlinked images export blank from the Story Kit). See RADAR_IMAGES_SPEC.md.",
+            "pattern": "^https://[^/]+\\.[^/]+/[^\\s]+$",
+            "maxLength": 500
+          },
+          "image_origin": {
+            "type": "string",
+            "description": "REQUIRED when image_url is set. The URL the image was downloaded from before re-hosting. The Studio decides rights from this host; a self-hosted image without it is reference-only.",
+            "pattern": "^https?://[^/]+\\.[^/]+/[^\\s]+$",
+            "maxLength": 500
+          },
+          "image_credit": { "type": "string", "maxLength": 120, "description": "OPTIONAL. Who owns the image." },
+          "image_license": {
+            "type": "string",
+            "enum": ["press", "editorial", "unknown"],
+            "description": "OPTIONAL. 'press' ONLY when the image comes from the maker's own domain. The Studio re-checks the domain and fails safe."
+          }
         },
         "additionalProperties": true
       }
