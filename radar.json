@@ -1,86 +1,130 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-23T17:47:19.154Z",
+  "generatedAt": "2026-09-24T07:51:36.899Z",
   "trends": [
     {
-      "name": "Cafe Imports Goes 100% Employee-Owned",
-      "buzz": "One of specialty coffee's biggest green-bean importers just became fully employee-owned. This is a huge win for the people who source, QC, and ship the beans you brew every morning.",
+      "name": "Titanium Switch Fans Rave About the Hario RAN",
+      "buzz": "A pourover fan raves that the double-walled titanium Hario RAN Switch delivers noticeably better heat stability and more consistent flow than the glass Switch or Alpha version.",
       "tpl": "s2",
-      "src": "press",
-      "angle": "Frame as a feel-good industry shift that connects home brewers to the supply chain. Celebrate worker ownership as good for coffee quality and ethics — no jargon, just 'the folks doing the work now own the company.'",
-      "source_url": "https://sprudge.com/cafe-imports-is-now-100-employee-owned-1356707.html"
+      "src": "community",
+      "angle": "Love this kind of gear excitement — whether you brew with a $20 dripper or a titanium one, the cup in your hands is what matters. We're here for the hype either way.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1wod13b/hario_ran_titanium_v60_switch/"
     },
     {
-      "name": "Cascara Fizz: The Coffee Cherry RTD Taking Off",
-      "buzz": "Cascara Cabinet is turning coffee cherry husks into a sparkling RTD drink. It's caffeinated, fruity, and a zero-waste win — plus it's just hitting shelves nationwide.",
+      "name": "Zerno Z2 Grinder Finally Arrives",
+      "buzz": "After a nine-month wait, one Redditor's Zerno Z2 grinder finally showed up and they say it's producing some of their best brews yet.",
       "tpl": "s3",
-      "src": "review",
-      "angle": "Position as a fun, approachable way to experience cascara without needing a brew recipe. Emphasize sustainability + flavor, not preciousness. 'If you love cold brew but want something lighter, this is your move.'",
-      "source_url": "https://sprudge.com/ready-to-drink-the-cascara-fizz-boom-from-cascara-cabinet-1278625.html"
+      "src": "community",
+      "angle": "Long waitlists can feel intimidating, but they're proof people are genuinely excited about better grinding — no gatekeeping here, just celebrating a fellow coffee nerd's big day.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1wnqp65/finally_z2/"
     },
     {
-      "name": "Electrified Cold Brew Speeds Up Your Summer Sips",
-      "buzz": "Atomic Coffee and Overpotential teamed up to create cold brew that extracts in minutes using electrification tech. It's faster, cleaner-tasting, and opens up new brewing possibilities at home.",
-      "tpl": "s4",
-      "src": "press",
-      "angle": "Make it exciting for gear nerds and beginners alike. Frame as 'cold brew without the 12-hour wait' — no pretense, just a practical innovation. Hint at future home brewers being sold if the tech scales.",
-      "source_url": "https://dailycoffeenews.com/2026/09/23/atomic-coffee-and-overpotential-combine-for-electrified-cold-brew/"
-    },
-    {
-      "name": "Solar-Powered Coffee Roasting Is Now a Real Thing",
-      "buzz": "A New Mexico experiment is using solar heat to roast coffee beans. It's early-stage but could change how roasters think about energy and sustainability — especially in sunny climates.",
+      "name": "Stainless Steel Hario Switch Drippers Spotted",
+      "buzz": "A pourover fan in the Netherlands finally received their double-wall stainless steel Hario Switch drippers, ordered from a Hong Kong shop, complete with 100 tabbed filters.",
       "tpl": "s1",
-      "src": "press",
-      "angle": "Frame as 'the future is weird and cool.' Celebrate the innovation without overpromising. Tie it to home brewing: 'The beans you buy tomorrow might be sun-roasted — and that's awesome.'",
-      "source_url": "https://dailycoffeenews.com/2026/09/21/new-mexico-experiment-brings-solar-heat-to-the-roasting-drum/"
+      "src": "community",
+      "angle": "New dripper material variations are always fun to see — remember, the 'best' brewer is just the one that gets you excited to make coffee.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1woajrf/my_hario_switch_double_wall_stainless_steel/"
     },
     {
-      "name": "New Study Links Coffee to Muscle, Fat & Testosterone",
-      "buzz": "Fresh research shows coffee consumption is associated with body composition and hormone levels. Whether you brew for gains or just love the ritual, coffee keeps surprising scientists.",
+      "name": "A Reminder to Visit Your Local Roaster",
+      "buzz": "A community post encourages coffee lovers to visit local roasters, buy direct, and support small businesses — even paying a bit more for the connection and conversation.",
+      "tpl": "s4",
+      "src": "community",
+      "angle": "This is the same-team energy we live for. Supporting your local roaster isn't a flex, it's just good coffee citizenship — everyone's welcome at the counter.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1wn5b1t/visit_you_local_roaster/"
+    },
+    {
+      "name": "The Pinch-of-Salt Trick",
+      "buzz": "One brewer tried adding a pinch of salt to their metal-filter brew (a trick they say Alton Brown uses) and reports it tastes smoother.",
       "tpl": "s5",
       "src": "verify",
-      "angle": "Keep it light and inclusive — no bro-science. Frame as 'coffee does more than wake you up,' and invite curiosity. Avoid health claims; just celebrate the science as interesting, not prescriptive.",
-      "source_url": "https://dailycoffeenews.com/2026/09/23/study-finds-coffee-associations-with-fat-muscle-and-testosterone/"
+      "angle": "Fun kitchen-hack energy, but it's one person's experiment — worth trying at home and seeing what you think, no wrong answers in your own cup.",
+      "source_url": "https://www.reddit.com/r/OXORapidBrewer/comments/1wog4py/a_pinch_of_salt/"
     },
     {
-      "name": "MLB Pitcher's Espresso Machine Mystery Goes Viral",
-      "buzz": "Dodgers ace Tarik Skubal's espresso setup became a social media detective story. Fans are debating the machine, the grinder, and whether he pulls his own shots before games.",
+      "name": "Go Get Em Tiger Moves Roasting to Origin",
+      "buzz": "The LA specialty coffee company plans to shift 20% of its roasting to origin countries by end of 2026, aiming for 70% by end of 2027.",
       "tpl": "s6",
-      "src": "community",
-      "angle": "Lean into the fun. 'Same team' vibes — pros and beginners alike geek out over gear. Use it to normalize coffee obsession and show that even elite athletes care about their morning pour-over (or shot).",
-      "source_url": "https://sprudge.com/the-plot-thickens-on-dodgers-pitcher-tarik-skubals-espresso-machine-1348212.html"
+      "src": "press",
+      "angle": "Big structural shift worth celebrating — moving roasting closer to origin means more opportunity and value staying where the coffee is grown.",
+      "source_url": "https://sprudge.com/go-get-em-tiger-launches-roasted-at-origin-shifting-more-of-its-coffee-program-to-producing-countries-1361782.html",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/go-get-em-tiger-moves-roasting-to-origin.jpg",
+      "image_origin": "https://sprudge.com/wp-content/uploads/2026/09/gget-roasted-at-origin.jpg",
+      "image_credit": "sprudge.com",
+      "image_license": "editorial"
     },
     {
-      "name": "SCA Invests $1M in UC Davis Coffee Research",
-      "buzz": "The Specialty Coffee Association just gave UC Davis a million dollars for a new research fellowship. Expect breakthroughs in agronomy, flavor science, and brewing tech in the next few years.",
+      "name": "Variety Coffee Hits 10 NYC Locations",
+      "buzz": "Variety Coffee Roasters just opened its 10th New York City shop, this one in Greenpoint, adding to its Brooklyn, Manhattan, and Queens spots.",
+      "tpl": "s1",
+      "src": "press",
+      "angle": "Ten shops and counting — proof that specialty coffee can scale without losing its neighborhood feel. Great excuse for an NYC coffee crawl.",
+      "source_url": "https://dailycoffeenews.com/2026/09/22/variety-coffee-roasters-consistently-delivers-with-10th-new-york-location/",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/variety-coffee-hits-10-nyc-locations.jpg",
+      "image_origin": "https://dailycoffeenews.com/wp-content/uploads/2026/09/20260604_Variety-Coffee_004-620x414.jpg",
+      "image_credit": "dailycoffeenews.com",
+      "image_license": "editorial"
+    },
+    {
+      "name": "Lance Hedrick's 4 Aeropress Tips",
+      "buzz": "Lance Hedrick shares his four favorite tips for getting juicier brews out of the ever-popular Aeropress.",
       "tpl": "s2",
-      "src": "press",
-      "angle": "Frame as 'your coffee is about to get even better.' Celebrate investment in science as benefiting everyone — from farmers to home brewers. No gatekeeping: 'This research will level up the beans you buy.'",
-      "source_url": "https://dailycoffeenews.com/2026/09/22/sca-gives-uc-davis-coffee-center-1-million-for-research-fellowship/"
+      "src": "review",
+      "angle": "The Aeropress is the ultimate no-gatekeeping brewer — cheap, portable, forgiving. These tips are for everyone, beginner or veteran.",
+      "source_url": "https://www.youtube.com/watch?v=XkBKWBCiVxc",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/lance-hedricks-4-aeropress-tips.jpg",
+      "image_origin": "https://i.ytimg.com/vi/XkBKWBCiVxc/maxresdefault.jpg",
+      "image_credit": "@LanceHedrick",
+      "image_license": "unknown"
     },
     {
-      "name": "Blends Build Loyalty, Micro Lots Get the Glory",
-      "buzz": "A new industry deep-dive argues that while single-origin micro lots dominate hype, it's blends that keep customers coming back. Consistency beats novelty for most home brewers.",
-      "tpl": "s5",
-      "src": "press",
-      "angle": "Validate the everyday coffee drinker. Frame blends as smart, not boring. 'You don't need a $40 Gesha to make killer coffee — a great blend and good technique beat hype every time.'",
-      "source_url": "https://perfectdailygrind.com/2026/09/specialty-coffee-blends-longevity/"
-    },
-    {
-      "name": "Should Coffee Invest More in Baristas as Automation Rises?",
-      "buzz": "As superautomatics and smart brewers flood the market, a new essay asks: are we investing enough in the humans who teach, inspire, and innovate? The debate is heating up.",
-      "tpl": "s5",
-      "src": "community",
-      "angle": "Frame as relevant to home brewers: 'The people who taught you to brew deserve support, even as gear gets smarter.' Celebrate human expertise as irreplaceable, not threatened.",
-      "source_url": "https://perfectdailygrind.com/2026/09/automation-in-coffee-investing-in-baristas/"
-    },
-    {
-      "name": "World's Best Baristas Are Going on Tour",
-      "buzz": "Top competitive baristas are hitting the road with live demos, tastings, and Q&As. It's part masterclass, part coffee concert — and tickets are selling fast in major cities.",
+      "name": "A Dripper That Removes the Guesswork",
+      "buzz": "Lance Hedrick reviews the Gabi Drip Master, a nearly decade-old brewer designed to take human error out of pourover for people intimidated by manual brewing.",
       "tpl": "s3",
-      "src": "community",
-      "angle": "Make it accessible: 'You don't need to compete to learn from champions.' Frame as a fun, inclusive way to level up your brewing. Encourage people to grab tickets and geek out together.",
-      "source_url": "https://perfectdailygrind.com/2026/09/baristas-going-on-tour/"
+      "src": "review",
+      "angle": "Manual brewing can feel intimidating at first — gadgets like this exist to make pourover approachable for everyone, not to replace the joy of learning.",
+      "source_url": "https://www.youtube.com/watch?v=v5ovxAg_Aqw",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/a-dripper-that-removes-the-guesswork.jpg",
+      "image_origin": "https://i.ytimg.com/vi/v5ovxAg_Aqw/maxresdefault.jpg",
+      "image_credit": "@LanceHedrick",
+      "image_license": "unknown"
+    },
+    {
+      "name": "Puck Prep 101 for Better Espresso",
+      "buzz": "Eight Ounce Coffee breaks down why an even coffee bed matters for extraction and shares their go-to puck prep routine.",
+      "tpl": "s4",
+      "src": "review",
+      "angle": "Puck prep sounds fancy but it's really just about giving water an even path through your coffee — simple tweak, big payoff, and totally doable at home.",
+      "source_url": "https://www.youtube.com/watch?v=TiC2oMqOsvo",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/puck-prep-101-for-better-espresso.jpg",
+      "image_origin": "https://i.ytimg.com/vi/TiC2oMqOsvo/maxresdefault.jpg",
+      "image_credit": "@Eightouncecoffee",
+      "image_license": "unknown"
+    },
+    {
+      "name": "Why Everyone's Talking About the Bookoo Themis Ultra Scale",
+      "buzz": "A reviewer notes the Bookoo Themis Ultra scale has become a fixture on many coffee benches, priced at roughly half of an Acaia Lunar, and digs into whether it holds up.",
+      "tpl": "s5",
+      "src": "verify",
+      "angle": "A budget scale getting this much love is exciting — but as always, watch the full comparison before you buy so you know what you're getting.",
+      "source_url": "https://www.youtube.com/watch?v=ZJGir5fbRCM",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/why-everyones-talking-about-the-bookoo-themis-ultra-scale.jpg",
+      "image_origin": "https://i.ytimg.com/vi/ZJGir5fbRCM/maxresdefault.jpg",
+      "image_credit": "@DaddyGotCoffee",
+      "image_license": "unknown"
+    },
+    {
+      "name": "A Dual-Burr 80mm Grinder Enters the Chat",
+      "buzz": "Brian Quan checks out the OZIK THE ALL, a dual burr grinder with 80mm and 83mm burrs, brewing and pulling espresso on it.",
+      "tpl": "s6",
+      "src": "review",
+      "angle": "Big, ambitious grinder builds like this show how fast home gear is evolving — fun to watch even if you're perfectly happy with a hand grinder.",
+      "source_url": "https://www.youtube.com/watch?v=56rcy6caCZw",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/a-dual-burr-80mm-grinder-enters-the-chat.jpg",
+      "image_origin": "https://i.ytimg.com/vi/56rcy6caCZw/maxresdefault.jpg",
+      "image_credit": "@BrianQuan",
+      "image_license": "unknown"
     }
   ]
 }
