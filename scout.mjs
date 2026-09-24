@@ -291,7 +291,31 @@ function tag(inner, name) {
   return inner.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`, 'i'))?.[1];
 }
 
-/** Minimal RSS/Atom parser: returns [{title, url, date, summary}] */
+/**
+ * The image a publisher attached to a feed entry (meant for syndication):
+ * media:content / media:thumbnail / image enclosure, else the first <img> in
+ * the entry's HTML. Returns an absolute http(s) URL or null.
+ */
+function feedEntryImage(inner, base) {
+  const attrUrl = re => inner.match(re)?.[1];
+  const html = decodeEntities((inner.match(/<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/i)?.[1] ||
+    inner.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] || '')
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1'));
+  const raw =
+    attrUrl(/<media:content\b(?=[^>]*\b(?:medium="image"|type="image\/))[^>]*\burl="([^"]+)"/i) ||
+    attrUrl(/<media:thumbnail\b[^>]*\burl="([^"]+)"/i) ||
+    attrUrl(/<enclosure\b(?=[^>]*\btype="image\/)[^>]*\burl="([^"]+)"/i) ||
+    html.match(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+  if (!raw) return null;
+  try {
+    const url = new URL(decodeEntities(raw.trim()), base);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Minimal RSS/Atom parser: returns [{title, url, date, summary, image}] */
 function parseRss(xml) {
   const items = [];
   // RSS <item> blocks
@@ -302,7 +326,7 @@ function parseRss(xml) {
       inner.match(/<guid[^>]*isPermaLink="true"[^>]*>([\s\S]*?)<\/guid>/i)?.[1]?.trim();
     const date = tag(inner, 'pubDate')?.trim();
     const summary = feedText(tag(inner, 'description') || tag(inner, 'content:encoded'));
-    if (title && link && link.startsWith('http')) items.push({ title, url: link, date, summary });
+    if (title && link && link.startsWith('http')) items.push({ title, url: link, date, summary, image: feedEntryImage(inner, link) });
   }
   // Atom <entry> blocks (Reddit, YouTube)
   for (const block of xml.matchAll(/<entry[^>]*>([\s\S]*?)<\/entry>/gi)) {
@@ -311,7 +335,7 @@ function parseRss(xml) {
     const link = inner.match(/<link[^>]*href="([^"]+)"/i)?.[1]?.trim();
     const date = (tag(inner, 'published') || tag(inner, 'updated'))?.trim();
     const summary = feedText(tag(inner, 'summary') || tag(inner, 'content') || tag(inner, 'media:description'));
-    if (title && link && link.startsWith('http')) items.push({ title, url: decodeEntities(link), date, summary });
+    if (title && link && link.startsWith('http')) items.push({ title, url: decodeEntities(link), date, summary, image: feedEntryImage(inner, decodeEntities(link)) });
   }
   return items;
 }
@@ -361,6 +385,7 @@ async function fetchRssArticles(hosts) {
             score: null,
             comments: null,
             created: isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10),
+            feedImage: entry.image, // fallback when the article page can't be read
           });
         }
 
@@ -416,6 +441,7 @@ async function fetchChannelApi(channelId, label, key) {
       url: `https://www.youtube.com/watch?v=${sn.resourceId.videoId}`,
       date: sn.publishedAt,
       summary: sn.description || '',
+      thumbs: ['maxres', 'standard', 'high'].map(k => sn.thumbnails?.[k]?.url).filter(Boolean),
     }));
 }
 
@@ -463,6 +489,7 @@ async function fetchYouTubeVideos(channels) {
           score: null,
           comments: null,
           created: isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10),
+          thumbs: entry.thumbs ?? [],
         });
       }
 
@@ -745,43 +772,88 @@ const IMAGE_ORIGIN_PATTERN = /^https?:\/\/[^/]+\.[^/]+\/[^\s]+$/; // mirrors rad
  * trends, staging the files in stagingDir. A trend only gets image fields when
  * the whole chain succeeded AND the origin is traceable; otherwise it gets none.
  */
-async function attachImages(trends, itemsByUrl, stagingDir, publicationHosts) {
-  const used = new Set();
-  let attached = 0;
-  for (const trend of trends) {
-    if (itemsByUrl.get(trend.source_url)?.kind !== 'article') continue;
-    const label = `image for "${trend.name}"`;
+function youtubeVideoId(url) {
+  return url.match(/(?:[?&]v=|\/shorts\/|youtu\.be\/)([\w-]{11})/)?.[1] ?? null;
+}
+
+/**
+ * Ranked image candidates for a trend: [{ url, via }]. First one that downloads
+ * and is big enough wins.
+ *   article → the page's og:image / twitter:image / image_src (the spec's
+ *             route), then the image the publisher put in its RSS feed
+ *   youtube → the API's largest thumbnails, then the standard i.ytimg.com
+ *             maxres/sd sizes (hqdefault is 480px: always under the floor)
+ *   reddit  → none
+ */
+async function imageCandidates(trend, item, label) {
+  const out = [];
+  if (item?.kind === 'article') {
     try {
       const page = await withRetry(
         () => fetchOk(trend.source_url, { signal: AbortSignal.timeout(15000), headers: { 'User-Agent': USER_AGENT } }),
         `article page (${label})`
       );
-      const imageUrl = extractImageUrl(await page.text(), page.url || trend.source_url);
-      if (!imageUrl) { console.log(`[scout] ${label}: no og:image / twitter:image / image_src — none attached`); continue; }
-
-      const { buf, origin } = await downloadImage(imageUrl);
-      if (origin.length > 500 || !IMAGE_ORIGIN_PATTERN.test(origin)) {
-        console.log(`[scout] ${label}: origin URL isn't traceable (${origin.slice(0, 80)}) — none attached`);
-        continue;
-      }
-      const jpeg = await toStoryJpeg(buf);
-      if (!jpeg) { console.log(`[scout] ${label}: under ${IMAGE_MIN_EDGE}px — skipped`); continue; }
-
-      let file = `${slugify(trend.name)}.jpg`;
-      for (let n = 2; used.has(file); n++) file = `${slugify(trend.name)}-${n}.jpg`;
-      used.add(file);
-      await writeFile(join(stagingDir, file), jpeg);
-
-      const { license, credit } = imageRights(origin, publicationHosts);
-      trend.image_url = `${PAGES_BASE_URL}/images/${file}`;
-      trend.image_origin = origin;
-      if (credit) trend.image_credit = credit;
-      trend.image_license = license;
-      attached++;
-      console.log(`[scout] ${label}: ${file} (${license}, from ${new URL(origin).hostname})`);
+      const og = extractImageUrl(await page.text(), page.url || trend.source_url);
+      if (og) out.push({ url: og, via: 'article page' });
+      else console.log(`[scout] ${label}: article page has no og:image / twitter:image / image_src`);
     } catch (err) {
-      console.warn(`[scout] ${label}: ${err.message} — none attached`);
+      console.log(`[scout] ${label}: article page unreadable (${err.message})`);
     }
+    if (item.feedImage) out.push({ url: item.feedImage, via: 'RSS feed' });
+  } else if (item?.kind === 'youtube') {
+    for (const url of item.thumbs ?? []) out.push({ url, via: 'YouTube thumbnail' });
+    const id = youtubeVideoId(trend.source_url);
+    if (id) for (const size of ['maxresdefault', 'sddefault']) out.push({ url: `https://i.ytimg.com/vi/${id}/${size}.jpg`, via: 'YouTube thumbnail' });
+  }
+  return out.filter((c, i, all) => all.findIndex(o => o.url === c.url) === i);
+}
+
+/**
+ * Adds image_url / image_origin / image_credit / image_license to article and
+ * YouTube trends, staging the files in stagingDir. A trend only gets image
+ * fields when a download fully succeeded AND its origin is traceable;
+ * otherwise it gets none.
+ */
+async function attachImages(trends, itemsByUrl, stagingDir, publicationHosts) {
+  const used = new Set();
+  let attached = 0;
+  for (const trend of trends) {
+    const item = itemsByUrl.get(trend.source_url);
+    if (item?.kind !== 'article' && item?.kind !== 'youtube') continue;
+    const label = `image for "${trend.name}"`;
+    const candidates = await imageCandidates(trend, item, label);
+    if (!candidates.length) { console.log(`[scout] ${label}: no image found — none attached`); continue; }
+
+    for (const { url, via } of candidates) {
+      try {
+        const { buf, origin } = await downloadImage(url);
+        if (origin.length > 500 || !IMAGE_ORIGIN_PATTERN.test(origin)) {
+          console.log(`[scout] ${label}: ${via} origin isn't traceable (${origin.slice(0, 80)})`);
+          continue;
+        }
+        const jpeg = await toStoryJpeg(buf);
+        if (!jpeg) { console.log(`[scout] ${label}: ${via} image under ${IMAGE_MIN_EDGE}px`); continue; }
+
+        let file = `${slugify(trend.name)}.jpg`;
+        for (let n = 2; used.has(file); n++) file = `${slugify(trend.name)}-${n}.jpg`;
+        used.add(file);
+        await writeFile(join(stagingDir, file), jpeg);
+
+        const { license, credit } = imageRights(origin, publicationHosts);
+        trend.image_url = `${PAGES_BASE_URL}/images/${file}`;
+        trend.image_origin = origin;
+        // A video thumbnail belongs to the channel that made it
+        const who = credit ?? (item.kind === 'youtube' ? item.source : null);
+        if (who) trend.image_credit = who;
+        trend.image_license = license;
+        attached++;
+        console.log(`[scout] ${label}: ${file} via ${via} (${license}, from ${new URL(origin).hostname})`);
+        break;
+      } catch (err) {
+        console.log(`[scout] ${label}: ${via} download failed (${err.message})`);
+      }
+    }
+    if (!trend.image_url) console.log(`[scout] ${label}: none attached`);
   }
   console.log(`[scout] Images: attached to ${attached} of ${trends.length} trends`);
 }
@@ -926,7 +998,7 @@ async function main() {
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
-export { parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi, extractImageUrl, imageRights, toStoryJpeg, slugify, imageRuleErrors, attachImages, publishRadar };
+export { parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi, extractImageUrl, imageRights, toStoryJpeg, slugify, imageRuleErrors, attachImages, publishRadar, feedEntryImage, youtubeVideoId };
 
 // Run only when executed directly (importing for tests must not start a scout run)
 if (process.argv[1] === fileURLToPath(import.meta.url)) main().catch(err => {

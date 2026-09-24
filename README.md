@@ -167,13 +167,20 @@ untouched**.
 
 ## Article images
 
-For each trend that comes from an article, the scout attaches the article's own
-preview image so the Story Kit can show what the story is about. Full rules:
+For article and YouTube trends, the scout attaches the story's own preview
+image so the Story Kit can show what the story is about. Full rules:
 [`RADAR_IMAGES_SPEC.md`](RADAR_IMAGES_SPEC.md).
 
-- It reads the article's `og:image`, then `twitter:image`, then
-  `<link rel="image_src">`. If none exist, the trend gets **no** image fields.
-  Nothing is guessed or substituted.
+- **Articles:** the article page's `og:image`, then `twitter:image`, then
+  `<link rel="image_src">`. If the page can't be read (some sites block
+  automated requests) or has none, it falls back to the image the publisher
+  attached to that story in its RSS feed.
+- **YouTube:** the video's thumbnail (the largest one available). These get
+  `image_license: "unknown"` (the channel owns them, so reference-only) and
+  `image_credit` set to the channel.
+- **Reddit:** no images.
+- If nothing is found, the trend gets **no** image fields. Nothing is guessed
+  or substituted.
 - The image is downloaded, resized to 1500px on its long edge (JPEG, quality
   82) and saved under `images/`, so `image_url` points at this repo's GitHub
   Pages copy. Images under 600px are skipped. Images the radar no longer uses
