@@ -114,11 +114,13 @@ Only these sources are used — the scout never pulls from anywhere else.
 
 ## How to use a different model
 
-The model name lives in exactly one place in `scout.mjs`
-(`const MODEL = …`). You can also override it without editing code by setting a
-`MODEL` environment variable. The default is `claude-sonnet-4-5` — strong at the
-multi-step web research this job needs, still pennies per week. Set
-`MODEL=claude-haiku-4-5` for a cheaper run, or an Opus model for a smarter one.
+The model name lives in exactly one place in `scout.mjs` (`const MODEL = …`).
+You can also override it without editing code by setting a `MODEL` environment
+variable. The default is `claude-sonnet-5`, which is plenty for picking and
+writing short copy, and costs pennies per week. It runs at `medium` effort; set
+`EFFORT=high` for more careful picks. Picks come back as structured output
+(JSON checked against a schema), so any current model that supports structured
+outputs works.
 
 ---
 

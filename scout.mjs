@@ -32,8 +32,11 @@ const SOURCES_PATH = join(__dirname, 'sources.txt');
 const OUTPUT_PATH = process.env.OUTPUT_PATH || join(__dirname, 'radar.json');
 const COLLECTED_PATH = process.env.COLLECTED_PATH || null;
 
-const MODEL = process.env.MODEL || 'claude-sonnet-4-5';
-const MAX_TOKENS = 8192;
+const MODEL = process.env.MODEL || 'claude-sonnet-5';
+// Sonnet 5 thinks (adaptively) by default — leave room for thinking + ~12 picks
+const MAX_TOKENS = 16000;
+// Picking + short copy doesn't need deep reasoning; medium keeps it quick and cheap
+const EFFORT = process.env.EFFORT || 'medium';
 
 const VALID_TPL = new Set(['s1', 's2', 's3', 's4', 's5', 's6']);
 const VALID_SRC = new Set(['press', 'review', 'community', 'verify']);
@@ -437,7 +440,7 @@ Honesty rules:
   something is "everywhere" or "blowing up" from a single post.
 - Skip items that are off-topic for coffee, ads/promotions, or too vague to post.
 
-Output: call the submit_picks tool once with your picks, best first. For each:
+Output: your picks, best first. For each:
   "index": the item's number from the list
   "name": short trend name (≤ 80 chars)
   "buzz": 1-2 sentences describing the trend (≤ 400 chars)
@@ -445,32 +448,30 @@ Output: call the submit_picks tool once with your picks, best first. For each:
   "src": "press" | "review" | "community" | "verify"
   "angle": how DrewBrews should frame it — inclusive, no gatekeeping (≤ 400 chars)`;
 
-// Forced tool call = the API hands back already-parsed JSON, so a stray quote
-// in a post title can't break parsing (the old "[" prefill approach could).
-const PICKS_TOOL = {
-  name: 'submit_picks',
-  description: 'Submit the curated trend picks for this week\'s radar, best first.',
-  input_schema: {
-    type: 'object',
-    properties: {
-      picks: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            index: { type: 'integer', description: 'Item number from the list' },
-            name: { type: 'string' },
-            buzz: { type: 'string' },
-            tpl: { type: 'string', enum: [...VALID_TPL] },
-            src: { type: 'string', enum: [...VALID_SRC] },
-            angle: { type: 'string' },
-          },
-          required: ['index', 'name', 'buzz', 'tpl', 'src', 'angle'],
+// Structured output: the API guarantees the reply matches this schema, so a
+// stray quote in a post title can't break parsing (the old "[" prefill could).
+const PICKS_SCHEMA = {
+  type: 'object',
+  properties: {
+    picks: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          index: { type: 'integer', description: 'Item number from the list' },
+          name: { type: 'string' },
+          buzz: { type: 'string' },
+          tpl: { type: 'string', enum: [...VALID_TPL] },
+          src: { type: 'string', enum: [...VALID_SRC] },
+          angle: { type: 'string' },
         },
+        required: ['index', 'name', 'buzz', 'tpl', 'src', 'angle'],
+        additionalProperties: false,
       },
     },
-    required: ['picks'],
   },
+  required: ['picks'],
+  additionalProperties: false,
 };
 
 function buildCurationPrompt(items, today) {
@@ -493,7 +494,7 @@ function buildCurationPrompt(items, today) {
     `For each pick, write fresh "buzz" and "angle" copy in DrewBrews voice. ` +
     `Set "index" to the item's number. Do NOT invent items not on this list.\n\n` +
     `ITEMS:\n\n${numbered}\n\n` +
-    `Submit your picks with the submit_picks tool.`
+    `Return your picks, best first.`
   );
 }
 
@@ -505,22 +506,28 @@ async function curateTrends(client, items, today) {
       model: MODEL,
       max_tokens: MAX_TOKENS,
       system: SYSTEM_PROMPT,
-      tools: [PICKS_TOOL],
-      tool_choice: { type: 'tool', name: PICKS_TOOL.name },
+      output_config: { effort: EFFORT, format: { type: 'json_schema', schema: PICKS_SCHEMA } },
       messages: [{ role: 'user', content: buildCurationPrompt(items, today) }],
     }),
     'curation request'
   );
 
-  const call = response.content.find(b => b.type === 'tool_use' && b.name === PICKS_TOOL.name);
-  const picks = Array.isArray(call?.input?.picks) ? call.input.picks : [];
+  if (response.stop_reason === 'refusal' || response.stop_reason === 'max_tokens') {
+    console.warn(`[scout] curation: stopped early (${response.stop_reason}) — no usable picks.`);
+    return [];
+  }
+  let picks = [];
+  try {
+    const text = response.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    picks = JSON.parse(text).picks ?? [];
+  } catch (err) {
+    console.warn(`[scout] curation: reply wasn't valid JSON (${err.message}).`);
+  }
   if (picks.length === 0) {
     console.warn(`[scout] curation: 0 picks (stop_reason: ${response.stop_reason}).`);
     return [];
   }
-  if (response.stop_reason === 'max_tokens') {
-    console.warn('[scout] curation: hit max_tokens — picks may be incomplete.');
-  }
+  console.log(`[scout] curation usage: ${response.usage.input_tokens} in / ${response.usage.output_tokens} out`);
 
   // Map picks back to real collected items
   const trends = [];
@@ -613,7 +620,7 @@ async function main() {
   console.log(`[scout] Sources — subreddits: ${subs.join(', ')} | sites: ${rssHosts.join(', ')} | yt: ${ytChannels.length} channels`);
 
   const today = new Date().toISOString().slice(0, 10);
-  console.log(`[scout] Model: ${MODEL} | date: ${today}`);
+  console.log(`[scout] Model: ${MODEL} (effort ${EFFORT}) | date: ${today}`);
 
   // ── Phase 1: Collect real content ──────────────────────────────────────────
   const [redditPosts, rssArticles, ytVideos] = await Promise.all([
