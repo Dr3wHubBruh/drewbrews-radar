@@ -1,0 +1,54 @@
+# TEMPORARY — QA run of the scout on GitHub's runners. Writes to qa/ only;
+# never commits, never touches radar.json or the Gist. Delete before merging.
+name: QA scout (temporary)
+
+on:
+  push:
+    branches: [claude/vibrant-johnson-95c817]
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Probe Reddit endpoints from a GitHub runner
+        run: |
+          for u in \
+            "https://www.reddit.com/r/pourover/hot.json?limit=5" \
+            "https://www.reddit.com/r/pourover/top/.rss?t=week&limit=5" \
+            "https://old.reddit.com/r/pourover/top/.rss?t=week&limit=5"; do
+            echo "$(curl -s -o /dev/null -w '%{http_code}' -A 'DrewBrews-Radar/2.0 (weekly coffee trend scout; contact via GitHub)' "$u")  $u"
+          done
+
+      - name: Run the scout (QA output only)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          OUTPUT_PATH: qa/radar.qa.json
+          COLLECTED_PATH: qa/collected.json
+        run: mkdir -p qa && node scout.mjs
+
+      - name: Print results for review
+        if: always()
+        run: |
+          echo "===== COLLECTED (Reddit) ====="
+          jq -r '.[] | select(.kind=="reddit") | "\(.source) | \(.created) | \(.title) | \(.url)\n    TEXT: \(.body[0:220])"' qa/collected.json || true
+          echo "===== COLLECTED (YouTube) ====="
+          jq -r '.[] | select(.kind=="youtube") | "\(.source) | \(.created) | \(.title) | \(.url)"' qa/collected.json || true
+          echo "===== COLLECTED (Articles) ====="
+          jq -r '.[] | select(.kind=="article") | "\(.source) | \(.created) | \(.title)\n    TEXT: \(.body[0:160])"' qa/collected.json || true
+          echo "===== RADAR ====="
+          cat qa/radar.qa.json || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-results
+          path: qa/
