@@ -45,7 +45,7 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: node scout.mjs
 
-      - name: Commit radar.json if it changed
+      - name: Commit radar.json and images/ if they changed
         run: |
           git config user.name "drewbrews-radar-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -54,20 +54,25 @@ jobs:
           git rebase --abort 2>/dev/null || true
           git merge  --abort 2>/dev/null || true
 
-          # keep the freshly generated file safe
+          # keep the freshly generated radar + its images safe
           cp radar.json /tmp/radar.json
+          rm -rf /tmp/radar-images && mkdir -p /tmp/radar-images
+          if [ -d images ]; then cp -a images/. /tmp/radar-images/; fi
 
           for i in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main      # match remote exactly — no conflict possible
             cp /tmp/radar.json radar.json     # re-apply our fresh file on top
+            rm -rf images                     # images/ = exactly what this run referenced
+            if [ -n "$(ls -A /tmp/radar-images)" ]; then mkdir -p images && cp -a /tmp/radar-images/. images/; fi
 
-            if git diff --quiet -- radar.json; then
+            if [ -z "$(git status --porcelain -- radar.json images)" ]; then
               echo "No change this week — nothing to post."
               exit 0
             fi
 
-            git add radar.json
+            git add -A -- radar.json
+            git add -A -- images 2>/dev/null || true   # also records deletions of pruned images
             git commit -m "radar: weekly refresh ($(date +%F))"
 
             if git push origin main; then

@@ -17,9 +17,11 @@
 // script logs, exits non-zero, and leaves the existing radar.json untouched.
 // -----------------------------------------------------------------------------
 
-import { appendFile, readFile, writeFile } from 'node:fs/promises';
+import { appendFile, copyFile, mkdir, mkdtemp, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
+import sharp from 'sharp';
 import Anthropic from '@anthropic-ai/sdk';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
@@ -31,6 +33,24 @@ const SOURCES_PATH = join(__dirname, 'sources.txt');
 // than the live radar.json (and dump everything collected for review).
 const OUTPUT_PATH = process.env.OUTPUT_PATH || join(__dirname, 'radar.json');
 const COLLECTED_PATH = process.env.COLLECTED_PATH || null;
+
+// ── Article images (see RADAR_IMAGES_SPEC.md) ──
+// Images are re-hosted on GitHub Pages (hotlinked images export blank from the
+// Story Kit). IMAGES_DIR is where the files live in the repo; a dry run points
+// it somewhere else so it never touches the published images.
+const PAGES_BASE_URL = (process.env.PAGES_BASE_URL || 'https://dr3whubbruh.github.io/drewbrews-radar').replace(/\/+$/, '');
+const IMAGES_DIR = process.env.IMAGES_DIR || join(__dirname, 'images');
+const IMAGE_MIN_EDGE = 600;       // skip anything smaller on its long edge
+const IMAGE_MAX_EDGE = 1500;      // resize down to this long edge
+const IMAGE_JPEG_QUALITY = 82;
+const IMAGE_MAX_BYTES = 15 * 1024 * 1024;
+// Maker (manufacturer / roaster) domains. image_license "press" is set ONLY
+// when image_origin is on one of these. Keep in sync with MFR_HOSTS in
+// drewbrews-trend-studio.html; add a maker here when Drew starts covering one.
+const MAKER_HOSTS = ['aprilcoffeeroasters.com', 'miir.com', 'hario.com', 'option-o.com', 'fellowproducts.com'];
+// Publication domains: their photographers own the images → "editorial".
+// The article sites in sources.txt are added to this list at run time.
+const PUBLICATION_HOSTS = ['sprudge.com', 'dailycoffeenews.com', 'perfectdailygrind.com', 'notabarista.org'];
 
 const MODEL = process.env.MODEL || 'claude-sonnet-5';
 // Sonnet 5 thinks (adaptively) by default — leave room for thinking + ~12 picks
@@ -271,7 +291,31 @@ function tag(inner, name) {
   return inner.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`, 'i'))?.[1];
 }
 
-/** Minimal RSS/Atom parser: returns [{title, url, date, summary}] */
+/**
+ * The image a publisher attached to a feed entry (meant for syndication):
+ * media:content / media:thumbnail / image enclosure, else the first <img> in
+ * the entry's HTML. Returns an absolute http(s) URL or null.
+ */
+function feedEntryImage(inner, base) {
+  const attrUrl = re => inner.match(re)?.[1];
+  const html = decodeEntities((inner.match(/<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/i)?.[1] ||
+    inner.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] || '')
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1'));
+  const raw =
+    attrUrl(/<media:content\b(?=[^>]*\b(?:medium="image"|type="image\/))[^>]*\burl="([^"]+)"/i) ||
+    attrUrl(/<media:thumbnail\b[^>]*\burl="([^"]+)"/i) ||
+    attrUrl(/<enclosure\b(?=[^>]*\btype="image\/)[^>]*\burl="([^"]+)"/i) ||
+    html.match(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+  if (!raw) return null;
+  try {
+    const url = new URL(decodeEntities(raw.trim()), base);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Minimal RSS/Atom parser: returns [{title, url, date, summary, image}] */
 function parseRss(xml) {
   const items = [];
   // RSS <item> blocks
@@ -282,7 +326,7 @@ function parseRss(xml) {
       inner.match(/<guid[^>]*isPermaLink="true"[^>]*>([\s\S]*?)<\/guid>/i)?.[1]?.trim();
     const date = tag(inner, 'pubDate')?.trim();
     const summary = feedText(tag(inner, 'description') || tag(inner, 'content:encoded'));
-    if (title && link && link.startsWith('http')) items.push({ title, url: link, date, summary });
+    if (title && link && link.startsWith('http')) items.push({ title, url: link, date, summary, image: feedEntryImage(inner, link) });
   }
   // Atom <entry> blocks (Reddit, YouTube)
   for (const block of xml.matchAll(/<entry[^>]*>([\s\S]*?)<\/entry>/gi)) {
@@ -291,7 +335,7 @@ function parseRss(xml) {
     const link = inner.match(/<link[^>]*href="([^"]+)"/i)?.[1]?.trim();
     const date = (tag(inner, 'published') || tag(inner, 'updated'))?.trim();
     const summary = feedText(tag(inner, 'summary') || tag(inner, 'content') || tag(inner, 'media:description'));
-    if (title && link && link.startsWith('http')) items.push({ title, url: decodeEntities(link), date, summary });
+    if (title && link && link.startsWith('http')) items.push({ title, url: decodeEntities(link), date, summary, image: feedEntryImage(inner, decodeEntities(link)) });
   }
   return items;
 }
@@ -341,6 +385,7 @@ async function fetchRssArticles(hosts) {
             score: null,
             comments: null,
             created: isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10),
+            feedImage: entry.image, // fallback when the article page can't be read
           });
         }
 
@@ -396,6 +441,7 @@ async function fetchChannelApi(channelId, label, key) {
       url: `https://www.youtube.com/watch?v=${sn.resourceId.videoId}`,
       date: sn.publishedAt,
       summary: sn.description || '',
+      thumbs: ['maxres', 'standard', 'high'].map(k => sn.thumbnails?.[k]?.url).filter(Boolean),
     }));
 }
 
@@ -443,6 +489,7 @@ async function fetchYouTubeVideos(channels) {
           score: null,
           comments: null,
           created: isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10),
+          thumbs: entry.thumbs ?? [],
         });
       }
 
@@ -640,6 +687,217 @@ function dedupe(items, skipUrls) {
 }
 
 // ---------------------------------------------------------------------------
+// Article images (RADAR_IMAGES_SPEC.md)
+//   article page → og:image / twitter:image / link rel=image_src → download →
+//   resize to JPEG → stage in a temp dir. Nothing is written to IMAGES_DIR
+//   until the whole radar has passed validation (see publishRadar).
+// ---------------------------------------------------------------------------
+
+function matchDomain(host, domains) {
+  return domains.find(d => host === d || host.endsWith('.' + d)) ?? null;
+}
+
+/** Rights come from who owns the pixels (the image_origin host), never from what the story is about. */
+function imageRights(originUrl, publicationHosts) {
+  const host = new URL(originUrl).hostname.toLowerCase().replace(/^www\./, '');
+  const maker = matchDomain(host, MAKER_HOSTS);
+  if (maker) return { license: 'press', credit: maker };
+  const publication = matchDomain(host, publicationHosts);
+  if (publication) return { license: 'editorial', credit: publication };
+  return { license: 'unknown', credit: null };
+}
+
+function tagAttrs(tag) {
+  const attrs = {};
+  for (const m of tag.matchAll(/([a-zA-Z_:][-\w:.]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))/g)) {
+    attrs[m[1].toLowerCase()] = decodeEntities(m[2] ?? m[3] ?? m[4] ?? '');
+  }
+  return attrs;
+}
+
+/** First of og:image → twitter:image → <link rel="image_src">, resolved against the page URL. */
+function extractImageUrl(html, pageUrl) {
+  const end = html.search(/<\/head>/i);
+  const head = end > 0 ? html.slice(0, end) : html.slice(0, 500_000);
+  const metas = [...head.matchAll(/<meta\b[^>]*>/gi)].map(m => tagAttrs(m[0]));
+  const links = [...head.matchAll(/<link\b[^>]*>/gi)].map(m => tagAttrs(m[0]));
+  const meta = key => metas.find(a => (a.property || a.name || '').toLowerCase() === key)?.content;
+  const raw = meta('og:image') ||
+    meta('twitter:image') ||
+    links.find(a => (a.rel || '').toLowerCase().split(/\s+/).includes('image_src'))?.href;
+  if (!raw?.trim()) return null;
+  try {
+    const url = new URL(raw.trim(), pageUrl);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+async function downloadImage(url) {
+  const res = await fetchOk(url, {
+    signal: AbortSignal.timeout(20000),
+    headers: { 'User-Agent': USER_AGENT, 'Accept': 'image/*' },
+  });
+  const type = res.headers.get('content-type') || '';
+  if (!type.startsWith('image/')) throw new Error(`not an image (${type || 'no content-type'})`);
+  if (Number(res.headers.get('content-length') || 0) > IMAGE_MAX_BYTES) throw new Error('image too large');
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length > IMAGE_MAX_BYTES) throw new Error('image too large');
+  // res.url is where the pixels actually came from (after any redirects)
+  return { buf, origin: res.url || url };
+}
+
+/** → JPEG ≤ 1500px long edge, or null when the source is under 600px (too small for a story frame). */
+async function toStoryJpeg(buf) {
+  const img = sharp(buf, { failOn: 'error', limitInputPixels: 50_000_000 }).autoOrient();
+  const { width = 0, height = 0 } = await img.metadata();
+  if (Math.max(width, height) < IMAGE_MIN_EDGE) return null;
+  return img
+    .resize({ width: IMAGE_MAX_EDGE, height: IMAGE_MAX_EDGE, fit: 'inside', withoutEnlargement: true })
+    .flatten({ background: '#ffffff' })
+    .jpeg({ quality: IMAGE_JPEG_QUALITY, mozjpeg: true })
+    .toBuffer();
+}
+
+function slugify(text) {
+  return text.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/['’]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '') || 'trend';
+}
+
+const IMAGE_ORIGIN_PATTERN = /^https?:\/\/[^/]+\.[^/]+\/[^\s]+$/; // mirrors radar.schema.json
+
+/**
+ * Adds image_url / image_origin / image_credit / image_license to article
+ * trends, staging the files in stagingDir. A trend only gets image fields when
+ * the whole chain succeeded AND the origin is traceable; otherwise it gets none.
+ */
+function youtubeVideoId(url) {
+  return url.match(/(?:[?&]v=|\/shorts\/|youtu\.be\/)([\w-]{11})/)?.[1] ?? null;
+}
+
+/**
+ * Ranked image candidates for a trend: [{ url, via }]. First one that downloads
+ * and is big enough wins.
+ *   article → the page's og:image / twitter:image / image_src (the spec's
+ *             route), then the image the publisher put in its RSS feed
+ *   youtube → the API's largest thumbnails, then the standard i.ytimg.com
+ *             maxres/sd sizes (hqdefault is 480px: always under the floor)
+ *   reddit  → none
+ */
+async function imageCandidates(trend, item, label) {
+  const out = [];
+  if (item?.kind === 'article') {
+    try {
+      const page = await withRetry(
+        () => fetchOk(trend.source_url, { signal: AbortSignal.timeout(15000), headers: { 'User-Agent': USER_AGENT } }),
+        `article page (${label})`
+      );
+      const og = extractImageUrl(await page.text(), page.url || trend.source_url);
+      if (og) out.push({ url: og, via: 'article page' });
+      else console.log(`[scout] ${label}: article page has no og:image / twitter:image / image_src`);
+    } catch (err) {
+      console.log(`[scout] ${label}: article page unreadable (${err.message})`);
+    }
+    if (item.feedImage) out.push({ url: item.feedImage, via: 'RSS feed' });
+  } else if (item?.kind === 'youtube') {
+    for (const url of item.thumbs ?? []) out.push({ url, via: 'YouTube thumbnail' });
+    const id = youtubeVideoId(trend.source_url);
+    if (id) for (const size of ['maxresdefault', 'sddefault']) out.push({ url: `https://i.ytimg.com/vi/${id}/${size}.jpg`, via: 'YouTube thumbnail' });
+  }
+  return out.filter((c, i, all) => all.findIndex(o => o.url === c.url) === i);
+}
+
+/**
+ * Adds image_url / image_origin / image_credit / image_license to article and
+ * YouTube trends, staging the files in stagingDir. A trend only gets image
+ * fields when a download fully succeeded AND its origin is traceable;
+ * otherwise it gets none.
+ */
+async function attachImages(trends, itemsByUrl, stagingDir, publicationHosts) {
+  const used = new Set();
+  let attached = 0;
+  for (const trend of trends) {
+    const item = itemsByUrl.get(trend.source_url);
+    if (item?.kind !== 'article' && item?.kind !== 'youtube') continue;
+    const label = `image for "${trend.name}"`;
+    const candidates = await imageCandidates(trend, item, label);
+    if (!candidates.length) { console.log(`[scout] ${label}: no image found — none attached`); continue; }
+
+    for (const { url, via } of candidates) {
+      try {
+        const { buf, origin } = await downloadImage(url);
+        if (origin.length > 500 || !IMAGE_ORIGIN_PATTERN.test(origin)) {
+          console.log(`[scout] ${label}: ${via} origin isn't traceable (${origin.slice(0, 80)})`);
+          continue;
+        }
+        const jpeg = await toStoryJpeg(buf);
+        if (!jpeg) { console.log(`[scout] ${label}: ${via} image under ${IMAGE_MIN_EDGE}px`); continue; }
+
+        let file = `${slugify(trend.name)}.jpg`;
+        for (let n = 2; used.has(file); n++) file = `${slugify(trend.name)}-${n}.jpg`;
+        used.add(file);
+        await writeFile(join(stagingDir, file), jpeg);
+
+        const { license, credit } = imageRights(origin, publicationHosts);
+        trend.image_url = `${PAGES_BASE_URL}/images/${file}`;
+        trend.image_origin = origin;
+        // A video thumbnail belongs to the channel that made it
+        const who = credit ?? (item.kind === 'youtube' ? item.source : null);
+        if (who) trend.image_credit = who;
+        trend.image_license = license;
+        attached++;
+        console.log(`[scout] ${label}: ${file} via ${via} (${license}, from ${new URL(origin).hostname})`);
+        break;
+      } catch (err) {
+        console.log(`[scout] ${label}: ${via} download failed (${err.message})`);
+      }
+    }
+    if (!trend.image_url) console.log(`[scout] ${label}: none attached`);
+  }
+  console.log(`[scout] Images: attached to ${attached} of ${trends.length} trends`);
+}
+
+/** Rules from the spec's acceptance check that JSON Schema can't express. */
+function imageRuleErrors(radar, publicationHosts) {
+  const errors = [];
+  radar.trends.forEach((t, i) => {
+    const at = `trends[${i}] "${t.name}"`;
+    if (t.image_url) {
+      if (!t.image_url.startsWith(`${PAGES_BASE_URL}/images/`)) errors.push(`${at}: image_url is not under ${PAGES_BASE_URL}/images/`);
+      if (!t.image_origin) errors.push(`${at}: image_url without image_origin`);
+    }
+    if (t.image_license === 'press') {
+      const host = t.image_origin ? new URL(t.image_origin).hostname.replace(/^www\./, '') : '';
+      if (!matchDomain(host, MAKER_HOSTS) || matchDomain(host, publicationHosts)) {
+        errors.push(`${at}: "press" license on a non-maker origin (${host || 'none'})`);
+      }
+    }
+  });
+  return errors;
+}
+
+/**
+ * Only called after validation passed: copy staged images in, write radar.json
+ * atomically, then prune images the new radar no longer references.
+ */
+async function publishRadar(radar, stagingDir) {
+  const referenced = new Set(radar.trends.filter(t => t.image_url).map(t => basename(new URL(t.image_url).pathname)));
+  if (referenced.size) await mkdir(IMAGES_DIR, { recursive: true });
+  for (const file of referenced) await copyFile(join(stagingDir, file), join(IMAGES_DIR, file));
+
+  const tmp = `${OUTPUT_PATH}.tmp`;
+  await writeFile(tmp, JSON.stringify(radar, null, 2) + '\n', 'utf8');
+  await rename(tmp, OUTPUT_PATH);
+
+  let pruned = 0;
+  for (const file of await readdir(IMAGES_DIR).catch(() => [])) {
+    if (!referenced.has(file)) { await rm(join(IMAGES_DIR, file), { force: true }); pruned++; }
+  }
+  if (pruned) console.log(`[scout] Pruned ${pruned} image(s) no longer on the radar`);
+}
+
+// ---------------------------------------------------------------------------
 // Source health — a whole source type going dark must be loud, not silent.
 // Emits GitHub Actions ::warning:: annotations and a job-summary table.
 // ---------------------------------------------------------------------------
@@ -715,24 +973,32 @@ async function main() {
     process.exit(1);
   }
 
-  // ── Phase 3: Validate and write ───────────────────────────────────────────
+  // ── Phase 3: Article images (staged, not yet published) ────────────────────
+  const publicationHosts = [...new Set([...PUBLICATION_HOSTS, ...rssHosts])];
+  const stagingDir = await mkdtemp(join(tmpdir(), 'radar-images-'));
+  await attachImages(trends, new Map(allItems.map(i => [i.url, i])), stagingDir, publicationHosts);
+
+  // ── Phase 4: Validate, then publish ────────────────────────────────────────
   const radar = {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
     trends,
   };
 
-  if (!validate(radar)) {
-    console.error('[scout] Result FAILED schema validation. radar.json left untouched.');
-    console.error(ajv.errorsText(validate.errors, { separator: '\n  ' }));
+  const ruleErrors = imageRuleErrors(radar, publicationHosts);
+  if (!validate(radar) || ruleErrors.length) {
+    console.error('[scout] Result FAILED validation. radar.json and images/ left untouched.');
+    if (validate.errors) console.error('  ' + ajv.errorsText(validate.errors, { separator: '\n  ' }));
+    for (const e of ruleErrors) console.error('  ' + e);
     process.exit(1);
   }
 
-  await writeFile(OUTPUT_PATH, JSON.stringify(radar, null, 2) + '\n', 'utf8');
+  await publishRadar(radar, stagingDir);
+  await rm(stagingDir, { recursive: true, force: true });
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
-export { parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi };
+export { parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi, extractImageUrl, imageRights, toStoryJpeg, slugify, imageRuleErrors, attachImages, publishRadar, feedEntryImage, youtubeVideoId };
 
 // Run only when executed directly (importing for tests must not start a scout run)
 if (process.argv[1] === fileURLToPath(import.meta.url)) main().catch(err => {

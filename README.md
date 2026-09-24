@@ -165,6 +165,38 @@ untouched**.
 
 ---
 
+## Article images
+
+For article and YouTube trends, the scout attaches the story's own preview
+image so the Story Kit can show what the story is about. Full rules:
+[`RADAR_IMAGES_SPEC.md`](RADAR_IMAGES_SPEC.md).
+
+- **Articles:** the article page's `og:image`, then `twitter:image`, then
+  `<link rel="image_src">`. If the page can't be read (some sites block
+  automated requests) or has none, it falls back to the image the publisher
+  attached to that story in its RSS feed.
+- **YouTube:** the video's thumbnail (the largest one available). These get
+  `image_license: "unknown"` (the channel owns them, so reference-only) and
+  `image_credit` set to the channel.
+- **Reddit:** no images.
+- If nothing is found, the trend gets **no** image fields. Nothing is guessed
+  or substituted.
+- The image is downloaded, resized to 1500px on its long edge (JPEG, quality
+  82) and saved under `images/`, so `image_url` points at this repo's GitHub
+  Pages copy. Images under 600px are skipped. Images the radar no longer uses
+  are deleted each run.
+- `image_origin` is the exact URL the image was downloaded from. With no
+  traceable origin, `image_url` is left out entirely.
+- `image_license` is decided by who owns the pixels (the `image_origin` host):
+  `press` only for a maker's own domain (`MAKER_HOSTS` in `scout.mjs`),
+  `editorial` for a publication's domain, otherwise `unknown`. When Drew starts
+  covering a new maker, add their domain to `MAKER_HOSTS` here **and** to
+  `MFR_HOSTS` in the Studio.
+- The whole radar is validated against `radar.schema.json`, plus the
+  spec's rules the schema can't express (e.g. `image_url` requires
+  `image_origin`, and `press` is never allowed on a publication's domain).
+  A run that fails leaves both `radar.json` and `images/` untouched.
+
 ## Known gaps
 
 - **Reddit API access isn't set up yet.** Until it is, Reddit comes from the
