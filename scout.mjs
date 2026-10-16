@@ -25,6 +25,7 @@ import sharp from 'sharp';
 import Anthropic from '@anthropic-ai/sdk';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import { buildAllowlist, gate } from './safety.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SCHEMA_PATH = join(__dirname, 'radar.schema.json');
@@ -379,6 +380,7 @@ async function fetchRssArticles(hosts) {
           items.push({
             kind: 'article',
             source: host,
+            feedHost: host, // link-safety gate: an article must stay on its feed's site
             title: entry.title,
             body: entry.summary.slice(0, 600),
             url: entry.url,
@@ -485,7 +487,7 @@ async function fetchYouTubeVideos(channels) {
           source: label,
           title: entry.title,
           body: entry.summary.slice(0, 600),
-          url: entry.url,
+          url: canonicalVideoUrl(entry.url),
           score: null,
           comments: null,
           created: isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10),
@@ -776,6 +778,14 @@ function youtubeVideoId(url) {
   return url.match(/(?:[?&]v=|\/shorts\/|youtu\.be\/)([\w-]{11})/)?.[1] ?? null;
 }
 
+/** Channel feeds list Shorts as /shorts/<id>; publish every video as watch?v=<id>,
+ *  the one YouTube form the link-safety rule accepts. Non-video links pass through
+ *  unchanged (and the gate drops them). */
+function canonicalVideoUrl(url) {
+  const id = /^https:\/\/(www\.)?youtube\.com\/(shorts\/|watch\?)/i.test(url) ? youtubeVideoId(url) : null;
+  return id ? `https://www.youtube.com/watch?v=${id}` : url;
+}
+
 /**
  * Ranked image candidates for a trend: [{ url, via }]. First one that downloads
  * and is big enough wins.
@@ -907,6 +917,24 @@ const HEALTH_HINTS = {
   YouTube: process.env.YOUTUBE_API_KEY ? ' Check the YOUTUBE_API_KEY secret and its quota.' : ' No YOUTUBE_API_KEY set, so the flaky public feeds were used (see README setup step 7).',
 };
 
+/** Log every link the safety gate dropped, so Drew can see what was filtered and
+ *  "teach" the allowlist by adding a source to sources.txt. */
+async function reportDropped(dropped, stage) {
+  if (!dropped.length) {
+    console.log(`[scout] Link safety (${stage}): nothing dropped.`);
+    return;
+  }
+  console.log(`[scout] Link safety (${stage}): dropped ${dropped.length} item(s):`);
+  for (const d of dropped) console.log(`  ✕ ${d.reason} | ${d.source} | ${d.title} | ${d.url}`);
+  console.log(`::warning title=Link safety dropped ${dropped.length} item(s) (${stage})::See the run log or summary for each link and reason.`);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    const esc = s => String(s).replace(/[|<>\n]/g, ' ');
+    const lines = [`### Link safety — dropped (${stage})`, '', '| Reason | Source | Title | Link |', '|---|---|---|---|',
+      ...dropped.map(d => `| ${esc(d.reason)} | ${esc(d.source)} | ${esc(d.title)} | ${esc(d.url)} |`), ''];
+    await appendFile(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n');
+  }
+}
+
 async function reportSourceHealth(rows) {
   const lines = ['### Radar source health', '', '| Source | Configured | Items collected |', '|---|---|---|'];
   for (const [name, configured, collected] of rows) {
@@ -949,7 +977,11 @@ async function main() {
   ]);
 
   const previous = await previousRadar();
-  const allItems = dedupe([...redditPosts, ...rssArticles, ...ytVideos], previous.urls);
+  // Link safety (brief §7): anything not on the allowlist is dropped here, before
+  // Claude ever sees it, and again after curation. Every drop is logged with its reason.
+  const allow = buildAllowlist({ subs, rssHosts });
+  const { safe: safeItems, dropped } = gate([...redditPosts, ...rssArticles, ...ytVideos], allow);
+  const allItems = dedupe(safeItems, previous.urls);
   const kept = kind => allItems.filter(i => i.kind === kind).length;
   console.log(`[scout] Collected ${allItems.length} items after de-duplication (${kept('reddit')} Reddit, ${kept('article')} articles, ${kept('youtube')} YouTube)`);
   await reportSourceHealth([
@@ -957,6 +989,7 @@ async function main() {
     ['Articles', rssHosts.length, rssArticles.length],
     ['YouTube', ytChannels.length, ytVideos.length],
   ]);
+  await reportDropped(dropped, 'collected');
   if (COLLECTED_PATH) await writeFile(COLLECTED_PATH, JSON.stringify(allItems, null, 2) + '\n', 'utf8');
 
   if (allItems.length === 0) {
@@ -967,6 +1000,14 @@ async function main() {
   // ── Phase 2: Claude curates ──────────────────────────────────────────────
   const client = new Anthropic();
   let trends = await curateTrends(client, allItems, today, previous.names);
+  // Defense in depth: re-check every pick's link before anything is published.
+  const itemsByUrl = new Map(allItems.map(i => [i.url, i]));
+  const recheck = gate(trends.map(t => ({ ...(itemsByUrl.get(t.source_url) ?? { kind: 'unknown' }), url: t.source_url, title: t.name })), allow);
+  if (recheck.dropped.length) {
+    const bad = new Set(recheck.dropped.map(d => d.url));
+    trends = trends.filter(t => !bad.has(t.source_url));
+    await reportDropped(recheck.dropped, 'picked');
+  }
 
   if (trends.length === 0) {
     console.error('[scout] No trends selected by curation. radar.json left untouched.');
@@ -998,7 +1039,7 @@ async function main() {
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
-export { parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi, extractImageUrl, imageRights, toStoryJpeg, slugify, imageRuleErrors, attachImages, publishRadar, feedEntryImage, youtubeVideoId };
+export { canonicalVideoUrl, parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi, extractImageUrl, imageRights, toStoryJpeg, slugify, imageRuleErrors, attachImages, publishRadar, feedEntryImage, youtubeVideoId };
 
 // Run only when executed directly (importing for tests must not start a scout run)
 if (process.argv[1] === fileURLToPath(import.meta.url)) main().catch(err => {

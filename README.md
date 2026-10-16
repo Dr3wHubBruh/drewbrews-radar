@@ -116,10 +116,31 @@ it *would* have posted. Handy after changing `sources.txt` or adding secrets.
 
 ## When does it run automatically?
 
-Every **Wednesday at 13:00 UTC** — that's **5am Pacific in winter (PST), 6am in
-summer (PDT)**. GitHub's scheduler runs in UTC and ignores daylight saving, so
-the local time shifts by an hour across the year. For weekly content that
-doesn't matter.
+Every **Wednesday at 12:23 UTC**: **5:23am Pacific in summer (PDT), 4:23am in
+winter (PST)**. GitHub's scheduler runs in UTC and ignores daylight saving.
+
+The time is deliberately not on the hour. GitHub queues top-of-the-hour
+schedules: the old `13:00` runs actually started 5–6 hours late (17:53, 18:19
+and 19:15 UTC in Sept–Oct 2026). GitHub can still delay any scheduled run; if
+the radar hasn't refreshed by mid-morning, use "Run now" below.
+
+## Link safety (what can and can't be published)
+
+Every link is checked twice, before Claude sees the collected items and again
+after it picks, by `safety.mjs` (the DrewBrews Content Studio runs the same rules
+when it shows the radar). A link is published only if it is:
+
+- a **Reddit thread** (`/r/<sub>/comments/…`) in a vetted subreddit, or
+- a **single YouTube video** (`watch?v=…`; Shorts are rewritten to this form) from
+  a channel in `sources.txt`, or
+- an **article page** on a vetted site, on the same site as the feed it came from.
+  Never a homepage, channel page, subreddit front page or any other site.
+
+Anything else is **dropped and logged with the reason**: in the run log, as a
+warning on the run page, and in the run summary table. To allow a new site or
+subreddit, add it to `sources.txt` yourself; nothing adds to the list on its own.
+The rules have tests (`npm test`) that run before every scout run; if they fail,
+nothing is published.
 
 ## How to change the sources
 
