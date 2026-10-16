@@ -1,11 +1,12 @@
 name: Weekly Trend Radar
 
 on:
-  # Wednesday 13:00 UTC = 5am PST / 6am PDT.
-  # GitHub cron is UTC and does NOT observe DST, so this drifts ±1h seasonally —
-  # harmless for weekly content. (Exact 5am year-round would need two cron lines.)
+  # Wednesday 12:23 UTC = 5:23am PDT / 4:23am PST (GitHub cron is UTC, no DST).
+  # Not on the hour on purpose: GitHub queues top-of-the-hour schedules, and the
+  # old "0 13" runs started 5–6 hours late (17:53, 18:19, 19:15 UTC in Sept–Oct
+  # 2026). GitHub can still delay any scheduled run; "Run workflow" is the backup.
   schedule:
-    - cron: "0 13 * * 3"
+    - cron: "23 12 * * 3"
   # Manual "Run now" button in the Actions tab.
   workflow_dispatch:
 
@@ -33,6 +34,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # Link-safety rules must pass before anything can be published.
+      - name: Link-safety tests
+        run: npm test
 
       - name: Run the scout
         env:

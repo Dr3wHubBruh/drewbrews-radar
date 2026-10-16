@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Weekly specialty-coffee trend scout. Writes a validated radar.json for the DrewBrews Trend Studio.",
   "scripts": {
-    "scout": "node scout.mjs"
+    "scout": "node scout.mjs",
+    "test": "node --test 'tests/*.test.mjs'"
   },
   "engines": {
     "node": ">=20"

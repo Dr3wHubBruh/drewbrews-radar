@@ -19,6 +19,9 @@ jobs:
           cache: npm
       - run: npm ci
 
+      - name: Link-safety tests
+        run: npm test
+
       - name: Run the scout (preview only)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
