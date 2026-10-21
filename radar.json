@@ -1,134 +1,134 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-14T17:54:19.927Z",
+  "generatedAt": "2026-10-21T17:20:32.886Z",
   "trends": [
     {
-      "name": "Pour-Over 'Rules' You're Allowed to Break",
-      "buzz": "A r/pourover thread asks which pour-over 'rules' people stopped treating as gospel once they got more experience — folks are realizing a simpler brew that tastes better IS the recipe.",
-      "tpl": "s3",
-      "src": "community",
-      "angle": "This is peak same-team energy: there's no one right way to pour, so let's celebrate experimenting over memorizing someone else's recipe. No gatekeeping, just good coffee.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1x2fu5h/what_pourover_rule_did_you_stop_treating_like_a/"
-    },
-    {
-      "name": "Thrift Store Stagg EKG Score",
-      "buzz": "A pour-over fan found a fully-working Fellow Stagg EKG kettle at a thrift store for just $8.",
-      "tpl": "s1",
-      "src": "community",
-      "angle": "Great reminder that great gear doesn't always mean buying new — give your community a reason to check thrift shops and share their own secondhand wins.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1x14t91/best_thrift_find_ever/"
-    },
-    {
-      "name": "DIY Brew Station Built Around the Timemore Smart Pro X",
-      "buzz": "A hobbyist finished building a custom brewing station sized around the Timemore Smart Pro X, noting the compact base means scale choice matters more than with bigger setups like the Fellow.",
-      "tpl": "s2",
-      "src": "community",
-      "angle": "Love seeing people make their brew corner their own — tag us in your setups, however big or small your counter space is.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1x3qr6g/finished_a_brewing_station_for_the_timemore_smart/"
-    },
-    {
-      "name": "Loveramics Flatbed Dripper + Paper Holder Combo",
-      "buzz": "A Hong Kong-based pour-over fan picked up the Loveramics Flatbed Coffee Dripper One bundled with a ceramic paper holder and says the build quality impressed them.",
+      "name": "$100 Vintage Braun vs $2,000 Setup",
+      "buzz": "A creator pitted a $100 vintage Braun drip maker from the 80s against a $2,000 Fellow Aiden + Zerno Z1 setup in a blind taste test — and the results weren't what he expected.",
       "tpl": "s2",
       "src": "review",
-      "angle": "Flatbed drippers are such a welcoming entry point — different shape, same delicious possibilities. No wrong dripper, just different styles.",
-      "source_url": "https://www.reddit.com/r/pourover/comments/1x1k5h8/loveramics_flatbed_coffee_dripper_one_and_drip/"
-    },
-    {
-      "name": "La Marzocco x Rains Barista Apron",
-      "buzz": "La Marzocco and Rains have collaborated on a new barista apron with a waterproof, technical treatment.",
-      "tpl": "s2",
-      "src": "press",
-      "angle": "Gear love doesn't stop at brewers — a technical apron collab is a fun reminder that good design can touch every corner of the coffee bar, home or café.",
-      "source_url": "https://sprudge.com/la-marzocco-and-rains-collaborate-for-a-new-barista-apron-1409605.html",
-      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/la-marzocco-x-rains-barista-apron.jpg",
-      "image_origin": "https://sprudge.com/wp-content/uploads/2026/10/260911_rains_x_la_marzocco_9_0764-2-copy.jpg",
-      "image_credit": "sprudge.com",
-      "image_license": "editorial"
-    },
-    {
-      "name": "Matcha and Customized Drinks Join Coffee Menus",
-      "buzz": "An industry piece looks at whether matcha and customized drinks are actually helping specialty coffee shops solve one of the sector's hardest problems: getting customers to pay more.",
-      "tpl": "s3",
-      "src": "press",
-      "angle": "More options on the menu means more ways for people to find their favorite ritual — coffee shops embracing matcha and custom drinks is inclusive, not a departure from craft.",
-      "source_url": "https://perfectdailygrind.com/2026/10/matcha-customised-drinks-helping-specialty-coffee/",
-      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/matcha-and-customized-drinks-join-coffee-menus.jpg",
-      "image_origin": "https://perfectdailygrind.com/wp-content/uploads/2026/10/14_10_Article__PDG-EN-FB-post.png",
-      "image_credit": "perfectdailygrind.com",
-      "image_license": "editorial"
-    },
-    {
-      "name": "Lelit Elizabeth3 Gets Lance Hedrick Excited",
-      "buzz": "Lance Hedrick says he wasn't expecting to be this excited reviewing the new Lelit Elizabeth3, noting more home machines are adding features like flow control based on what consumers actually want.",
-      "tpl": "s4",
-      "src": "review",
-      "angle": "It's exciting when brands actually listen to home baristas — flow control trickling down to more machines means more people get to play with their shots.",
-      "source_url": "https://www.youtube.com/watch?v=gAUYvSB0fdU",
-      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/lelit-elizabeth3-gets-lance-hedrick-excited.jpg",
-      "image_origin": "https://i.ytimg.com/vi/gAUYvSB0fdU/maxresdefault.jpg",
-      "image_credit": "@LanceHedrick",
-      "image_license": "unknown"
-    },
-    {
-      "name": "SOLO Spin Variable Flow Dripper",
-      "buzz": "Brian Quan tries out the SOLO Spin, a variable flow pour-over dripper, alongside 2025 US Barista Champion Kay Cheon.",
-      "tpl": "s4",
-      "src": "review",
-      "angle": "New dripper shapes are always worth a curious look — nobody needs to own every brewer, but it's fun to see what the next idea in pour-over looks like.",
-      "source_url": "https://www.youtube.com/watch?v=jRPUQYMRXGs",
-      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/solo-spin-variable-flow-dripper.jpg",
-      "image_origin": "https://i.ytimg.com/vi/jRPUQYMRXGs/maxresdefault.jpg",
-      "image_credit": "@BrianQuan",
-      "image_license": "unknown"
-    },
-    {
-      "name": "Cafelat Robot: Lever Espresso Made Approachable",
-      "buzz": "DaddyGotCoffee reviews the Cafelat Robot manual lever espresso maker, calling it hard to mess up and walking through dialing it in from a classic 1:3 shot to ristretto and beyond.",
-      "tpl": "s5",
-      "src": "review",
-      "angle": "Manual lever espresso can look intimidating, but 'hard to mess up' is exactly the beginner-friendly framing we love — espresso at home doesn't require a huge machine.",
-      "source_url": "https://www.youtube.com/watch?v=59Y-_KdQtO4",
-      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/cafelat-robot-lever-espresso-made-approachable.jpg",
-      "image_origin": "https://i.ytimg.com/vi/59Y-_KdQtO4/maxresdefault.jpg",
+      "angle": "Love this one: great coffee isn't about spending the most. Frame it as proof that curiosity and good beans matter more than gear budget — no ladder to climb, just brew what makes you happy.",
+      "source_url": "https://www.youtube.com/watch?v=-fxhPImpPHQ",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/100-vintage-braun-vs-2-000-setup.jpg",
+      "image_origin": "https://i.ytimg.com/vi/-fxhPImpPHQ/maxresdefault.jpg",
       "image_credit": "@DaddyGotCoffee",
       "image_license": "unknown"
     },
     {
-      "name": "ECM Exacto Brings Grind-by-Weight to Home Espresso",
-      "buzz": "Whole Latte Love reviews the ECM Exacto espresso grinder, testing its grind-by-weight dosing, digital adjustment, and automatic portafilter recognition.",
-      "tpl": "s4",
-      "src": "review",
-      "angle": "Grind-by-weight tech moving into home grinders is a great step toward consistency for anyone leveling up their espresso game — exciting, not exclusive.",
-      "source_url": "https://www.youtube.com/watch?v=3bQDjYiptLc",
-      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/ecm-exacto-brings-grind-by-weight-to-home-espresso.jpg",
-      "image_origin": "https://i.ytimg.com/vi/3bQDjYiptLc/maxresdefault.jpg",
-      "image_credit": "@Wholelattelovepage",
-      "image_license": "unknown"
-    },
-    {
-      "name": "Bezzera NINI Brings Flow Control to a Compact Machine",
-      "buzz": "Whole Latte Love reviews the Bezzera NINI, a heat-exchange espresso machine under 10 inches wide that adds optional manual flow control via its new BZ group.",
-      "tpl": "s2",
-      "src": "review",
-      "angle": "Compact kitchens deserve good espresso too — flow control in a smaller footprint means more home setups can play with this feature.",
-      "source_url": "https://www.youtube.com/watch?v=SeeflfJE5Jc",
-      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/bezzera-nini-brings-flow-control-to-a-compact-machine.jpg",
-      "image_origin": "https://i.ytimg.com/vi/SeeflfJE5Jc/maxresdefault.jpg",
-      "image_credit": "@Wholelattelovepage",
-      "image_license": "unknown"
-    },
-    {
-      "name": "A Coffee-Themed Watch Lands on Kickstarter",
-      "buzz": "The Coffee In Motion Chronograph by Chronofuns is currently live on Kickstarter, aimed at coffee lovers who also love watches.",
+      "name": "Beginner's V60 Buyer's Remorse",
+      "buzz": "A total beginner jumped straight into a Fellow kettle + Hario V60 immersion setup before ever really drinking coffee — and is now second-guessing the gear choices.",
       "tpl": "s1",
-      "src": "verify",
-      "angle": "Fun crossover for the coffee-gear-collector crowd — worth a peek if novelty coffee merch is your thing, just do your usual Kickstarter homework before backing.",
-      "source_url": "https://sprudge.com/theres-a-new-coffee-watch-for-your-coffee-watch-collection-1406849.html",
-      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/a-coffee-themed-watch-lands-on-kickstarter.jpg",
-      "image_origin": "https://sprudge.com/wp-content/uploads/2026/10/coffee-in-motion-chronograph.jpg",
+      "src": "community",
+      "angle": "This is exactly why we exist: everyone starts somewhere, and 'wrong' first purchases are part of the fun. Use it to remind followers there's no gatekeeping on gear mistakes — just learning.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1xbdpmb/went_allin_on_a_v60_setup_as_a_complete_beginner/"
+    },
+    {
+      "name": "The $20 Pour-Over Experience",
+      "buzz": "Premium pour-overs let cafés showcase rare lots and attract enthusiasts, but most customers don't order them — they work best as an addition to a strong core menu, not a replacement.",
+      "tpl": "s4",
+      "src": "press",
+      "angle": "Frame this as 'special occasion coffee' — not snobby, just a fun treat to try once in a while. Pour-over for everyone, splurge or not.",
+      "source_url": "https://perfectdailygrind.com/2026/10/20-dollar-pour-over-coffee/",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/the-20-pour-over-experience.jpg",
+      "image_origin": "https://perfectdailygrind.com/wp-content/uploads/2026/10/21_10_Article__PDG-EN-FB-post.png",
+      "image_credit": "perfectdailygrind.com",
+      "image_license": "editorial"
+    },
+    {
+      "name": "Best Entry-Level Grinders of 2026",
+      "buzz": "Whole Latte Love compared five entry-level grinders built around different workflows, from quiet single-dosing to programmable hopper-based grinding.",
+      "tpl": "s5",
+      "src": "review",
+      "angle": "Great beginner resource — there's a grinder for every budget and workflow, no single 'correct' choice. Perfect for anyone starting their coffee journey.",
+      "source_url": "https://www.youtube.com/watch?v=wx5LSvnnbEI",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/best-entry-level-grinders-of-2026.jpg",
+      "image_origin": "https://i.ytimg.com/vi/wx5LSvnnbEI/maxresdefault.jpg",
+      "image_credit": "@Wholelattelovepage",
+      "image_license": "unknown"
+    },
+    {
+      "name": "The Flow-Focused Espresso Shift",
+      "buzz": "Lance Hedrick looks at three internationally renowned cafés embracing flow-focused (rather than pressure-focused) espresso extraction to chase better flavor.",
+      "tpl": "s6",
+      "src": "review",
+      "angle": "Espresso is evolving and it's exciting, not intimidating — frame this as 'cool new ideas worth knowing about,' not a new rulebook to follow.",
+      "source_url": "https://www.youtube.com/watch?v=ECxXKKfW37w",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/the-flow-focused-espresso-shift.jpg",
+      "image_origin": "https://i.ytimg.com/vi/ECxXKKfW37w/maxresdefault.jpg",
+      "image_credit": "@LanceHedrick",
+      "image_license": "unknown"
+    },
+    {
+      "name": "3D-Printed V60 Filter Holder Hack",
+      "buzz": "A home brewer designed and 3D-printed a V60-inspired filter holder with a hidden French cleat mount, so it lifts off easily for refilling and cleaning.",
+      "tpl": "s3",
+      "src": "community",
+      "angle": "Celebrate DIY coffee-corner creativity — you don't need to buy fancy accessories, sometimes the best upgrades come from your own hands.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1x9qpv8/v60_filter_holder/"
+    },
+    {
+      "name": "Little Nest Coffee Roasters Hatches in Detroit Suburb",
+      "buzz": "A new family-friendly roastery, Little Nest Coffee Roasters, has opened in Grosse Pointe Woods near Detroit in a 3,400-square-foot space.",
+      "tpl": "s1",
+      "src": "press",
+      "angle": "New roasters opening up are always worth celebrating — shoutout the local coffee scene growing and invite folks to go check it out if nearby.",
+      "source_url": "https://dailycoffeenews.com/2026/10/21/little-nest-coffee-roasters-hatches-outside-detroit/",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/little-nest-coffee-roasters-hatches-in-detroit-suburb.jpg",
+      "image_origin": "https://dailycoffeenews.com/wp-content/uploads/2026/10/Little-Nest-Coffee-Grosse-Point-Woods-bar-620x465.jpeg",
+      "image_credit": "dailycoffeenews.com",
+      "image_license": "editorial"
+    },
+    {
+      "name": "Three Roasters, One Extraordinary Geisha",
+      "buzz": "Phil & Sebastian announced the second edition of Project III, bringing together Ratibor Hartmann, Proud Mary, and MAME to explore Geisha coffees from a renowned Panama producer.",
+      "tpl": "s4",
+      "src": "press",
+      "angle": "Collaboration over competition — frame this as roasters teaming up to share something special with everyone, the same-team spirit we love.",
+      "source_url": "https://sprudge.com/phil-sebastian-announces-second-edition-of-project-iii-featuring-ratibor-hartmann-proud-mary-and-mame-1486270.html",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/three-roasters-one-extraordinary-geisha.jpg",
+      "image_origin": "https://sprudge.com/wp-content/uploads/2026/10/project-iii-release-2-box-copy.jpg",
       "image_credit": "sprudge.com",
       "image_license": "editorial"
+    },
+    {
+      "name": "Ceramic vs Tritan V60s: Team Pretty or Team Practical?",
+      "buzz": "A brewer asked the community whether anyone still reaches for their Tritan V60 now that ceramic drippers like the Alpha have stolen the spotlight.",
+      "tpl": "s3",
+      "src": "community",
+      "angle": "Fun, low-stakes debate to invite engagement — there's no wrong dripper material, just preference. Ask followers which team they're on.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1xawt7x/the_coffees_a_ultra_light_but_the_dripper_is/"
+    },
+    {
+      "name": "Timemore's New Delta Switch Base",
+      "buzz": "Timemore's new switch base, the 'Delta,' features a lever mechanism that lets you manually control coffee flow rate for brewing experimentation.",
+      "tpl": "s2",
+      "src": "community",
+      "angle": "New gear that opens doors to experimentation is always exciting — frame it as a fun new toy to play with, not a must-have upgrade.",
+      "source_url": "https://www.reddit.com/r/pourover/comments/1x7aphf/timemores_rendition_of_a_switch_base_timemore/"
+    },
+    {
+      "name": "Are Smart Coffee Scales Getting Too Smart?",
+      "buzz": "DaddyGotCoffee tested four smart scales — Acaia Lunar, Bookoo Themis Ultra, Mavo Lumicurve, and Oscalla — comparing flow rate tracking, apps, and auto-timers to see which smart features actually matter.",
+      "tpl": "s5",
+      "src": "review",
+      "angle": "Helpful for anyone drowning in scale options — remind folks that fancy features are nice but not necessary to make a great cup.",
+      "source_url": "https://www.youtube.com/watch?v=QeNP7wjzC-0",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/are-smart-coffee-scales-getting-too-smart.jpg",
+      "image_origin": "https://i.ytimg.com/vi/QeNP7wjzC-0/maxresdefault.jpg",
+      "image_credit": "@DaddyGotCoffee",
+      "image_license": "unknown"
+    },
+    {
+      "name": "Best Entry-Level Espresso Machines of 2026",
+      "buzz": "Whole Latte Love tested six top entry-level espresso machines, comparing temperature control, steaming performance, workflow, and build quality for new home baristas.",
+      "tpl": "s6",
+      "src": "review",
+      "angle": "A great resource for anyone dipping their toes into home espresso — there's a machine out there for every experience level and budget.",
+      "source_url": "https://www.youtube.com/watch?v=PmsWH7xlTCw",
+      "image_url": "https://dr3whubbruh.github.io/drewbrews-radar/images/best-entry-level-espresso-machines-of-2026.jpg",
+      "image_origin": "https://i.ytimg.com/vi/PmsWH7xlTCw/maxresdefault.jpg",
+      "image_credit": "@Wholelattelovepage",
+      "image_license": "unknown"
     }
   ]
 }
