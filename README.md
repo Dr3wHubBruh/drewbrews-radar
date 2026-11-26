@@ -139,10 +139,18 @@ top-of-the-hour schedules. If the radar still hasn't refreshed, use "Run now".
 If a whole source type (Reddit, articles or YouTube) collects **nothing**, the
 radar is still published from the other sources, and then the last step of the
 run fails on purpose so GitHub emails you. The run summary's "Radar source
-health" table shows which type was empty. For Reddit this now only happens if
-the API, RSS and the Exa fallback all came back empty.
+health" table shows which type was empty.
+
+**Reddit is muted for now.** Every automated route to Reddit is currently
+blocked (see Known gaps), so `.github/workflows/radar.yml` sets
+`ALERT_IGNORE: Reddit`. Reddit still shows ❌ "(alert muted)" in the health
+table, but it doesn't fail the run or send an email. Articles and YouTube still
+alert. Remove `Reddit` from `ALERT_IGNORE` once Reddit has a working source.
 
 ## Reddit fallback (Exa search)
+
+> **Status (Nov 2026):** Exa's API currently returns no reddit.com results, so
+> this fallback finds nothing yet. See Known gaps.
 
 Reddit's RSS feed is heavily rate-limited, its public `.json` feed has been
 blocked since May 2026, and Reddit also blocks Anthropic's web search. So when
@@ -260,13 +268,14 @@ image so the Story Kit can show what the story is about. Full rules:
 
 ## Known gaps
 
-- **Reddit API access isn't set up yet.** Reddit's RSS feed is heavily
-  rate-limited and its public `.json` feed has been blocked since May 2026, so
-  most weeks the scout falls back to **Exa search** (see "Reddit fallback (Exa
-  search)" above). Threads found that way are real and vetted, but Exa's index
-  runs 2–4 weeks behind, so Reddit picks are a few weeks old. Setup step 6
-  (Reddit API approval) would give this week's threads, but Reddit approves few
-  personal apps.
+- **Reddit has no working source right now.** Checked in Nov 2026: Reddit's
+  RSS feed is rate-limited (429), its public `.json` feed is blocked, Reddit
+  blocks Anthropic's web search, and Exa's paid search API returns no
+  reddit.com results (a question is open with Exa support; the Exa fallback
+  code stays in place and starts working if Exa enables Reddit). The one
+  sanctioned route left is Reddit API approval (setup step 6). Until then the
+  radar runs on articles and YouTube, and the Reddit alert is muted (see
+  "Source alert").
 - **`tpl` (s1–s6) picks the Instagram story template** each trend is posted
   with in the Studio. The scout doesn't know what each template looks like, so
   the AI picks one by feel. A one-line description of each template (e.g. "s3 =

@@ -393,31 +393,6 @@ async function fetchRedditViaExa(subs, key) {
       console.warn(`[scout] r/${sub}: Exa ${err.message} — skipping`);
     }
   }
-  if (items.length === 0 && subs.length) {
-    // TEMPORARY diagnostic (remove once Exa works): which request option empties the results?
-    const base = exaSearchBody(subs[0], Date.now(), true);
-    const variants = {
-      'no date filter': { ...base, startPublishedDate: undefined },
-      'no text contents': { ...base, contents: undefined },
-      'no domain filter': { ...base, includeDomains: undefined, startPublishedDate: undefined },
-      'bare query only': { query: `r/${subs[0]} reddit discussion` },
-    };
-    for (const [label, body] of Object.entries(variants)) {
-      try {
-        const res = await fetchOk(EXA_SEARCH_URL, {
-          method: 'POST', signal: AbortSignal.timeout(30000),
-          headers: { 'x-api-key': key, 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        cost += data?.costDollars?.total ?? 0;
-        const urls = (data?.results ?? []).map(r => `${r.url} (${r.publishedDate ?? 'no date'})`);
-        console.log(`[scout] Exa diagnostic "${label}": ${urls.length} results; first: ${urls.slice(0, 3).join(' | ') || '-'}`);
-      } catch (err) {
-        console.log(`[scout] Exa diagnostic "${label}": ${err.message}`);
-      }
-    }
-  }
   console.log(`[scout] Reddit via Exa: ${items.length} threads, about $${cost.toFixed(3)}`);
   return items;
 }
@@ -1241,7 +1216,7 @@ async function main() {
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
-export { exaToRedditItems, exaSearchBody, mapPicks, isRecent, emptySources, MAX_PER_KIND, MAX_PER_SOURCE, ARTICLE_MAX_AGE_DAYS };
+export { exaToRedditItems, exaSearchBody, mapPicks, isRecent, emptySources, alertSources, MAX_PER_KIND, MAX_PER_SOURCE, ARTICLE_MAX_AGE_DAYS };
 export { canonicalVideoUrl, parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi, extractImageUrl, imageRights, toStoryJpeg, slugify, imageRuleErrors, attachImages, publishRadar, feedEntryImage, youtubeVideoId };
 
 // Run only when executed directly (importing for tests must not start a scout run)
