@@ -55,6 +55,8 @@ jobs:
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
           # Optional: YouTube Data API key (reliable); without it, public feeds (flaky).
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          # Optional: Exa search key. Reddit fallback when its API/RSS give nothing.
+          EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
         run: node scout.mjs
 
       - name: Commit radar.json and images/ if they changed

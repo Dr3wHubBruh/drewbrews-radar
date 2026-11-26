@@ -7,7 +7,8 @@ no manual copy-paste, ever.
 
 ```
 GitHub Action (weekly) → scout.mjs
-   1. COLLECT  real posts/articles/videos      (no AI — Reddit, RSS feeds, YouTube feeds)
+   1. COLLECT  real posts/articles/videos      (no AI — Reddit, RSS feeds, YouTube feeds;
+                                               Exa search only as a Reddit fallback)
    2. CURATE   Claude picks the best + writes copy   (it picks by number, never writes links)
    3. PUBLISH  validated radar.json → commit → GitHub Pages + Gist  →  the Studio reads it
 ```
@@ -138,13 +139,30 @@ top-of-the-hour schedules. If the radar still hasn't refreshed, use "Run now".
 If a whole source type (Reddit, articles or YouTube) collects **nothing**, the
 radar is still published from the other sources, and then the last step of the
 run fails on purpose so GitHub emails you. The run summary's "Radar source
-health" table shows which type was empty.
+health" table shows which type was empty. For Reddit this now only happens if
+the API, RSS and the Exa fallback all came back empty.
 
-**Reddit is muted for now.** Every automated route to Reddit is currently
-blocked (see Known gaps), so `.github/workflows/radar.yml` sets
-`ALERT_IGNORE: Reddit`. Reddit still shows ❌ "(alert muted)" in the health
-table, but it doesn't fail the run or send an email. Articles and YouTube still
-alert. Remove `Reddit` from `ALERT_IGNORE` once Reddit has a working source.
+## Reddit fallback (Exa search)
+
+Reddit's RSS feed is heavily rate-limited, its public `.json` feed has been
+blocked since May 2026, and Reddit also blocks Anthropic's web search. So when
+the Reddit API (no secrets set) and RSS both come back empty, the scout runs
+one [Exa](https://exa.ai) search per subreddit, limited to that subreddit and
+the last 30 days (Exa's Reddit index runs 2–4 weeks behind, so Reddit picks are
+a few weeks old rather than this week's; upvote and comment counts are read
+from Exa's page text). Every thread link comes from Exa's results and then goes
+through the same link safety check as everything else (a `/comments/` thread
+in a vetted subreddit).
+
+**Setup (once):** create an Exa account, make an API key in its dashboard, and
+add it as a repository secret named `EXA_API_KEY` (Settings → Secrets and
+variables → Actions). Without the secret the fallback is skipped.
+
+**Cost:** one search per subreddit (5 today) at Exa's "auto" rate, roughly
+3–4 cents a week. Exa's free Starter plan gives monthly credits that cover this;
+check exa.ai/pricing for the current numbers. The run log prints the cost
+(`Reddit via Exa: … about $…`). Set the `REDDIT_SEARCH` environment variable to
+`off` to disable the fallback.
 
 ## Link safety (what can and can't be published)
 
@@ -197,7 +215,7 @@ outputs works.
 | Radar didn't update this week | The Action failed (GitHub emails the repo owner on failure) | Open the **Actions** tab → re-run the workflow. If it's an API error, check the `ANTHROPIC_API_KEY` secret and your Anthropic billing. |
 | Studio shows the old / built-in radar | `RADAR_URL` not set, or the file isn't reachable | Confirm GitHub Pages is on and the URL is exactly right. Open the Pages URL in a browser — you should see JSON. |
 | Want different sources | — | Edit `sources.txt`, commit. |
-| ❌ Run failed at "Alert if a source type went dark" — Reddit | No Reddit API secrets, so it fell back to rate-limited RSS | Add `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` (setup step 6). |
+| ❌ Run failed at "Alert if a source type went dark" — Reddit | RSS was rate-limited and the Exa fallback found nothing, has no `EXA_API_KEY` secret, or is out of credits (HTTP 402) | Check the `Exa` lines in the run log. Add or top up the `EXA_API_KEY` secret (see "Reddit fallback"). |
 | ❌ Run failed at "Alert if a source type went dark" — YouTube | No `YOUTUBE_API_KEY`, so the flaky public feeds were used; or the key is wrong or out of quota | Add the key (setup step 7). If one is set, check it in the Google Cloud console. |
 | The same story shows up two weeks running | — | It shouldn't: anything already in the current `radar.json` is skipped. |
 
@@ -242,12 +260,13 @@ image so the Story Kit can show what the story is about. Full rules:
 
 ## Known gaps
 
-- **Reddit has no working source right now.** Checked in Nov 2026: Reddit's
-  RSS feed is rate-limited (429), its public `.json` feed is blocked, Reddit
-  blocks Anthropic's web search, and Exa's paid search API returns no
-  reddit.com results (a question is open with Exa support). The one sanctioned
-  route left is Reddit API approval (setup step 6). Until then the radar runs on
-  articles and YouTube, and the Reddit alert is muted (see "Source alert").
+- **Reddit API access isn't set up yet.** Reddit's RSS feed is heavily
+  rate-limited and its public `.json` feed has been blocked since May 2026, so
+  most weeks the scout falls back to **Exa search** (see "Reddit fallback (Exa
+  search)" above). Threads found that way are real and vetted, but Exa's index
+  runs 2–4 weeks behind, so Reddit picks are a few weeks old. Setup step 6
+  (Reddit API approval) would give this week's threads, but Reddit approves few
+  personal apps.
 - **`tpl` (s1–s6) picks the Instagram story template** each trend is posted
   with in the Studio. The scout doesn't know what each template looks like, so
   the AI picks one by feel. A one-line description of each template (e.g. "s3 =
