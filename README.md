@@ -7,7 +7,8 @@ no manual copy-paste, ever.
 
 ```
 GitHub Action (weekly) → scout.mjs
-   1. COLLECT  real posts/articles/videos      (no AI — Reddit, RSS feeds, YouTube feeds)
+   1. COLLECT  real posts/articles/videos      (no AI — Reddit, RSS feeds, YouTube feeds;
+                                               web search only as a Reddit fallback)
    2. CURATE   Claude picks the best + writes copy   (it picks by number, never writes links)
    3. PUBLISH  validated radar.json → commit → GitHub Pages + Gist  →  the Studio reads it
 ```
@@ -138,8 +139,18 @@ top-of-the-hour schedules. If the radar still hasn't refreshed, use "Run now".
 If a whole source type (Reddit, articles or YouTube) collects **nothing**, the
 radar is still published from the other sources, and then the last step of the
 run fails on purpose so GitHub emails you. The run summary's "Radar source
-health" table shows which type was empty. Until Reddit access is fixed (see
-Known gaps), expect this alert every week for Reddit.
+health" table shows which type was empty. For Reddit this now only happens if
+the API, RSS and the web search fallback all came back empty.
+
+## Reddit web search fallback
+
+When Reddit's API (no secrets set) and RSS both come back empty, the scout asks
+Claude to run one web search per subreddit, limited to reddit.com. Claude only
+runs the searches: every thread link is taken from the search tool's own
+results, never from text Claude writes, and then goes through the same link
+safety check as everything else (a `/comments/` thread in a vetted subreddit).
+It costs a few extra web searches per run (at most one per subreddit plus 3).
+Set the `REDDIT_SEARCH` environment variable to `off` to disable it.
 
 ## Link safety (what can and can't be published)
 
@@ -192,7 +203,7 @@ outputs works.
 | Radar didn't update this week | The Action failed (GitHub emails the repo owner on failure) | Open the **Actions** tab → re-run the workflow. If it's an API error, check the `ANTHROPIC_API_KEY` secret and your Anthropic billing. |
 | Studio shows the old / built-in radar | `RADAR_URL` not set, or the file isn't reachable | Confirm GitHub Pages is on and the URL is exactly right. Open the Pages URL in a browser — you should see JSON. |
 | Want different sources | — | Edit `sources.txt`, commit. |
-| ❌ Run failed at "Alert if a source type went dark" — Reddit | No Reddit API secrets, so it fell back to rate-limited RSS | Add `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` (setup step 6). |
+| ❌ Run failed at "Alert if a source type went dark" — Reddit | RSS was rate-limited and the web search fallback found no vetted threads (or `REDDIT_SEARCH=off`) | Check the log line `Reddit via web search: …`. Re-run; if it stays empty, add `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` (setup step 6). |
 | ❌ Run failed at "Alert if a source type went dark" — YouTube | No `YOUTUBE_API_KEY`, so the flaky public feeds were used; or the key is wrong or out of quota | Add the key (setup step 7). If one is set, check it in the Google Cloud console. |
 | The same story shows up two weeks running | — | It shouldn't: anything already in the current `radar.json` is skipped. |
 
@@ -237,11 +248,12 @@ image so the Story Kit can show what the story is about. Full rules:
 
 ## Known gaps
 
-- **Reddit API access isn't set up yet.** Until it is, Reddit comes from the
-  rate-limited RSS feed: most weeks it contributes few or no posts, and the
-  posts it does bring carry no upvote counts, so the AI can't tell a popular
-  thread from noise. Each run shows a ⚠️ warning for this; that's expected until
-  setup step 6 is done.
+- **Reddit API access isn't set up yet.** Reddit's RSS feed is heavily
+  rate-limited and its public `.json` feed has been blocked since May 2026, so
+  most weeks the scout falls back to **web search** (see "Reddit web search
+  fallback" below). Threads found that way are real and vetted, but carry no
+  upvote counts, so the AI can't tell a popular thread from noise. Setup step 6
+  (Reddit API approval) would fix that, but Reddit approves few personal apps.
 - **`tpl` (s1–s6) picks the Instagram story template** each trend is posted
   with in the Studio. The scout doesn't know what each template looks like, so
   the AI picks one by feel. A one-line description of each template (e.g. "s3 =
