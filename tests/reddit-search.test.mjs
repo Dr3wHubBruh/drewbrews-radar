@@ -62,10 +62,28 @@ test('tolerates a missing or malformed results list', () => {
   assert.deepEqual(exaToRedditItems([null, {}, { url: 42 }], SUBS, NOW), []);
 });
 
-test('search body limits Exa to one subreddit and the last week', () => {
+test('reads upvotes and comment counts from the page text and strips the header', () => {
+  const text = '# Weber dropped a new EG-1…\n\nPosted by **u/someone** in r/pourover · 1,056 points · 126 comments · October 23, 2026 at 3:32 AM UTC\n\nI have been eyeing the EG-1 for years.';
+  const [item] = exaToRedditItems([
+    r('https://www.reddit.com/r/pourover/comments/1xd392d/weber_dropped_a_new_eg1/', 'Weber dropped a new EG-1… : r/pourover', '2026-10-23T03:32:55.000Z', text),
+  ], SUBS, NOW);
+  assert.equal(item.score, 1056);
+  assert.equal(item.comments, 126);
+  assert.equal(item.body, 'I have been eyeing the EG-1 for years.');
+});
+
+test('missing counts stay null', () => {
+  const [item] = exaToRedditItems([r('https://www.reddit.com/r/pourover/comments/1a/x/', 'X', null, 'plain text')], SUBS, NOW);
+  assert.equal(item.score, null);
+  assert.equal(item.comments, null);
+});
+
+test('search body limits Exa to one subreddit and the last 30 days', () => {
+  // Exa's Reddit index runs 2–4 weeks behind (probed 26 Nov 2026: newest
+  // r/pourover thread was 30 Oct), so a one-week window returns nothing.
   const body = exaSearchBody('pourover', NOW);
   assert.deepEqual(body.includeDomains, ['reddit.com/r/pourover']);
-  assert.equal(body.startPublishedDate, '2026-11-18T12:00:00.000Z'); // 8 days back
+  assert.equal(body.startPublishedDate, '2026-10-27T12:00:00.000Z'); // 30 days back
   assert.ok(body.numResults <= 10); // base price covers up to 10 results
   assert.ok(body.contents.text.maxCharacters <= 1000);
 });

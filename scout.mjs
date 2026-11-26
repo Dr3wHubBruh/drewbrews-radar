@@ -287,7 +287,9 @@ async function fetchRedditPosts(subreddits) {
 
 const EXA_SEARCH_URL = 'https://api.exa.ai/search';
 const EXA_RESULTS_PER_SUB = 10;      // Exa's base price covers up to 10 results
-const EXA_LOOKBACK_DAYS = 8;         // weekly radar + one day of slack
+// Exa's Reddit index runs 2–4 weeks behind (probed 26 Nov 2026: newest
+// r/pourover thread indexed was from 30 Oct), so a one-week window finds nothing.
+const EXA_LOOKBACK_DAYS = 30;
 const EXA_TEXT_CHARS = 800;
 
 /** https://<any>.reddit.com/r/<sub>/comments/<id>[/<slug>] → parts, or null. */
@@ -304,7 +306,7 @@ function parseRedditThread(u) {
 /** Request body for one subreddit's Exa search. */
 function exaSearchBody(sub, now = Date.now()) {
   return {
-    query: `r/${sub} discussion this week`,
+    query: `popular recent discussion threads in r/${sub}`,
     type: 'auto',
     numResults: EXA_RESULTS_PER_SUB,
     includeDomains: [`reddit.com/r/${sub}`],
@@ -331,15 +333,19 @@ function exaToRedditItems(results, subs, now = Date.now()) {
     const ms = r.publishedDate ? Date.parse(r.publishedDate) : NaN;
     if (!isRecent(ms, now, MAX_POST_AGE_DAYS)) continue;
     seen.add(t.id);
+    // Exa's page text starts "# <title>" then "Posted by … · 56 points · 126 comments · <date>"
+    const text = String(r.text ?? '');
+    const count = re => { const m = text.match(re); return m ? Number(m[1].replace(/,/g, '')) : null; };
+    const body = text.replace(/^\s*#[^\n]*\n/, '').replace(/^\s*Posted by[^\n]*\n/, '');
     items.push({
       kind: 'reddit',
       source: `r/${sub}`,
       via: 'exa',
       title,
-      body: String(r.text ?? '').replace(/\s+/g, ' ').trim().slice(0, 600),
+      body: body.replace(/\s+/g, ' ').trim().slice(0, 600),
       url: `https://www.reddit.com/r/${sub}/comments/${t.id}/${t.slug ? t.slug + '/' : ''}`,
-      score: null,
-      comments: null,
+      score: count(/·\s*([\d,]+)\s+points?\b/i),
+      comments: count(/·\s*([\d,]+)\s+comments?\b/i),
       flair: null,
       created: isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10),
     });

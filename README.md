@@ -148,9 +148,11 @@ Reddit's RSS feed is heavily rate-limited, its public `.json` feed has been
 blocked since May 2026, and Reddit also blocks Anthropic's web search. So when
 the Reddit API (no secrets set) and RSS both come back empty, the scout runs
 one [Exa](https://exa.ai) search per subreddit, limited to that subreddit and
-the last 8 days. Every thread link comes from Exa's results and then goes
+the last 30 days (Exa's Reddit index runs 2–4 weeks behind, so Reddit picks are
+a few weeks old rather than this week's; upvote and comment counts are read
+from Exa's page text). Every thread link comes from Exa's results and then goes
 through the same link safety check as everything else (a `/comments/` thread
-in a vetted subreddit). Exa threads carry no upvote counts.
+in a vetted subreddit).
 
 **Setup (once):** create an Exa account, make an API key in its dashboard, and
 add it as a repository secret named `EXA_API_KEY` (Settings → Secrets and
@@ -261,9 +263,10 @@ image so the Story Kit can show what the story is about. Full rules:
 - **Reddit API access isn't set up yet.** Reddit's RSS feed is heavily
   rate-limited and its public `.json` feed has been blocked since May 2026, so
   most weeks the scout falls back to **Exa search** (see "Reddit fallback (Exa
-  search)" above). Threads found that way are real and vetted, but carry no
-  upvote counts, so the AI can't tell a popular thread from noise. Setup step 6
-  (Reddit API approval) would fix that, but Reddit approves few personal apps.
+  search)" above). Threads found that way are real and vetted, but Exa's index
+  runs 2–4 weeks behind, so Reddit picks are a few weeks old. Setup step 6
+  (Reddit API approval) would give this week's threads, but Reddit approves few
+  personal apps.
 - **`tpl` (s1–s6) picks the Instagram story template** each trend is posted
   with in the Studio. The scout doesn't know what each template looks like, so
   the AI picks one by feel. A one-line description of each template (e.g. "s3 =
