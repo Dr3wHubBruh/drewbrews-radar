@@ -138,8 +138,13 @@ top-of-the-hour schedules. If the radar still hasn't refreshed, use "Run now".
 If a whole source type (Reddit, articles or YouTube) collects **nothing**, the
 radar is still published from the other sources, and then the last step of the
 run fails on purpose so GitHub emails you. The run summary's "Radar source
-health" table shows which type was empty. Until Reddit access is fixed (see
-Known gaps), expect this alert every week for Reddit.
+health" table shows which type was empty.
+
+**Reddit is muted for now.** Every automated route to Reddit is currently
+blocked (see Known gaps), so `.github/workflows/radar.yml` sets
+`ALERT_IGNORE: Reddit`. Reddit still shows ❌ "(alert muted)" in the health
+table, but it doesn't fail the run or send an email. Articles and YouTube still
+alert. Remove `Reddit` from `ALERT_IGNORE` once Reddit has a working source.
 
 ## Link safety (what can and can't be published)
 
@@ -237,11 +242,12 @@ image so the Story Kit can show what the story is about. Full rules:
 
 ## Known gaps
 
-- **Reddit API access isn't set up yet.** Until it is, Reddit comes from the
-  rate-limited RSS feed: most weeks it contributes few or no posts, and the
-  posts it does bring carry no upvote counts, so the AI can't tell a popular
-  thread from noise. Each run shows a ⚠️ warning for this; that's expected until
-  setup step 6 is done.
+- **Reddit has no working source right now.** Checked in Nov 2026: Reddit's
+  RSS feed is rate-limited (429), its public `.json` feed is blocked, Reddit
+  blocks Anthropic's web search, and Exa's paid search API returns no
+  reddit.com results (a question is open with Exa support). The one sanctioned
+  route left is Reddit API approval (setup step 6). Until then the radar runs on
+  articles and YouTube, and the Reddit alert is muted (see "Source alert").
 - **`tpl` (s1–s6) picks the Instagram story template** each trend is posted
   with in the Studio. The scout doesn't know what each template looks like, so
   the AI picks one by feel. A one-line description of each template (e.g. "s3 =
