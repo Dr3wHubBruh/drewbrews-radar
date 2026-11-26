@@ -61,6 +61,10 @@ const EFFORT = process.env.EFFORT || 'medium';
 
 // At most this many trends from one subreddit / site / channel
 const MAX_PER_SOURCE = 4;
+// At most this many trends from one platform (Reddit / YouTube / articles).
+// The per-source cap alone let 9 of 12 picks be YouTube on 18 Nov 2026,
+// because each video came from a different channel.
+const MAX_PER_KIND = 5;
 
 const VALID_TPL = new Set(['s1', 's2', 's3', 's4', 's5', 's6']);
 const VALID_SRC = new Set(['press', 'review', 'community', 'verify']);
@@ -79,6 +83,15 @@ const RSS_ARTICLE_LIMIT = 10;
 const MIN_POST_AGE_HOURS = 2;
 // Max age: don't pull posts older than 90 days
 const MAX_POST_AGE_DAYS = 90;
+// Articles are news: anything older than two weeks is a stale story
+// (the radar is weekly, so this leaves one spare week of slack).
+const ARTICLE_MAX_AGE_DAYS = 14;
+
+/** True when a timestamp is within maxDays of now. Undated (NaN) counts as recent,
+ *  so a feed that omits dates is not silently emptied. */
+function isRecent(ms, now, maxDays) {
+  return isNaN(ms) || now - ms <= maxDays * 86400 * 1000;
+}
 
 // ---------------------------------------------------------------------------
 // Parse sources.txt
@@ -352,7 +365,6 @@ function stripFeedBoilerplate(text) {
 }
 
 async function fetchRssArticles(hosts) {
-  const maxAgeSec = MAX_POST_AGE_DAYS * 86400 * 1000; // ms
   const now = Date.now();
   const items = [];
 
@@ -373,7 +385,7 @@ async function fetchRssArticles(hosts) {
 
         for (const entry of parsed) {
           const ms = entry.date ? Date.parse(entry.date) : NaN;
-          if (!isNaN(ms) && now - ms > maxAgeSec) continue; // too old
+          if (!isRecent(ms, now, ARTICLE_MAX_AGE_DAYS)) continue; // stale story
           entry.summary = stripFeedBoilerplate(entry.summary);
           // Headline-only, name-like entries (e.g. author profile pages) aren't news
           if (!entry.summary && entry.title.split(/\s+/).length <= 4) continue;
@@ -586,7 +598,8 @@ function buildCurationPrompt(items, today, lastWeek = []) {
     `Today is ${today}. Pick up to 12 of the most postable specialty-coffee trends ` +
     `from the list below — the ones a DrewBrews audience would find exciting, useful, or interesting. ` +
     `Order them best-first. If fewer than 12 are truly postable, return fewer — quality over quantity. ` +
-    `Keep the mix varied: no more than 4 picks from any single subreddit, site, or channel.\n\n` +
+    `Keep the mix varied: no more than ${MAX_PER_SOURCE} picks from any single subreddit, site, or channel, ` +
+    `and no more than ${MAX_PER_KIND} from any one platform (Reddit, YouTube, articles).\n\n` +
     `For each pick, write fresh "buzz" and "angle" copy in DrewBrews voice. ` +
     `Set "index" to the item's number. Do NOT invent items not on this list.\n\n` +
     (lastWeek.length
@@ -629,9 +642,20 @@ async function curateTrends(client, items, today, lastWeek = []) {
   }
   console.log(`[scout] curation usage: ${response.usage.input_tokens} in / ${response.usage.output_tokens} out`);
 
-  // Map picks back to real collected items
+  const trends = mapPicks(picks, items);
+  console.log(`[scout] curation: ${trends.length} trends from ${picks.length} picks`);
+  return trends;
+}
+
+/**
+ * Map Claude's picks back to real collected items, enforcing the variety caps
+ * (per source and per platform). source_url always comes from the collected
+ * item — never from the model.
+ */
+function mapPicks(picks, items) {
   const trends = [];
   const perSource = new Map();
+  const perKind = new Map();
   for (const pick of picks) {
     const idx = typeof pick.index === 'number' ? pick.index - 1 : -1;
     if (idx < 0 || idx >= items.length) {
@@ -641,8 +665,10 @@ async function curateTrends(client, items, today, lastWeek = []) {
     const item = items[idx];
     if (!pick.name?.trim() || !pick.buzz?.trim()) continue;
     const n = (perSource.get(item.source) ?? 0) + 1;
-    if (n > MAX_PER_SOURCE) continue; // keep the radar varied
+    const k = (perKind.get(item.kind) ?? 0) + 1;
+    if (n > MAX_PER_SOURCE || k > MAX_PER_KIND) continue; // keep the radar varied
     perSource.set(item.source, n);
+    perKind.set(item.kind, k);
 
     trends.push({
       name: String(pick.name).trim().slice(0, 80),
@@ -653,8 +679,6 @@ async function curateTrends(client, items, today, lastWeek = []) {
       source_url: item.url, // ← REAL URL from our collection, never from the model
     });
   }
-
-  console.log(`[scout] curation: ${trends.length} trends from ${picks.length} picks`);
   return trends.slice(0, 12);
 }
 
@@ -935,10 +959,22 @@ async function reportDropped(dropped, stage) {
   }
 }
 
+/** Names of source types that have sources configured but collected 0 items. */
+function emptySources(rows) {
+  return rows.filter(([, configured, collected]) => configured > 0 && collected === 0).map(([name]) => name);
+}
+
 async function reportSourceHealth(rows) {
+  const empty = emptySources(rows);
+  // Hand the list to the workflow: its last step fails the run (→ GitHub's
+  // failure email) AFTER radar.json is published, so a dark source is loud
+  // but never blocks the week's radar.
+  if (process.env.GITHUB_OUTPUT) {
+    await appendFile(process.env.GITHUB_OUTPUT, `empty_sources=${empty.join(', ')}\n`);
+  }
   const lines = ['### Radar source health', '', '| Source | Configured | Items collected |', '|---|---|---|'];
   for (const [name, configured, collected] of rows) {
-    const ok = configured === 0 || collected > 0;
+    const ok = !empty.includes(name);
     lines.push(`| ${ok ? '✅' : '❌'} ${name} | ${configured} | ${collected} |`);
     if (!ok) console.log(`::warning title=${name} source is empty::${configured} ${name} sources configured but 0 items collected this run.${HEALTH_HINTS[name] ?? ''}`);
   }
@@ -1039,6 +1075,7 @@ async function main() {
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
+export { mapPicks, isRecent, emptySources, MAX_PER_KIND, MAX_PER_SOURCE, ARTICLE_MAX_AGE_DAYS };
 export { canonicalVideoUrl, parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi, extractImageUrl, imageRights, toStoryJpeg, slugify, imageRuleErrors, attachImages, publishRadar, feedEntryImage, youtubeVideoId };
 
 // Run only when executed directly (importing for tests must not start a scout run)

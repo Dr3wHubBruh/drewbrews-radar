@@ -1,12 +1,14 @@
 name: Weekly Trend Radar
 
 on:
-  # Wednesday 12:23 UTC = 5:23am PDT / 4:23am PST (GitHub cron is UTC, no DST).
-  # Not on the hour on purpose: GitHub queues top-of-the-hour schedules, and the
-  # old "0 13" runs started 5–6 hours late (17:53, 18:19, 19:15 UTC in Sept–Oct
-  # 2026). GitHub can still delay any scheduled run; "Run workflow" is the backup.
+  # Tuesday 19:47 UTC = 11:47am PST / 12:47pm PDT (GitHub cron is UTC, no DST).
+  # GitHub delays scheduled runs a lot: the Wednesday 12:23 UTC runs started
+  # 7–9.5 hours late in Oct–Nov 2026 (latest: 21:47 UTC on 25 Nov). Starting on
+  # Tuesday means even a 10-hour delay still lands before Wednesday morning in
+  # the US. Not on the hour on purpose (GitHub queues top-of-the-hour jobs).
+  # "Run workflow" remains the manual backup.
   schedule:
-    - cron: "23 12 * * 3"
+    - cron: "47 19 * * 2"
   # Manual "Run now" button in the Actions tab.
   workflow_dispatch:
 
@@ -40,6 +42,7 @@ jobs:
         run: npm test
 
       - name: Run the scout
+        id: scout
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # Optional: with these set, Reddit is read via the official API
@@ -104,3 +107,14 @@ jobs:
             -d "{\"files\":{\"radar.json\":{\"content\":$(cat radar.json | jq -Rs .)}}}" \
             "https://api.github.com/gists/$GIST_ID" \
           | grep -qE '^2' && echo "Gist updated." || echo "::warning::Gist update failed (non-2xx response)."
+
+      # Runs last, so this week's radar is already published. If any source type
+      # (Reddit / Articles / YouTube) collected nothing, fail the run so GitHub
+      # sends its failure email instead of the gap going unnoticed for weeks.
+      - name: Alert if a source type went dark
+        if: steps.scout.outputs.empty_sources != ''
+        env:
+          EMPTY: ${{ steps.scout.outputs.empty_sources }}
+        run: |
+          echo "::error title=Source type empty::No items collected from: $EMPTY. The radar was still published from the other sources. See the 'Radar source health' table in the run summary."
+          exit 1
