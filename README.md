@@ -1,6 +1,6 @@
 # DrewBrews Trend Radar
 
-This little repo does one job: **every Wednesday morning it researches what's
+This little repo does one job: **every week, ready by Wednesday morning, it researches what's
 buzzing in specialty coffee and publishes a `radar.json` file.** The DrewBrews
 Trend Studio reads that file and refreshes its on-screen radar automatically —
 no manual copy-paste, ever.
@@ -116,13 +116,30 @@ it *would* have posted. Handy after changing `sources.txt` or adding secrets.
 
 ## When does it run automatically?
 
-Every **Wednesday at 12:23 UTC**: **5:23am Pacific in summer (PDT), 4:23am in
-winter (PST)**. GitHub's scheduler runs in UTC and ignores daylight saving.
+Every **Tuesday at 19:47 UTC**: **11:47am Pacific in winter (PST), 12:47pm in
+summer (PDT)**. GitHub's scheduler runs in UTC and ignores daylight saving.
 
-The time is deliberately not on the hour. GitHub queues top-of-the-hour
-schedules: the old `13:00` runs actually started 5–6 hours late (17:53, 18:19
-and 19:15 UTC in Sept–Oct 2026). GitHub can still delay any scheduled run; if
-the radar hasn't refreshed by mid-morning, use "Run now" below.
+Why Tuesday: GitHub delays scheduled runs a lot. The old Wednesday 12:23 UTC
+runs started 7–9.5 hours late in Oct–Nov 2026 (21:47 UTC on 25 Nov). Starting
+a day early means even a 10-hour delay still lands before Wednesday morning in
+the US. The time is deliberately not on the hour, because GitHub queues
+top-of-the-hour schedules. If the radar still hasn't refreshed, use "Run now".
+
+## Variety and freshness rules
+
+- At most **4 picks from one source** (a subreddit, site or channel) and at most
+  **5 from one platform** (Reddit, YouTube or articles), so one platform can't
+  take over the radar.
+- Articles older than **14 days** are skipped as stale news. Reddit posts and
+  videos may be up to 90 days old.
+
+## Source alert (the run turns red on purpose)
+
+If a whole source type (Reddit, articles or YouTube) collects **nothing**, the
+radar is still published from the other sources, and then the last step of the
+run fails on purpose so GitHub emails you. The run summary's "Radar source
+health" table shows which type was empty. Until Reddit access is fixed (see
+Known gaps), expect this alert every week for Reddit.
 
 ## Link safety (what can and can't be published)
 
@@ -175,8 +192,8 @@ outputs works.
 | Radar didn't update this week | The Action failed (GitHub emails the repo owner on failure) | Open the **Actions** tab → re-run the workflow. If it's an API error, check the `ANTHROPIC_API_KEY` secret and your Anthropic billing. |
 | Studio shows the old / built-in radar | `RADAR_URL` not set, or the file isn't reachable | Confirm GitHub Pages is on and the URL is exactly right. Open the Pages URL in a browser — you should see JSON. |
 | Want different sources | — | Edit `sources.txt`, commit. |
-| ⚠️ "Reddit source is empty" on a run | No Reddit API secrets, so it fell back to rate-limited RSS | Add `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` (setup step 6). |
-| ⚠️ "YouTube source is empty" | No `YOUTUBE_API_KEY`, so the flaky public feeds were used; or the key is wrong or out of quota | Add the key (setup step 7). If one is set, check it in the Google Cloud console. |
+| ❌ Run failed at "Alert if a source type went dark" — Reddit | No Reddit API secrets, so it fell back to rate-limited RSS | Add `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` (setup step 6). |
+| ❌ Run failed at "Alert if a source type went dark" — YouTube | No `YOUTUBE_API_KEY`, so the flaky public feeds were used; or the key is wrong or out of quota | Add the key (setup step 7). If one is set, check it in the Google Cloud console. |
 | The same story shows up two weeks running | — | It shouldn't: anything already in the current `radar.json` is skipped. |
 
 **A bad week never blanks the radar.** If Claude returns nothing usable or the
