@@ -303,13 +303,14 @@ function parseRedditThread(u) {
   return m ? { sub: m[1], id: m[2].toLowerCase(), slug: m[3] ?? '' } : null;
 }
 
-/** Request body for one subreddit's Exa search. */
-function exaSearchBody(sub, now = Date.now()) {
+/** Request body for one subreddit's Exa search. `broad` drops the path filter
+ *  (plain reddit.com); exaToRedditItems still keeps only the vetted subreddit. */
+function exaSearchBody(sub, now = Date.now(), broad = false) {
   return {
     query: `popular recent discussion threads in r/${sub}`,
     type: 'auto',
     numResults: EXA_RESULTS_PER_SUB,
-    includeDomains: [`reddit.com/r/${sub}`],
+    includeDomains: [broad ? 'reddit.com' : `reddit.com/r/${sub}`],
     startPublishedDate: new Date(now - EXA_LOOKBACK_DAYS * 86400 * 1000).toISOString(),
     contents: { text: { maxCharacters: EXA_TEXT_CHARS } },
   };
@@ -356,21 +357,37 @@ function exaToRedditItems(results, subs, now = Date.now()) {
 async function fetchRedditViaExa(subs, key) {
   const items = [];
   let cost = 0;
+  const search = async (sub, broad) => {
+    const res = await withRetry(
+      () => fetchOk(EXA_SEARCH_URL, {
+        method: 'POST',
+        signal: AbortSignal.timeout(30000),
+        headers: { 'x-api-key': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify(exaSearchBody(sub, Date.now(), broad)),
+      }),
+      `Exa r/${sub}`
+    );
+    const data = await res.json();
+    cost += data?.costDollars?.total ?? 0;
+    const n = Array.isArray(data?.results) ? data.results.length : 0;
+    if (n === 0) {
+      // Diagnose an empty answer instead of guessing: what did Exa send back?
+      console.log(`[scout] r/${sub}: Exa ${broad ? 'broad' : 'path'} search empty — keys: ${Object.keys(data ?? {}).join(',')}` +
+        ` | warnings: ${JSON.stringify(data?.warnings ?? data?.notices ?? null).slice(0, 300)} | requestId: ${data?.requestId ?? '?'}`);
+    }
+    return { results: data?.results, n };
+  };
   for (const sub of subs) {
     try {
-      const res = await withRetry(
-        () => fetchOk(EXA_SEARCH_URL, {
-          method: 'POST',
-          signal: AbortSignal.timeout(30000),
-          headers: { 'x-api-key': key, 'Content-Type': 'application/json' },
-          body: JSON.stringify(exaSearchBody(sub)),
-        }),
-        `Exa r/${sub}`
-      );
-      const data = await res.json();
-      cost += data?.costDollars?.total ?? 0;
-      const found = exaToRedditItems(data?.results, [sub]);
-      console.log(`[scout] r/${sub}: kept ${found.length} threads (of ${data?.results?.length ?? 0} via Exa)`);
+      let { results, n } = await search(sub, false);
+      let found = exaToRedditItems(results, [sub]);
+      let via = 'path filter';
+      if (found.length === 0) {
+        ({ results, n } = await search(sub, true));
+        found = exaToRedditItems(results, [sub]);
+        via = 'reddit.com';
+      }
+      console.log(`[scout] r/${sub}: kept ${found.length} threads (of ${n} via Exa, ${via})`);
       items.push(...found);
     } catch (err) {
       console.warn(`[scout] r/${sub}: Exa ${err.message} — skipping`);

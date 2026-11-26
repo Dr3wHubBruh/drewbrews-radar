@@ -87,3 +87,9 @@ test('search body limits Exa to one subreddit and the last 30 days', () => {
   assert.ok(body.numResults <= 10); // base price covers up to 10 results
   assert.ok(body.contents.text.maxCharacters <= 1000);
 });
+
+test('broad search body drops the subreddit path but keeps the date window', () => {
+  const body = exaSearchBody('pourover', NOW, true);
+  assert.deepEqual(body.includeDomains, ['reddit.com']);
+  assert.equal(body.startPublishedDate, '2026-10-27T12:00:00.000Z');
+});
