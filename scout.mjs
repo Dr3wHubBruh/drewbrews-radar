@@ -1112,18 +1112,27 @@ function emptySources(rows) {
   return rows.filter(([, configured, collected]) => configured > 0 && collected === 0).map(([name]) => name);
 }
 
+/** Empty source types minus those muted in a comma-separated ignore list
+ *  (ALERT_IGNORE, e.g. "Reddit" while a source is known to be dark). */
+function alertSources(empty, ignoreCsv) {
+  const ignore = new Set(String(ignoreCsv ?? '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
+  return empty.filter(name => !ignore.has(name.toLowerCase()));
+}
+
 async function reportSourceHealth(rows) {
   const empty = emptySources(rows);
+  const alert = alertSources(empty, process.env.ALERT_IGNORE);
   // Hand the list to the workflow: its last step fails the run (→ GitHub's
   // failure email) AFTER radar.json is published, so a dark source is loud
-  // but never blocks the week's radar.
+  // but never blocks the week's radar. Muted types still show ❌ below.
   if (process.env.GITHUB_OUTPUT) {
-    await appendFile(process.env.GITHUB_OUTPUT, `empty_sources=${empty.join(', ')}\n`);
+    await appendFile(process.env.GITHUB_OUTPUT, `empty_sources=${alert.join(', ')}\n`);
   }
   const lines = ['### Radar source health', '', '| Source | Configured | Items collected |', '|---|---|---|'];
   for (const [name, configured, collected] of rows) {
     const ok = !empty.includes(name);
-    lines.push(`| ${ok ? '✅' : '❌'} ${name} | ${configured} | ${collected} |`);
+    const muted = !ok && !alert.includes(name) ? ' (alert muted)' : '';
+    lines.push(`| ${ok ? '✅' : '❌'} ${name}${muted} | ${configured} | ${collected} |`);
     if (!ok) console.log(`::warning title=${name} source is empty::${configured} ${name} sources configured but 0 items collected this run.${HEALTH_HINTS[name] ?? ''}`);
   }
   if (process.env.GITHUB_STEP_SUMMARY) {

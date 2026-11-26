@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { mapPicks, isRecent, emptySources, MAX_PER_KIND, MAX_PER_SOURCE, ARTICLE_MAX_AGE_DAYS } from '../scout.mjs';
+import { mapPicks, isRecent, emptySources, alertSources, MAX_PER_KIND, MAX_PER_SOURCE, ARTICLE_MAX_AGE_DAYS } from '../scout.mjs';
 
 // --- Per-platform cap -------------------------------------------------------
 // Nov 18 2026: 9 of 12 trends were YouTube, because the cap only counted each
@@ -63,4 +63,14 @@ test('emptySources names each configured source type that collected nothing', ()
 });
 test('a source type with nothing configured is never "empty"', () => {
   assert.deepEqual(emptySources([['Reddit', 0, 0], ['YouTube', 8, 4]]), []);
+});
+
+// --- Muting a known-dark source from the alert ------------------------------
+test('alertSources leaves out types named in the ignore list (case-insensitive)', () => {
+  assert.deepEqual(alertSources(['Reddit', 'YouTube'], 'reddit'), ['YouTube']);
+  assert.deepEqual(alertSources(['Reddit'], ' Reddit , Articles '), []);
+});
+test('alertSources with no ignore list alerts on everything empty', () => {
+  assert.deepEqual(alertSources(['Reddit', 'Articles'], undefined), ['Reddit', 'Articles']);
+  assert.deepEqual(alertSources(['Reddit'], ''), ['Reddit']);
 });
