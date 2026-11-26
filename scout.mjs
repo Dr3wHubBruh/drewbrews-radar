@@ -277,18 +277,18 @@ async function fetchRedditPosts(subreddits) {
 }
 
 // ---------------------------------------------------------------------------
-// Phase 1a (fallback): Reddit threads via Claude's web search
-//   Used only when the API/RSS path collected nothing (RSS is rate-limited and
-//   Reddit's public .json has been blocked since May 2026). Claude only RUNS
-//   the searches; thread URLs are taken from the web_search tool's own result
-//   blocks, never from text Claude writes, so a link can't be invented.
-//   Set REDDIT_SEARCH=off to disable.
+// Phase 1a (fallback): Reddit threads via Exa search (needs EXA_API_KEY)
+//   Used only when the API/RSS path collected nothing (RSS is rate-limited,
+//   Reddit's public .json is blocked, and Reddit blocks Anthropic's web search).
+//   One Exa search per vetted subreddit, limited to that subreddit and the last
+//   week. Thread URLs come only from Exa's results and still pass safety.mjs.
+//   Set REDDIT_SEARCH=off to disable. Docs: https://docs.exa.ai/reference/search
 // ---------------------------------------------------------------------------
 
-// The basic web search tool returns plain result blocks we can read directly
-// (the newer dynamic-filtering variant routes results through code execution).
-const REDDIT_SEARCH_TOOL = 'web_search_20250305';
-const REDDIT_SEARCH_MAX_CONTINUATIONS = 4;
+const EXA_SEARCH_URL = 'https://api.exa.ai/search';
+const EXA_RESULTS_PER_SUB = 10;      // Exa's base price covers up to 10 results
+const EXA_LOOKBACK_DAYS = 8;         // weekly radar + one day of slack
+const EXA_TEXT_CHARS = 800;
 
 /** https://<any>.reddit.com/r/<sub>/comments/<id>[/<slug>] → parts, or null. */
 function parseRedditThread(u) {
@@ -301,79 +301,76 @@ function parseRedditThread(u) {
   return m ? { sub: m[1], id: m[2].toLowerCase(), slug: m[3] ?? '' } : null;
 }
 
-/**
- * Pure: turn a web-search response's content blocks into Reddit items.
- * Reads URLs ONLY from web_search_tool_result blocks; keeps /comments/ threads
- * in vetted subs, canonicalizes to www.reddit.com, drops mod threads and
- * anything older than MAX_POST_AGE_DAYS (undated kept), de-dupes by post id.
- * Quoted page text from citations (cited_text) becomes the item body.
- */
-function harvestRedditResults(content, subs, now = Date.now()) {
-  const vetted = new Map(subs.map(s => [s.toLowerCase(), s]));
-  const citedText = new Map();
-  for (const block of content) {
-    for (const c of block.type === 'text' ? block.citations ?? [] : []) {
-      const t = c.type === 'web_search_result_location' ? parseRedditThread(c.url) : null;
-      if (t && c.cited_text) citedText.set(t.id, `${citedText.get(t.id) ?? ''} ${c.cited_text}`.trim());
-    }
-  }
+/** Request body for one subreddit's Exa search. */
+function exaSearchBody(sub, now = Date.now()) {
+  return {
+    query: `r/${sub} discussion this week`,
+    type: 'auto',
+    numResults: EXA_RESULTS_PER_SUB,
+    includeDomains: [`reddit.com/r/${sub}`],
+    startPublishedDate: new Date(now - EXA_LOOKBACK_DAYS * 86400 * 1000).toISOString(),
+    contents: { text: { maxCharacters: EXA_TEXT_CHARS } },
+  };
+}
 
+/**
+ * Pure: Exa results → Reddit items. Keeps /comments/ threads in vetted subs,
+ * canonicalizes to www.reddit.com, drops mod threads and anything older than
+ * MAX_POST_AGE_DAYS (undated kept), de-dupes by post id.
+ */
+function exaToRedditItems(results, subs, now = Date.now()) {
+  const vetted = new Map(subs.map(s => [s.toLowerCase(), s]));
   const items = [];
   const seen = new Set();
-  for (const block of content) {
-    if (block.type !== 'web_search_tool_result' || !Array.isArray(block.content)) continue; // error blocks carry an object
-    for (const r of block.content) {
-      const t = r?.type === 'web_search_result' ? parseRedditThread(r.url) : null;
-      const sub = t && vetted.get(t.sub.toLowerCase());
-      if (!sub || seen.has(t.id)) continue;
-      const title = String(r.title ?? '').replace(/\s*(?::\s*r\/[a-z0-9_]+|-\s*Reddit)\s*$/i, '').trim();
-      if (!title || REDDIT_MOD_THREAD.test(title)) continue;
-      const ms = r.page_age ? Date.parse(r.page_age) : NaN;
-      if (!isRecent(ms, now, MAX_POST_AGE_DAYS)) continue;
-      seen.add(t.id);
-      items.push({
-        kind: 'reddit',
-        source: `r/${sub}`,
-        via: 'search',
-        title,
-        body: (citedText.get(t.id) ?? '').slice(0, 600),
-        url: `https://www.reddit.com/r/${sub}/comments/${t.id}/${t.slug ? t.slug + '/' : ''}`,
-        score: null,
-        comments: null,
-        flair: null,
-        created: isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10),
-      });
-    }
+  for (const r of Array.isArray(results) ? results : []) {
+    const t = typeof r?.url === 'string' ? parseRedditThread(r.url) : null;
+    const sub = t && vetted.get(t.sub.toLowerCase());
+    if (!sub || seen.has(t.id)) continue;
+    const title = String(r.title ?? '').replace(/\s*(?::\s*r\/[a-z0-9_]+|-\s*Reddit)\s*$/i, '').trim();
+    if (!title || REDDIT_MOD_THREAD.test(title)) continue;
+    const ms = r.publishedDate ? Date.parse(r.publishedDate) : NaN;
+    if (!isRecent(ms, now, MAX_POST_AGE_DAYS)) continue;
+    seen.add(t.id);
+    items.push({
+      kind: 'reddit',
+      source: `r/${sub}`,
+      via: 'exa',
+      title,
+      body: String(r.text ?? '').replace(/\s+/g, ' ').trim().slice(0, 600),
+      url: `https://www.reddit.com/r/${sub}/comments/${t.id}/${t.slug ? t.slug + '/' : ''}`,
+      score: null,
+      comments: null,
+      flair: null,
+      created: isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10),
+    });
   }
   return items;
 }
 
-async function fetchRedditViaSearch(client, subs, today) {
-  const tools = [{ type: REDDIT_SEARCH_TOOL, name: 'web_search', max_uses: subs.length + 3, allowed_domains: ['reddit.com'] }];
-  const month = new Date(today).toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-  const messages = [{
-    role: 'user',
-    content:
-      `Today is ${today}. Use web_search to find this week's most-discussed threads in each of these subreddits: ` +
-      `${subs.map(s => `r/${s}`).join(', ')}. Run one search per subreddit (for example "r/${subs[0]} ${month}"), ` +
-      `and at most a few extra searches if one comes back empty. When you are done searching, reply with the single word "done".`,
-  }];
-
-  const content = [];
-  let searches = 0;
-  for (let turn = 0; turn <= REDDIT_SEARCH_MAX_CONTINUATIONS; turn++) {
-    const response = await withRetry(
-      () => client.messages.create({ model: MODEL, max_tokens: 4000, output_config: { effort: 'low' }, tools, messages }),
-      'Reddit web search'
-    );
-    content.push(...response.content);
-    searches += response.usage?.server_tool_use?.web_search_requests ?? 0;
-    if (response.stop_reason !== 'pause_turn') break;
-    messages.push({ role: 'assistant', content: response.content });
+async function fetchRedditViaExa(subs, key) {
+  const items = [];
+  let cost = 0;
+  for (const sub of subs) {
+    try {
+      const res = await withRetry(
+        () => fetchOk(EXA_SEARCH_URL, {
+          method: 'POST',
+          signal: AbortSignal.timeout(30000),
+          headers: { 'x-api-key': key, 'Content-Type': 'application/json' },
+          body: JSON.stringify(exaSearchBody(sub)),
+        }),
+        `Exa r/${sub}`
+      );
+      const data = await res.json();
+      cost += data?.costDollars?.total ?? 0;
+      const found = exaToRedditItems(data?.results, [sub]);
+      console.log(`[scout] r/${sub}: kept ${found.length} threads (of ${data?.results?.length ?? 0} via Exa)`);
+      items.push(...found);
+    } catch (err) {
+      console.warn(`[scout] r/${sub}: Exa ${err.message} — skipping`);
+    }
   }
-
-  const items = harvestRedditResults(content, subs);
-  console.log(`[scout] Reddit via web search: ${items.length} threads from ${searches} searches`);
+  console.log(`[scout] Reddit via Exa: ${items.length} threads, about $${cost.toFixed(3)}`);
   return items;
 }
 
@@ -1038,7 +1035,9 @@ async function publishRadar(radar, stagingDir) {
 // ---------------------------------------------------------------------------
 
 const HEALTH_HINTS = {
-  Reddit: process.env.REDDIT_CLIENT_ID ? '' : ' Known gap: Reddit API access not set up yet (see README → Known gaps).',
+  Reddit: process.env.REDDIT_CLIENT_ID ? '' : process.env.EXA_API_KEY
+    ? ' RSS was rate-limited and the Exa fallback found nothing; check the Exa lines in the log and the key\'s credits.'
+    : ' No REDDIT_CLIENT_ID or EXA_API_KEY set, so only the rate-limited RSS feed was tried (see README → Reddit).',
   YouTube: process.env.YOUTUBE_API_KEY ? ' Check the YOUTUBE_API_KEY secret and its quota.' : ' No YOUTUBE_API_KEY set, so the flaky public feeds were used (see README setup step 7).',
 };
 
@@ -1115,11 +1114,11 @@ async function main() {
     fetchYouTubeVideos(ytChannels),
   ]);
   if (redditPosts.length === 0 && subs.length && process.env.REDDIT_SEARCH !== 'off') {
-    console.log('[scout] Reddit API/RSS returned nothing — trying web search fallback');
-    try {
-      redditPosts = await fetchRedditViaSearch(client, subs, today);
-    } catch (err) {
-      console.warn(`[scout] Reddit web search failed (${err.message}) — continuing without Reddit`);
+    if (process.env.EXA_API_KEY) {
+      console.log('[scout] Reddit API/RSS returned nothing — trying Exa search fallback');
+      redditPosts = await fetchRedditViaExa(subs, process.env.EXA_API_KEY);
+    } else {
+      console.log('[scout] Reddit API/RSS returned nothing and no EXA_API_KEY is set — no Reddit this run');
     }
   }
 
@@ -1185,7 +1184,7 @@ async function main() {
   console.log(`[scout] ✅ Wrote ${trends.length} trends to radar.json (generatedAt ${radar.generatedAt}).`);
 }
 
-export { harvestRedditResults, mapPicks, isRecent, emptySources, MAX_PER_KIND, MAX_PER_SOURCE, ARTICLE_MAX_AGE_DAYS };
+export { exaToRedditItems, exaSearchBody, mapPicks, isRecent, emptySources, MAX_PER_KIND, MAX_PER_SOURCE, ARTICLE_MAX_AGE_DAYS };
 export { canonicalVideoUrl, parseSources, parseRss, feedText, stripFeedBoilerplate, fetchChannelApi, extractImageUrl, imageRights, toStoryJpeg, slugify, imageRuleErrors, attachImages, publishRadar, feedEntryImage, youtubeVideoId };
 
 // Run only when executed directly (importing for tests must not start a scout run)
